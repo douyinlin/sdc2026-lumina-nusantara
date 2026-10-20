@@ -218,13 +218,25 @@ ANIM_CSS = """
 <style>
 @keyframes sr-curtain {
   0%   { opacity: 1; }
-  70%  { opacity: 1; }
+  84%  { opacity: 1; }
   100% { opacity: 0; visibility: hidden; }
 }
+@keyframes sr-eyebrow {
+  0%   { opacity: 0; transform: translateY(6px); letter-spacing: .05em; }
+  100% { opacity: 1; transform: translateY(0); letter-spacing: .22em; }
+}
 @keyframes sr-mark {
-  0%   { transform: scale(0.7); opacity: 0; letter-spacing: -2px; }
-  55%  { transform: scale(1.06); opacity: 1; letter-spacing: 2px; }
-  100% { transform: scale(1); opacity: 1; letter-spacing: 4px; }
+  0%   { opacity: 0; transform: scale(.94); letter-spacing: -1.5px; }
+  45%  { opacity: 1; letter-spacing: .5px; }
+  100% { opacity: 1; transform: scale(1); letter-spacing: -.5px; }
+}
+@keyframes sr-tagline {
+  0%   { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes sr-brand {
+  0%   { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 @keyframes sr-sweep {
   0%   { transform: translateX(-120%); }
@@ -235,21 +247,36 @@ ANIM_CSS = """
   100% { opacity: 1; transform: translateY(0); }
 }
 .sr-curtain {
-  position: fixed; inset: 0; z-index: 999999;
+  position: fixed; inset: 0; z-index: 999999; text-align: center;
   display: flex; align-items: center; justify-content: center;
-  background: radial-gradient(circle at 50% 42%, #f7faf3 0%, #eef3e6 45%, #e3ebd8 100%);
-  animation: sr-curtain 1s ease forwards;
+  background: radial-gradient(circle at 50% 40%, #fbfdf7 0%, #eff4e8 46%, #dfe8d3 100%);
+  animation: sr-curtain 2.2s ease forwards;
   pointer-events: none;
+}
+.sr-curtain-inner { max-width: 860px; padding: 0 28px; }
+.sr-eyebrow {
+  font-size: 12px; font-weight: 600; color: #7a8663; text-transform: uppercase;
+  letter-spacing: .22em; margin-bottom: 16px;
+  animation: sr-eyebrow .7s ease-out both;
 }
 .sr-mark {
   font-family: "Helvetica Neue", Arial, sans-serif;
-  font-size: 34px; font-weight: 700; color: #6f7f42;
-  animation: sr-mark 0.9s cubic-bezier(.2,.8,.25,1) forwards;
+  font-size: 42px; font-weight: 800; color: #4b5a2a; line-height: 1.15;
+  animation: sr-mark 1s cubic-bezier(.2,.8,.25,1) .12s both;
+}
+.sr-tagline {
+  margin-top: 14px; color: #62704f; font-size: 14.5px; line-height: 1.7;
+  animation: sr-tagline .9s ease-out .55s both;
+}
+.sr-brand {
+  margin-top: 22px; font-size: 13px; font-weight: 650; color: #8A9A5B;
+  letter-spacing: .16em; text-transform: uppercase;
+  animation: sr-brand .8s ease-out 1s both;
 }
 .sr-bar {
   position: absolute; bottom: 0; left: 0; height: 3px; width: 100%;
-  background: linear-gradient(90deg, transparent, #8A9A5B, transparent);
-  animation: sr-sweep 1s ease forwards;
+  background: linear-gradient(90deg, transparent, #8A9A5B, #5b7fa6, #8A9A5B, transparent);
+  animation: sr-sweep 2.2s ease forwards;
 }
 .sr-enter { animation: sr-rise 0.55s ease-out both; }
 </style>
@@ -257,7 +284,16 @@ ANIM_CSS = """
 
 INTRO_HTML = """
 <div class="sr-curtain">
-  <div class="sr-mark">📡 SKILLRADAR</div>
+  <div class="sr-curtain-inner">
+    <div class="sr-eyebrow">SDC 2026 · Domain 1 · SDG 4</div>
+    <div class="sr-mark">The Future-Ready Workforce</div>
+    <div class="sr-tagline">
+      Tracking AI's advance · forecasting rising and declining skills ·
+      matching people to future roles · personalised reskilling ·
+      every role mapped to the UN SDGs
+    </div>
+    <div class="sr-brand">📡 SkillRadar MY</div>
+  </div>
   <div class="sr-bar"></div>
 </div>
 """
