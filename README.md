@@ -176,11 +176,11 @@ Proof of use: [`submission/RUNPOD PROOF OF USE.pdf`](submission/RUNPOD%20PROOF%2
 
 | Name | Role |
 | --- | --- |
-| DU YULIN | Team Lead / Product & AI / Submission |
-| GAO TANGLINYUE | Frontend & UX (Streamlit interface) |
-| ZHENG QUANYING | Data & trend pipeline |
-| WU ZHUOLI | Matching & evaluation logic |
-| ZHANG BORAN | Documentation, slide deck & demo video |
+| DU YULIN | Team Lead / Core development & submission |
+| GAO TANGLINYUE | UI design & bug testing |
+| ZHENG QUANYING | Core development (data pipeline & trend layer) |
+| WU ZHUOLI | Core development (matching & pathway engine) |
+| ZHANG BORAN | Core development & documentation |
 
 ## 11. Submission Checklist
 
