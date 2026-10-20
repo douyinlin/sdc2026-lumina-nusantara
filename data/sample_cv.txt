@@ -1,0 +1,47 @@
+# ⚠️ 这是一个【合成】的示例简历，不是真实个人数据
+# 用于 SkillRadar MY 的 demo（Domain 1 规则：只用公开或合成数据）
+# 姓名、公司、电话均为虚构
+
+NUR AISYAH BINTI RAHMAN
+Kuala Lumpur, Malaysia | +60 12-000 0000 | aisyaah@example.com
+
+PROFILE
+Customer-service supervisor with 6 years of experience in a
+Malaysian telecommunications contact centre. Comfortable turning
+manual reporting into dashboards and experimenting with AI tools
+to speed up daily work.
+
+EXPERIENCE
+2021 - 2025   Team Lead, Customer Support
+              Telekom SME Desk (synthetic company)
+              - Led a team of 8 agents across chat and voice channels
+              - Handled escalations via Zendesk and internal CRM
+              - Built monthly reporting dashboards in Excel and Power BI
+              - Used ChatGPT prompt templates to cut response drafting
+                time by roughly 30%
+              - Ran first-line SQL queries to audit ticket backlogs
+
+2019 - 2021   Customer Service Executive
+              Managed a portfolio of 120 SME accounts; introduced a
+              shared Excel tracker that reduced missed follow-ups.
+
+SKILLS
+- Customer support and complaint handling
+- Team lead / supervisor experience
+- Excel (formulas, pivot tables) and Power BI dashboards
+- Basic SQL
+- Python (pandas) for small data-cleaning scripts
+- Zendesk and CRM administration
+- Prompt engineering with ChatGPT
+- Monthly reporting pack for management
+
+EDUCATION
+Diploma in Business Administration, 2019
+
+LANGUAGES
+Bahasa Malaysia (native), English (professional), Mandarin (basic)
+
+NOTE FOR REVIEWERS
+This sample was written for the SDC 2026 hackathon demo. It is synthetic
+and contains no real personal data. Try it with the CV upload step in
+SkillRadar MY.

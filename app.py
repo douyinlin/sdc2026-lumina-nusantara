@@ -147,6 +147,91 @@ def apply_trend(trend: dict) -> list[Role]:
 
 
 # --------------------------------------------------------------------------- #
+# CV intake — "Skills profile intake" (Domain 1 must-have feature #1)
+# --------------------------------------------------------------------------- #
+
+SKILL_ALIASES = {
+    "customer service": "customer support",
+    "client service": "customer support",
+    "helpdesk": "customer support",
+    "spreadsheet": "excel",
+    "excel": "excel",
+    "structured query language": "sql",
+    "sql": "sql",
+    "power bi": "data visualisation",
+    "tableau": "data visualisation",
+    "dashboard": "data visualisation",
+    "chatgpt": "prompt engineering",
+    "genai": "prompt engineering",
+    "generative ai": "prompt engineering",
+    "llm": "prompt engineering",
+    "salesforce": "crm administration",
+    "zendesk": "crm administration",
+    "hubspot": "crm administration",
+    "crm": "crm administration",
+    "pmp": "project management",
+    "agile": "project management",
+    "scrum": "project management",
+    "roadmap": "product management",
+    "stakeholder": "product management",
+    "python": "python",
+    "pandas": "python",
+    "machine learning": "machine learning",
+    "pytorch": "machine learning",
+    "tensorflow": "machine learning",
+    "supervisor": "team lead",
+    "team lead": "team lead",
+    "manager": "team lead",
+    "reporting": "reporting",
+}
+
+
+def _read_uploaded_text(uploaded) -> str:
+    """Return plain text from a .txt/.md upload or a text-based .pdf upload."""
+    raw = uploaded.read()
+    name = (getattr(uploaded, "name", "") or "").lower()
+
+    if name.endswith(".pdf"):
+        # Minimal PDF text extraction: pull text out of Flate-compressed streams.
+        import re
+        import zlib
+
+        chunks: list[str] = []
+        for match in re.finditer(rb"stream\r?\n", raw):
+            start = match.end()
+            end = raw.find(b"endstream", start)
+            if end == -1:
+                continue
+            try:
+                blob = zlib.decompress(raw[start:end])
+            except Exception:
+                continue
+            for literal in re.finditer(rb"\(((?:[^()\\]|\\.)*)\)\s*Tj", blob):
+                chunks.append(literal.group(1).decode("latin-1", "ignore"))
+            for array in re.finditer(rb"\[(.*?)\]\s*TJ", blob, re.S):
+                for literal in re.finditer(rb"\(((?:[^()\\]|\\.)*)\)", array.group(1)):
+                    chunks.append(literal.group(1).decode("latin-1", "ignore"))
+        return " ".join(chunks)
+
+    return raw.decode("utf-8", "ignore")
+
+
+def extract_profile_from_upload(uploaded) -> list[str]:
+    """Map uploaded CV text onto the controlled skill vocabulary."""
+    text = _read_uploaded_text(uploaded).lower()
+    if not text.strip():
+        return []
+
+    found: list[str] = []
+    for alias, skill in SKILL_ALIASES.items():
+        if alias in text and skill not in found:
+            found.append(skill)
+
+    # Keep only skills the app actually knows about.
+    return [s for s in found if s in SKILL_OPTIONS]
+
+
+# --------------------------------------------------------------------------- #
 # UI
 # --------------------------------------------------------------------------- #
 
@@ -163,13 +248,40 @@ roles = apply_trend(trend)
 
 with st.sidebar:
     st.header("1 · Who are you today?")
-    demo_choice = st.selectbox("Start from a synthetic profile", ["Custom"] + list(DEMO_PROFILES))
-    if demo_choice == "Custom":
-        profile = st.multiselect("Your current skills", SKILL_OPTIONS, default=["customer support", "excel"])
-    else:
-        profile = st.multiselect(
-            "Your current skills", SKILL_OPTIONS, default=DEMO_PROFILES[demo_choice]
+
+    # ---- Two intake paths required by Domain 1: CV upload OR questionnaire ----
+    intake_mode = st.radio(
+        "How would you like to tell us about yourself?",
+        options=["Upload a CV (PDF / TXT)", "Fill a short questionnaire"],
+        help="Domain 1 rule: use synthetic documents only — never upload a real CV.",
+    )
+
+    detected_from_cv: list[str] = []
+
+    if intake_mode.startswith("Upload"):
+        uploaded = st.file_uploader(
+            "Drop a CV here (synthetic only)",
+            type=["txt", "pdf", "md"],
+            help="PDF text is extracted automatically. Nothing is stored or sent anywhere.",
         )
+        if uploaded is not None:
+            detected_from_cv = extract_profile_from_upload(uploaded)
+            if detected_from_cv:
+                st.success(f"Detected {len(detected_from_cv)} skill(s): {', '.join(detected_from_cv)}")
+            else:
+                st.warning(
+                    "No known skill was detected. Try the questionnaire, or add the skill names "
+                    "to the CV text (we match against a fixed skill vocabulary)."
+                )
+        st.caption("No CV handy? Use one of the sample profiles below.")
+
+    demo_choice = st.selectbox("Start from a profile", ["Custom"] + list(DEMO_PROFILES))
+    if demo_choice == "Custom":
+        default_skills = detected_from_cv or ["customer support", "excel"]
+    else:
+        default_skills = DEMO_PROFILES[demo_choice]
+
+    profile = st.multiselect("Your current skills (editable)", SKILL_OPTIONS, default=default_skills)
 
     st.header("2 · Scenario")
     scenario = st.radio(
