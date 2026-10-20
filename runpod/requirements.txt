@@ -1,0 +1,3 @@
+# Dependencies for the RunPod serverless endpoint image only.
+# The Streamlit app deliberately does not need these — see the root requirements.txt.
+runpod

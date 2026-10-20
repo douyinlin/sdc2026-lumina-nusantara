@@ -1,9 +1,5 @@
-﻿# Core app
+# Core app — keep this list minimal so a fresh Replit installs fast and never
+# fails on optional GPU packages. The RunPod dependency lives in
+# runpod/requirements.txt because it is only needed inside the endpoint image.
 streamlit
 pandas
-
-# RunPod serverless client (used by runpod/handler.py and the app integration)
-runpod
-
-# Optional: embeddings on the GPU endpoint
-# sentence-transformers

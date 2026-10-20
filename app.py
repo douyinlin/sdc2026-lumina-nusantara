@@ -1,20 +1,67 @@
 """SkillRadar MY — Streamlit application.
 
-Run:  streamlit run app.py
+One-click start:  python app.py   (installs Streamlit automatically if missing)
+Streamlit way   :  streamlit run app.py
+
 The matching / pathway / SDG engine lives in ``src/utils.py``; this file only
 handles screens and rendering so the engine stays unit-testable.
+
+The ``try`` block below is deliberate: on a fresh Replit (or any fresh machine)
+``streamlit`` may not be installed yet. Instead of crashing with
+ModuleNotFoundError we install the dependency and hand off to Streamlit.
 """
 
 from __future__ import annotations
 
 import json
+import os
+import subprocess
 import sys
-from datetime import datetime, date
+from datetime import date
 from pathlib import Path
 
-import streamlit as st
-
 ROOT = Path(__file__).parent
+
+
+def _running_under_streamlit() -> bool:
+    try:
+        from streamlit.runtime.scriptrunner import get_script_run_ctx
+
+        return get_script_run_ctx() is not None
+    except Exception:  # pragma: no cover
+        return False
+
+
+def _bootstrap() -> None:
+    """Install Streamlit if missing, then relaunch this file under Streamlit."""
+    try:
+        import streamlit  # noqa: F401
+    except ModuleNotFoundError:
+        print("[SkillRadar] Installing Streamlit (one time) ...", flush=True)
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "streamlit", "pandas"])
+    os.execv(
+        sys.executable,
+        [
+            sys.executable,
+            "-m",
+            "streamlit",
+            "run",
+            str(Path(__file__).resolve()),
+            "--server.port",
+            os.environ.get("PORT", "8501"),
+            "--server.address",
+            "0.0.0.0",
+            "--server.headless",
+            "true",
+        ],
+    )
+
+
+if not _running_under_streamlit():
+    _bootstrap()
+
+import streamlit as st  # noqa: E402
+
 sys.path.insert(0, str(ROOT / "src"))
 
 from utils import Role, pathway, rank, sdg_summary  # noqa: E402
