@@ -562,12 +562,16 @@ def current_stage() -> str:
 
 
 def top_bar() -> None:
-    left, mid, right = st.columns([1, 2, 1])
+    left, mid, right, far = st.columns([2, 1, 1, 1])
     with left:
         st.markdown("### 📡 SkillRadar MY")
     with right:
         if st.button("🔄 Re-evaluate", use_container_width=True,
                      help="Clear everything and start a new assessment"):
+            reset()
+    with far:
+        if st.button("🏠 Home", use_container_width=True,
+                     help="Back to the identity selection screen"):
             reset()
 
 
@@ -609,6 +613,11 @@ def role_card(result: dict, expanded: bool = False) -> None:
 
 def screen_landing() -> None:
     screen_wrap()
+    try:
+        if "stage" in st.query_params:
+            del st.query_params["stage"]
+    except Exception:
+        pass
     st.markdown(LANDING_CSS + ORBS_HTML, unsafe_allow_html=True)
 
     st.markdown(
