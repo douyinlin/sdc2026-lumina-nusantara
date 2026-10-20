@@ -1,3 +1,5 @@
+> 历史提案草稿（2026-10-20 整理标注）：下文含未验证统计、规划功能与平台使用声明，不代表当前实现或比赛期间原创证明。勿直接提交；以根 README 与 docs/project-record.md 为准。队长联系方式已从当前文本移除，Git 历史仍保留。
+
 # Proposal draft — Lumina Nusantara (Domain 1)
 
 Copy-paste source for `SDC2026_LuminaNusantara_Preliminary.pdf` and
@@ -15,7 +17,6 @@ English text between the markers (target limits in brackets).
 | Selected SDG Track (1–17) | SDG 4 — Quality Education (sub-target 4.4, with 8.5) |
 | Project / Solution Name | SkillRadar MY |
 | Name (Leader) | DU YULIN |
-| Email & Phone (Leader) | CYS2609009@xmu.edu.my / +60 11-1798 1756 |
 | University Affiliation(s) | Xiamen University Malaysia |
 | Number of Team Members | 5 |
 

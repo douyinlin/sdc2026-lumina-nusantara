@@ -1,23 +1,20 @@
 """SkillRadar MY — Streamlit application.
 
-One-click start:  python app.py   (installs Streamlit automatically if missing)
+Convenience start: python app.py (install requirements.txt first)
 Streamlit way   :  streamlit run app.py
 
 The matching / pathway / SDG engine lives in ``src/utils.py``; this file only
 handles screens and rendering so the engine stays unit-testable.
 
-The bootstrap block below is deliberate: on a fresh Replit (or any fresh
-machine) ``streamlit`` may not be installed yet, so instead of crashing with
-ModuleNotFoundError we install the dependency and hand off to Streamlit.
+Modified 2026-10-20: default to the minimal coverage demo; retain the earlier
+experimental UI behind an explicit option. Dependencies are installed explicitly.
 """
 
 from __future__ import annotations
 
 import json
 import os
-import subprocess
 import sys
-from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).parent
@@ -33,28 +30,18 @@ def _running_under_streamlit() -> bool:
 
 
 def _bootstrap() -> None:
-    """Install Streamlit if missing, then relaunch this file under Streamlit."""
+    """Start the installed Streamlit CLI in this process (also works on Windows)."""
     try:
-        import streamlit  # noqa: F401
+        from streamlit.web import cli
     except ModuleNotFoundError:
-        print("[SkillRadar] Installing Streamlit (one time) ...", flush=True)
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "streamlit", "pandas"])
-    os.execv(
-        sys.executable,
-        [
-            sys.executable,
-            "-m",
-            "streamlit",
-            "run",
-            str(Path(__file__).resolve()),
-            "--server.port",
-            os.environ.get("PORT", "8501"),
-            "--server.address",
-            "0.0.0.0",
-            "--server.headless",
-            "true",
-        ],
-    )
+        raise SystemExit("Missing Streamlit. Install requirements.txt in a virtual environment first.")
+    sys.argv = [
+        "streamlit", "run", str(Path(__file__).resolve()),
+        "--server.port", os.environ.get("PORT") or "8501",
+        "--server.address", "0.0.0.0", "--server.headless", "true",
+        "--browser.gatherUsageStats", "false",
+    ]
+    raise SystemExit(cli.main())
 
 
 if not _running_under_streamlit():
@@ -62,9 +49,9 @@ if not _running_under_streamlit():
 
 import streamlit as st  # noqa: E402
 
-sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT))
 
-from utils import Role, pathway, rank, sdg_summary  # noqa: E402
+from src.utils import Role, pathway, rank, sdg_summary  # noqa: E402
 
 TREND_FILE = ROOT / "data" / "trends" / "latest.json"
 
@@ -73,62 +60,15 @@ TREND_FILE = ROOT / "data" / "trends" / "latest.json"
 # Domain 1 rule: public / synthetic data only, never real CVs.
 # --------------------------------------------------------------------------- #
 
-SKILL_OPTIONS = sorted(
-    {
-        "customer support",
-        "excel",
-        "sql",
-        "python",
-        "data visualisation",
-        "prompt engineering",
-        "crm administration",
-        "project management",
-        "product management",
-        "machine learning",
-        "team lead",
-        "reporting",
-    }
-)
-
-ROLE_CATALOGUE = [
-    Role("AI Operations Specialist", ["prompt engineering", "data visualisation", "sql", "customer support"], 0.8, ["4.4", "8.5"]),
-    Role("Customer Success Analyst", ["crm administration", "data visualisation", "sql"], 0.2, ["8.5", "4.4"]),
-    Role("Data Steward", ["sql", "excel", "data visualisation"], 0.1, ["9.1", "8.5"]),
-    Role("Machine Learning Engineer", ["python", "machine learning", "sql"], 0.9, ["9.1", "4.4"]),
-    Role("Product Manager (AI)", ["product management", "project management", "prompt engineering"], 0.6, ["8.2", "4.4"]),
-    Role("Process Automation Lead", ["excel", "python", "project management", "prompt engineering"], 0.5, ["8.2", "9.1"]),
-    Role("Data Entry Specialist", ["excel", "reporting"], -0.9, ["8.5"]),
-]
-
-DEMO_PROFILES = {
-    "Customer-service supervisor (synthetic)": ["customer support", "excel", "team lead"],
-    "Fresh graduate (synthetic)": ["python", "reporting"],
-    "HR manager (synthetic)": ["project management", "excel", "crm administration"],
-}
-
-DEFAULT_TREND = {
-    "source_url": "https://www.weforum.org/publications/the-future-of-jobs-report-2025/",
-    "retrieved_at": date(2026, 10, 20).isoformat(),
-    "note": "Bundled seed snapshot. Replace data/trends/latest.json with a freshly "
-    "fetched snapshot before the demo and the dates below will update.",
-    "signals": [
-        {"skill": "prompt engineering", "direction": "rising", "weight": 0.4},
-        {"skill": "data visualisation", "direction": "rising", "weight": 0.2},
-        {"skill": "sql", "direction": "stable", "weight": 0.1},
-        {"skill": "customer support", "direction": "declining", "weight": -0.3},
-        {"skill": "excel", "direction": "stable", "weight": 0.0},
-        {"skill": "machine learning", "direction": "rising", "weight": 0.5},
-    ],
-}
+# Modified 2026-10-20: move synthetic data out of the UI; no claimed live source.
+EXPERIMENTAL = json.loads((ROOT / "data" / "experimental.json").read_text(encoding="utf-8"))
+SKILL_OPTIONS = EXPERIMENTAL["skills"]
+ROLE_CATALOGUE = [Role(**r) for r in EXPERIMENTAL["roles"]]
+DEMO_PROFILES = EXPERIMENTAL["profiles"]
 
 
 def load_trend() -> dict:
-    if TREND_FILE.exists():
-        try:
-            return json.loads(TREND_FILE.read_text(encoding="utf-8"))
-        except json.JSONDecodeError:
-            pass
-    return DEFAULT_TREND
+    return json.loads(TREND_FILE.read_text(encoding="utf-8"))
 
 
 def scenario_weight(trend: dict) -> dict[str, float]:
@@ -412,8 +352,17 @@ I18N: dict[str, dict[str, str]] = {
 st.set_page_config(page_title="SkillRadar MY", page_icon="📡", layout="wide")
 
 
-def render_app(lang: str) -> None:
-    tx = I18N[lang]
+def render_experimental_app(lang: str) -> None:
+    tx = dict(I18N[lang])
+    # Existing translations retained; replace claims unsupported by the code.
+    tx.update({
+        "tagline": "EXPERIMENTAL / 实验功能 · 模拟用户、岗位、趋势和评分；非真实预测。",
+        "scen_caption": "假设：moderate 使用原有演示权重；fast 将模拟趋势权重加倍后归一化。不是预测。",
+        "pathway_caption": "通往 {0} 的模拟技能排序；周数为任意演示估计，未核验真实课程或报销资格。",
+        "footer": "模拟数据，无真实来源和抓取日期。技能覆盖率不是录用概率。",
+        "ranked_caption": "假设情景：{0}；综合分是演示启发式，非技能覆盖率或录用概率。",
+    })
+    st.warning("实验功能：仅使用虚构资料；简历解析仅为本地关键词匹配。学习资源尚未接入，SDG 标签仅为示例，无经验证的贡献结论。")
     trend = load_trend()
     roles = apply_trend(trend)
 
@@ -468,7 +417,6 @@ def render_app(lang: str) -> None:
 
     if not profile:
         st.warning(tx["pick_one"])
-        st.stop()
 
     results = rank(profile, roles, scenario=scenario)
     top = results[0]
@@ -544,7 +492,8 @@ def render_app(lang: str) -> None:
                     tx["col_fast"]: f["score"],
                     "Δ": round(f["score"] - m["score"], 1),
                 }
-                for m, f in zip(moderate, fast)
+                for m in moderate
+                for f in fast if f["role"] == m["role"]
             ],
             width="stretch",
             hide_index=True,
@@ -559,14 +508,18 @@ def render_app(lang: str) -> None:
 
 LANGUAGE_OPTIONS = ["English", "Bahasa Malaysia", "中文"]
 
-_, lang_col = st.columns((5, 1))
-with lang_col:
-    lang = st.selectbox(
-        "Language / Bahasa / 语言",
-        options=LANGUAGE_OPTIONS,
-        index=0,
-        label_visibility="collapsed",
-        key="language_selector",
-    )
+if st.sidebar.checkbox("显示旧版实验功能 / Show experimental features", value=False):
+    _, lang_col = st.columns((5, 1))
+    with lang_col:
+        lang = st.selectbox(
+            "Language / Bahasa / 语言",
+            options=LANGUAGE_OPTIONS,
+            index=0,
+            label_visibility="collapsed",
+            key="language_selector",
+        )
 
-render_app(lang)
+    render_experimental_app(lang)
+else:
+    from src.demo import render_demo
+    render_demo()

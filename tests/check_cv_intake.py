@@ -10,7 +10,7 @@ import types
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT))
 
 # --------------------------------------------------------------------------- #
 # Minimal Streamlit stub so app.py can be imported without a server.
@@ -44,12 +44,13 @@ streamlit.columns = lambda *a, **k: [_Sidebar() for _ in range(8)]
 # Load helpers directly from app.py source (skip the UI section).
 # --------------------------------------------------------------------------- #
 src = (ROOT / "app.py").read_text(encoding="utf-8")
-start = src.index("SKILL_OPTIONS = sorted(")
+start = src.index("SKILL_ALIASES = {")
 end = src.index("# UI")
-from utils import Role  # noqa: E402
+from src.utils import Role  # noqa: E402
 from datetime import date  # noqa: E402
 
-namespace: dict = {"Role": Role, "date": date}
+import json
+namespace: dict = {"SKILL_OPTIONS": json.loads((ROOT / "data/experimental.json").read_text(encoding="utf-8"))["skills"]}
 exec(compile(src[start:end], "app_helpers", "exec"), namespace)
 
 extract = namespace["extract_profile_from_upload"]

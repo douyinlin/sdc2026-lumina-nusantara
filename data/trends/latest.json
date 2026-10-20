@@ -1,13 +1,38 @@
 {
-  "source_url": "https://www.weforum.org/publications/the-future-of-jobs-report-2025/",
-  "retrieved_at": "2026-10-20",
-  "note": "Bundled seed snapshot. Replace this file with a freshly fetched snapshot before the demo so the dates are current.",
+  "is_simulated": true,
+  "source_url": null,
+  "retrieved_at": null,
+  "note": "SIMULATED / 模拟趋势：未接入真实趋势。权重为既有演示假设，不来自 WEF，不代表统计或预测。",
   "signals": [
-    { "skill": "prompt engineering", "direction": "rising", "weight": 0.4 },
-    { "skill": "data visualisation", "direction": "rising", "weight": 0.2 },
-    { "skill": "sql", "direction": "stable", "weight": 0.1 },
-    { "skill": "customer support", "direction": "declining", "weight": -0.3 },
-    { "skill": "excel", "direction": "stable", "weight": 0.0 },
-    { "skill": "machine learning", "direction": "rising", "weight": 0.5 }
+    {
+      "skill": "prompt engineering",
+      "direction": "rising",
+      "weight": 0.4
+    },
+    {
+      "skill": "data visualisation",
+      "direction": "rising",
+      "weight": 0.2
+    },
+    {
+      "skill": "sql",
+      "direction": "stable",
+      "weight": 0.1
+    },
+    {
+      "skill": "customer support",
+      "direction": "declining",
+      "weight": -0.3
+    },
+    {
+      "skill": "excel",
+      "direction": "stable",
+      "weight": 0.0
+    },
+    {
+      "skill": "machine learning",
+      "direction": "rising",
+      "weight": 0.5
+    }
   ]
 }

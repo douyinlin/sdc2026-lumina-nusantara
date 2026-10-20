@@ -1,10 +1,12 @@
+# Modified 2026-10-20; actual Replit execution/deployment not yet verified.
 run = "python -m streamlit run app.py --server.port 5000 --server.address 0.0.0.0 --server.headless true"
 entrypoint = "app.py"
-modules = ["python"]
-
-[nix]
-channel = "stable-24_05"
+modules = ["python-3.12"]
 
 [[ports]]
 localPort = 5000
 externalPort = 80
+
+[deployment]
+run = ["sh", "-c", "python -m streamlit run app.py --server.address 0.0.0.0 --server.port ${PORT:-5000} --server.headless true"]
+build = ["sh", "-c", "python -m pip install -r requirements.txt"]

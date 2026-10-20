@@ -7,6 +7,7 @@ before any third-party dependency is installed.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import math
 
 
 @dataclass
@@ -43,6 +44,31 @@ GAP_COST = {
 WEIGHTS = {"coverage": 0.40, "transfer": 0.25, "trend": 0.20, "gap": 0.15}
 
 
+# Modified 2026-10-20: normalize distinct skills and reject malformed records.
+def normalize_skills(skills: object) -> list[str]:
+    if skills is None:
+        return []
+    if not isinstance(skills, (list, tuple, set, frozenset)):
+        raise ValueError("Skills must be a collection of strings, not text or an object.")
+    if any(not isinstance(skill, str) for skill in skills):
+        raise ValueError("Every skill must be a string.")
+    return sorted({skill.strip().casefold() for skill in skills if skill.strip()})
+
+
+def match_coverage(profile: object, name: object, required_skills: object) -> dict:
+    """Exact, unrounded set coverage; empty role requirements are invalid."""
+    if not isinstance(name, str) or not name.strip():
+        raise ValueError("Role name must be non-empty text.")
+    known = set(normalize_skills(profile))
+    required = normalize_skills(required_skills)
+    if not required:
+        raise ValueError("A role must require at least one skill.")
+    covered = [skill for skill in required if skill in known]
+    missing = [skill for skill in required if skill not in known]
+    return {"role": name.strip(), "coverage": len(covered) / len(required),
+            "covered": covered, "missing": missing, "required_count": len(required)}
+
+
 def _transfer_score(skill: str, required: str) -> float:
     if skill == required:
         return 1.0
@@ -57,13 +83,14 @@ def evaluate(profile: list[str], role: Role, scenario: str = "moderate") -> dict
     ``scenario`` is "moderate" or "fast"; fast disruption doubles the weight
     of the trend signal, which is how the two-scenario view is produced.
     """
-    profile = [s.strip().lower() for s in profile]
-    required = [s.strip().lower() for s in role.required_skills]
-
-    covered = [s for s in required if s in profile]
-    missing = [s for s in required if s not in profile]
-
-    coverage = len(covered) / len(required) if required else 0.0
+    if scenario not in {"moderate", "fast"}:
+        raise ValueError("Unknown scenario.")
+    if isinstance(role.trend, bool) or not isinstance(role.trend, (int, float)) or not math.isfinite(role.trend) or not -1 <= role.trend <= 1:
+        raise ValueError("Simulated trend must be finite and within [-1, 1].")
+    profile = normalize_skills(profile)
+    matched = match_coverage(profile, role.name, role.required_skills)
+    covered, missing = matched["covered"], matched["missing"]
+    coverage = matched["coverage"]
     transfer = (
         max((_transfer_score(p, r) for p in profile for r in missing), default=0.0)
         if missing
@@ -92,7 +119,7 @@ def evaluate(profile: list[str], role: Role, scenario: str = "moderate") -> dict
         "role": role.name,
         "score": round(score * 100, 1),
         "components": {
-            "coverage": round(coverage, 2),
+            "coverage": coverage,
             "transfer": round(transfer, 2),
             "trend": round(trend, 2),
             "gap_cost": round(gap_cost, 2),
@@ -122,7 +149,7 @@ def pathway(result: dict) -> list[dict]:
                 "step": i,
                 "skill": skill,
                 "weeks": max(1, round(GAP_COST.get(skill, 0.7) * 6)),
-                "resource": f"https://www.hrdcorp.gov.my/ (search: {skill})",
+                "resource": "未接入经核验的课程；周数仅为演示假设",
             }
         )
     return plan

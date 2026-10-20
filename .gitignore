@@ -1,16 +1,44 @@
-# Python
+# Python environments and generated files
 __pycache__/
 *.py[cod]
-venv/
 .venv/
+venv/
+build/
+dist/
+*.egg-info/
+# Optional future JS tooling
+node_modules/
+# Real credentials; retain the blank example
 .env
-
-# Data / caches
+.env.*
+!.env.example
+*.pem
+*.key
+credentials*.json
+.streamlit/secrets.toml
+# Logs, databases, caches and reports
+*.log
+*.sqlite
 *.sqlite3
-data/trends/*.tmp
+*.db
 .cache/
-
-# OS / Editor
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage*
+htmlcov/
+coverage/
+test-results/
+playwright-report/
+data/trends/*.tmp
+# Personal material must stay outside public source
+private/
+# OS/editor local settings
 .DS_Store
+Thumbs.db
+Desktop.ini
+*.tmp
+*.bak
 .vscode/
 .idea/
+*.code-workspace

@@ -1,0 +1,127 @@
+{
+  "is_simulated": true,
+  "note": "Existing experimental catalogue and arbitrary weights; not labour-market evidence.",
+  "skills": [
+    "crm administration",
+    "customer support",
+    "data visualisation",
+    "excel",
+    "machine learning",
+    "product management",
+    "project management",
+    "prompt engineering",
+    "python",
+    "reporting",
+    "sql",
+    "team lead"
+  ],
+  "roles": [
+    {
+      "name": "AI Operations Specialist",
+      "required_skills": [
+        "prompt engineering",
+        "data visualisation",
+        "sql",
+        "customer support"
+      ],
+      "trend": 0.8,
+      "sdg": [
+        "4.4",
+        "8.5"
+      ]
+    },
+    {
+      "name": "Customer Success Analyst",
+      "required_skills": [
+        "crm administration",
+        "data visualisation",
+        "sql"
+      ],
+      "trend": 0.2,
+      "sdg": [
+        "8.5",
+        "4.4"
+      ]
+    },
+    {
+      "name": "Data Steward",
+      "required_skills": [
+        "sql",
+        "excel",
+        "data visualisation"
+      ],
+      "trend": 0.1,
+      "sdg": [
+        "9.1",
+        "8.5"
+      ]
+    },
+    {
+      "name": "Machine Learning Engineer",
+      "required_skills": [
+        "python",
+        "machine learning",
+        "sql"
+      ],
+      "trend": 0.9,
+      "sdg": [
+        "9.1",
+        "4.4"
+      ]
+    },
+    {
+      "name": "Product Manager (AI)",
+      "required_skills": [
+        "product management",
+        "project management",
+        "prompt engineering"
+      ],
+      "trend": 0.6,
+      "sdg": [
+        "8.2",
+        "4.4"
+      ]
+    },
+    {
+      "name": "Process Automation Lead",
+      "required_skills": [
+        "excel",
+        "python",
+        "project management",
+        "prompt engineering"
+      ],
+      "trend": 0.5,
+      "sdg": [
+        "8.2",
+        "9.1"
+      ]
+    },
+    {
+      "name": "Data Entry Specialist",
+      "required_skills": [
+        "excel",
+        "reporting"
+      ],
+      "trend": -0.9,
+      "sdg": [
+        "8.5"
+      ]
+    }
+  ],
+  "profiles": {
+    "Customer-service supervisor (synthetic)": [
+      "customer support",
+      "excel",
+      "team lead"
+    ],
+    "Fresh graduate (synthetic)": [
+      "python",
+      "reporting"
+    ],
+    "HR manager (synthetic)": [
+      "project management",
+      "excel",
+      "crm administration"
+    ]
+  }
+}
