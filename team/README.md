@@ -23,6 +23,8 @@ src/ data/ tests/  ← 代码和数据
 | `docs/版本与回滚.md` | Git 分支与回滚操作指南 | 内部运维文档 |
 | `tools/build_pdfs.py` | 生成两份 PDF 的脚本 | 改文字时重跑，不涉及产品 |
 | `dev-env/启动 SkillRadar.bat` | 本地一键启动脚本 | 评委用线上的 demo 链接即可 |
+| `dev-env/pyproject.toml` | mypy 类型检查配置 | 开发工具，不影响运行 |
+| `dev-env/requirements-dev.txt` | 测试与类型检查依赖 | 开发工具，部署不需要 |
 | `screenshots/*.png` | 三种语言的界面截图 | 演示视频和 README 会覆盖 |
 
 ## 改提案文字时
