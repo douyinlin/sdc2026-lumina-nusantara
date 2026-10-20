@@ -25,7 +25,7 @@ every role mapped to the UN SDGs.
 | --- | --- |
 | GitHub Repository | https://github.com/douyinlin/sdc2026-lumina-nusantara |
 | Replit Project | https://replit.com/@duyulin18 |
-| Live Demo | `<TODO after Replit Deploy>` |
+| Live Demo | https://sdc2026-lumina-nusantara-65cnugvuxdle5dgp9ky3fs.streamlit.app |
 | RunPod Endpoint | `<TODO after RunPod endpoint is deployed>` |
 | Slide Deck | `<TODO>` |
 | Demo Video | `<TODO>` |
