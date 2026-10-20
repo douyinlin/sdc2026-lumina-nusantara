@@ -317,7 +317,7 @@ LANDING_CSS = """
 }
 [data-testid="stHeader"] { background: transparent; }
 
-.sr-orb { position: fixed; border-radius: 50%; filter: blur(40px); pointer-events: none; z-index: 0; }
+.sr-orb { position: fixed; border-radius: 50%; filter: blur(52px); pointer-events: none; z-index: 0; opacity:.75; }
 .sr-o1 { width: 340px; height: 340px; top: -70px; left: -60px;
          background: radial-gradient(circle, rgba(138,154,91,.50), rgba(138,154,91,0) 70%);
          animation: sr-float-a 16s ease-in-out infinite; }
@@ -341,8 +341,7 @@ LANDING_CSS = """
 .sr-sub { color: #5f6b52; font-size: 15.5px; max-width: 720px; margin: 0 auto; line-height: 1.6; }
 
 [data-testid="stVerticalBlockBorderWrapper"] {
-  background: rgba(255,255,255,.62) !important;
-  backdrop-filter: blur(12px);
+  background: rgba(255,255,255,.78) !important;
   border: 1px solid rgba(255,255,255,.9) !important;
   border-radius: 22px !important;
   box-shadow: 0 18px 46px rgba(76,86,52,.14);
@@ -372,7 +371,7 @@ LANDING_CSS = """
 
 .sr-steps { display:flex; gap:14px; justify-content:center; margin: 20px auto 0; max-width: 900px; }
 .sr-step { flex:1; background: rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.85);
-           border-radius:16px; padding:12px 14px; text-align:center; backdrop-filter: blur(8px); }
+           border-radius:16px; padding:12px 14px; text-align:center; }
 .sr-step b { display:block; color:#3f4a26; font-size:13.5px; margin-bottom:3px; }
 .sr-step span { color:#6b7560; font-size:12px; line-height:1.5; }
 .sr-step em { font-style:normal; font-size:17px; }
@@ -403,7 +402,7 @@ APP_CSS = """
   animation: sr-sky 26s ease-in-out infinite;
 }
 [data-testid="stHeader"] { background: transparent; }
-[data-testid="stSidebar"] { background: rgba(255,255,255,.55); backdrop-filter: blur(10px); }
+[data-testid="stSidebar"] { background: rgba(255,255,255,.72); }
 
 h1, h2, h3, h4 { color: #3f4a26 !important; letter-spacing: -.01em; }
 h3 { border-left: 4px solid #8A9A5B; padding-left: 10px; }
@@ -411,8 +410,7 @@ p, li, label, .stMarkdown { color: #4c5540; }
 
 /* glass panels */
 [data-testid="stVerticalBlockBorderWrapper"] {
-  background: rgba(255,255,255,.62) !important;
-  backdrop-filter: blur(12px);
+  background: rgba(255,255,255,.78) !important;
   border: 1px solid rgba(255,255,255,.9) !important;
   border-radius: 20px !important;
   box-shadow: 0 14px 34px rgba(76,86,52,.12);
@@ -707,9 +705,8 @@ def screen_js_intake() -> None:
     st.subheader("Tell us about yourself")
     st.caption("Upload a CV or tick the skills you already have — you can edit the result either way.")
 
-    tab_cv, tab_form = st.tabs(["📄 Upload a CV", "✅ Fill the questionnaire"])
-
-    with tab_cv:
+    st.markdown('<div class="sr-pill">Option A — upload a synthetic CV</div>', unsafe_allow_html=True)
+    if True:
         up = st.file_uploader("Drop a CV here (synthetic files only)", type=["txt", "md", "pdf"])
         if up is not None:
             found = cv_to_skills(up)
@@ -720,7 +717,8 @@ def screen_js_intake() -> None:
                 st.warning("No known skill detected — use the questionnaire tab instead.")
         st.caption("No CV handy? Try `data/sample_cv.txt` from the repository.")
 
-    with tab_form:
+    st.markdown('<div class="sr-pill">Option B — tick your skills by category</div>', unsafe_allow_html=True)
+    if True:
         picked: list[str] = []
         for group, items in TAXONOMY.items():
             st.markdown(f"**{group}**")
