@@ -14,3 +14,7 @@ data/trends/*.tmp
 .DS_Store
 .vscode/
 .idea/
+
+# Local tooling
+__pycache__/
+tools/__pycache__/
