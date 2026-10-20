@@ -31,33 +31,92 @@ TREND_FILE = DATA / "trends" / "latest.json"
 # --------------------------------------------------------------------------- #
 
 TAXONOMY: dict[str, dict[str, list[str]]] = {
-    "Office & Data": {
+    "📊 Office & Data": {
         "Excel / spreadsheets": ["excel"],
         "SQL & databases": ["sql"],
         "Data visualisation (Power BI, Tableau)": ["data visualisation"],
         "Reporting & dashboards": ["reporting"],
         "Basic statistics": ["basic statistics"],
+        "Data entry & cleaning": ["data entry"],
+        "Research & analysis": ["research"],
     },
-    "Tech & AI": {
+    "💻 Tech & AI": {
         "Python programming": ["python"],
+        "Web development (HTML/CSS/JS)": ["web development"],
         "Machine learning": ["machine learning"],
         "Generative AI / prompt engineering": ["prompt engineering"],
+        "Cloud platforms (AWS, GCP, Azure)": ["cloud"],
         "Process automation (RPA, scripts)": ["automation"],
+        "IT support & troubleshooting": ["it support"],
+        "Cybersecurity basics": ["cybersecurity"],
     },
-    "Customer & Operations": {
+    "🎧 Customer & Operations": {
         "Customer support": ["customer support"],
         "CRM tools (Salesforce, Zendesk)": ["crm administration"],
         "Operations & process improvement": ["process improvement"],
+        "Supply chain & procurement": ["supply chain"],
+        "Quality assurance": ["quality assurance"],
+        "Inventory & warehouse management": ["inventory"],
     },
-    "People & Management": {
+    "👥 People & Management": {
         "Team leadership": ["team lead"],
         "Project management": ["project management"],
         "Product management": ["product management"],
+        "Recruitment & talent acquisition": ["recruitment"],
+        "HR operations & payroll": ["hr operations"],
+        "Coaching & mentoring": ["coaching"],
     },
-    "Communication": {
+    "🗣 Communication & Language": {
         "Business communication": ["communication"],
         "Stakeholder management": ["stakeholder management"],
-        "Presentation & training": ["presentation"],
+        "Presentation & public speaking": ["presentation"],
+        "Negotiation": ["negotiation"],
+        "English (professional)": ["english"],
+        "Bahasa Malaysia": ["bahasa"],
+        "Mandarin / Chinese": ["mandarin"],
+    },
+    "💰 Finance & Accounting": {
+        "Bookkeeping & double entry": ["bookkeeping"],
+        "Financial reporting (MFRS/IFRS)": ["financial reporting"],
+        "Budgeting & forecasting": ["budgeting"],
+        "Tax compliance": ["tax"],
+        "Audit support": ["audit"],
+        "Financial modelling": ["financial modelling"],
+    },
+    "📣 Sales & Marketing": {
+        "B2B sales & pipeline management": ["sales"],
+        "Digital marketing (SEO, ads)": ["digital marketing"],
+        "Social media & content": ["content"],
+        "Brand & copywriting": ["copywriting"],
+        "Market research": ["market research"],
+        "Customer segmentation": ["segmentation"],
+    },
+    "🎨 Design & Creative": {
+        "Graphic design (Figma, Canva)": ["graphic design"],
+        "UI / UX design": ["ui ux"],
+        "Video editing": ["video editing"],
+        "Photography": ["photography"],
+    },
+    "🏭 Manufacturing & Logistics": {
+        "Lean / Six Sigma": ["lean"],
+        "Machine operation & maintenance": ["machine operation"],
+        "Health & safety (OSH)": ["osh"],
+        "Logistics coordination": ["logistics"],
+        "Forklift / heavy equipment": ["heavy equipment"],
+    },
+    "🏥 Health, Care & Education": {
+        "Patient care": ["patient care"],
+        "Clinic / hospital administration": ["clinic admin"],
+        "Teaching & curriculum design": ["teaching"],
+        "Counselling & support": ["counselling"],
+        "First aid & CPR": ["first aid"],
+    },
+    "⚖️ Legal, Compliance & Admin": {
+        "Contract review": ["contract review"],
+        "Regulatory compliance": ["compliance"],
+        "Company secretarial work": ["company secretary"],
+        "Office administration": ["office admin"],
+        "Documentation & records": ["documentation"],
     },
 }
 
@@ -151,12 +210,84 @@ def cv_to_skills(uploaded) -> list[str]:
 
 
 # --------------------------------------------------------------------------- #
-# Helpers
+# Motion — 1s intro curtain on load, and a 0.7s transition on stage changes.
+# Pure CSS: no rerun, no server work, works on Streamlit Cloud.
 # --------------------------------------------------------------------------- #
 
-def go(stage: str) -> None:
+ANIM_CSS = """
+<style>
+@keyframes sr-curtain {
+  0%   { opacity: 1; }
+  70%  { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
+}
+@keyframes sr-mark {
+  0%   { transform: scale(0.7); opacity: 0; letter-spacing: -2px; }
+  55%  { transform: scale(1.06); opacity: 1; letter-spacing: 2px; }
+  100% { transform: scale(1); opacity: 1; letter-spacing: 4px; }
+}
+@keyframes sr-sweep {
+  0%   { transform: translateX(-120%); }
+  100% { transform: translateX(120%); }
+}
+@keyframes sr-rise {
+  0%   { opacity: 0; transform: translateY(14px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.sr-curtain {
+  position: fixed; inset: 0; z-index: 999999;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 50% 42%, #f7faf3 0%, #eef3e6 45%, #e3ebd8 100%);
+  animation: sr-curtain 1s ease forwards;
+  pointer-events: none;
+}
+.sr-mark {
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: 34px; font-weight: 700; color: #6f7f42;
+  animation: sr-mark 0.9s cubic-bezier(.2,.8,.25,1) forwards;
+}
+.sr-bar {
+  position: absolute; bottom: 0; left: 0; height: 3px; width: 100%;
+  background: linear-gradient(90deg, transparent, #8A9A5B, transparent);
+  animation: sr-sweep 1s ease forwards;
+}
+.sr-enter { animation: sr-rise 0.55s ease-out both; }
+</style>
+"""
+
+INTRO_HTML = """
+<div class="sr-curtain">
+  <div class="sr-mark">📡 SKILLRADAR</div>
+  <div class="sr-bar"></div>
+</div>
+"""
+
+
+def play_intro() -> None:
+    """Show the 1-second curtain once per browser session."""
+    if st.session_state.get("intro_done"):
+        return
+    st.session_state["intro_done"] = True
+    st.markdown(ANIM_CSS + INTRO_HTML, unsafe_allow_html=True)
+
+
+def transition_into(stage: str) -> None:
+    """Short curtain + staged reveal, then move to the next screen."""
     st.session_state["stage"] = stage
+    st.session_state["entering"] = True
     st.rerun()
+
+
+def screen_wrap() -> None:
+    """Fade content in when arriving from a transition."""
+    if st.session_state.pop("entering", False):
+        st.markdown(ANIM_CSS, unsafe_allow_html=True)
+        st.markdown('<div class="sr-enter">', unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+
+def go(stage: str) -> None:
+    transition_into(stage)
 
 
 def reset() -> None:
@@ -214,6 +345,7 @@ def role_card(result: dict, expanded: bool = False) -> None:
 # --------------------------------------------------------------------------- #
 
 def screen_landing() -> None:
+    screen_wrap()
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("<h1 style='text-align:center'>📡 SkillRadar MY</h1>", unsafe_allow_html=True)
     st.markdown(
@@ -250,6 +382,7 @@ def screen_landing() -> None:
 # --------------------------------------------------------------------------- #
 
 def screen_js_intake() -> None:
+    screen_wrap()
     top_bar()
     st.subheader("Tell us about yourself")
     st.caption("Upload a CV or tick the skills you already have — you can edit the result either way.")
@@ -300,6 +433,7 @@ def screen_js_intake() -> None:
 # --------------------------------------------------------------------------- #
 
 def screen_js_results() -> None:
+    screen_wrap()
     top_bar()
     skills = st.session_state.get("skills") or []
     if not skills:
@@ -356,6 +490,7 @@ def screen_js_results() -> None:
 # --------------------------------------------------------------------------- #
 
 def screen_hr_intake() -> None:
+    screen_wrap()
     top_bar()
     st.subheader("Describe your team")
     st.caption("Pick the roles in your team and how many people sit in each. We aggregate the skill "
@@ -382,6 +517,7 @@ def screen_hr_intake() -> None:
 # --------------------------------------------------------------------------- #
 
 def screen_hr_results() -> None:
+    screen_wrap()
     top_bar()
     roster: dict[str, int] = st.session_state.get("roster") or {}
     if not roster:
@@ -443,6 +579,8 @@ def screen_hr_results() -> None:
 
 st.set_page_config(page_title="SkillRadar MY", page_icon="📡", layout="wide")
 st.session_state.setdefault("stage", "landing")
+
+play_intro()
 
 STAGES = {
     "landing": screen_landing,
