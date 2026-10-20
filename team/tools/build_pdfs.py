@@ -27,7 +27,7 @@ from reportlab.platypus import (
     TableStyle,
 )
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "submission"
 OUT.mkdir(exist_ok=True)
 
