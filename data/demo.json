@@ -1,54 +1,12 @@
 {
   "is_simulated": true,
-  "description": "人工编写的最小演示数据，不是招聘信息或技能标准。",
-  "skills": [
-    "excel",
-    "basic statistics",
-    "communication",
-    "sql",
-    "python",
-    "data visualisation"
-  ],
-  "labels": {
-    "excel": "Excel",
-    "basic statistics": "基础统计",
-    "communication": "沟通",
-    "sql": "SQL",
-    "python": "Python",
-    "data visualisation": "数据可视化"
-  },
-  "profile": {
-    "name": "小林（虚构用户）",
-    "skills": [
-      "excel",
-      "communication"
-    ]
-  },
+  "description": "Synthetic demo data: one fictional jobseeker and three example roles. Not real recruitment criteria.",
+  "skills": ["excel", "basic statistics", "communication", "sql", "python", "data visualisation"],
+  "labels": {"excel": "Excel", "basic statistics": "Basic statistics", "communication": "Communication", "sql": "SQL", "python": "Python", "data visualisation": "Data visualisation"},
+  "profile": {"name": "Sample jobseeker (fictional)", "skills": ["excel", "communication"]},
   "roles": [
-    {
-      "name": "数据分析助理（示例岗位）",
-      "required_skills": [
-        "excel",
-        "basic statistics",
-        "sql",
-        "data visualisation"
-      ]
-    },
-    {
-      "name": "业务运营助理（示例岗位）",
-      "required_skills": [
-        "excel",
-        "communication",
-        "basic statistics"
-      ]
-    },
-    {
-      "name": "Python 数据助理（示例岗位）",
-      "required_skills": [
-        "python",
-        "sql",
-        "data visualisation"
-      ]
-    }
+    {"name": "Data Analyst (example role)", "required_skills": ["excel", "basic statistics", "sql", "data visualisation"]},
+    {"name": "Business Operations Associate (example role)", "required_skills": ["excel", "communication", "basic statistics"]},
+    {"name": "Junior Python Developer (example role)", "required_skills": ["python", "sql", "data visualisation"]}
   ]
 }

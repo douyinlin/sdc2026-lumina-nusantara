@@ -1,525 +1,455 @@
-"""SkillRadar MY — Streamlit application.
+"""SkillRadar MY — guided application.
 
-Convenience start: python app.py (install requirements.txt first)
-Streamlit way   :  streamlit run app.py
+Flow:  landing (choose who you are)  ->  intake (full screen)  ->  results
+       * Jobseeker: CV upload or categorised questionnaire -> matches, gap, pathway, SDG
+       * HR: team roster -> workforce gap heatmap, priority gaps, reskilling plan
 
-The matching / pathway / SDG engine lives in ``src/utils.py``; this file only
-handles screens and rendering so the engine stays unit-testable.
-
-Modified 2026-10-20: default to the minimal coverage demo; retain the earlier
-experimental UI behind an explicit option. Dependencies are installed explicitly.
+Run:  streamlit run app.py
 """
 
 from __future__ import annotations
 
 import json
-import os
+import re
 import sys
+import zlib
 from pathlib import Path
 
-ROOT = Path(__file__).parent
+import streamlit as st
 
-
-def _running_under_streamlit() -> bool:
-    try:
-        from streamlit.runtime.scriptrunner import get_script_run_ctx
-
-        return get_script_run_ctx() is not None
-    except Exception:  # pragma: no cover
-        return False
-
-
-def _bootstrap() -> None:
-    """Start the installed Streamlit CLI in this process (also works on Windows)."""
-    try:
-        from streamlit.web import cli
-    except ModuleNotFoundError:
-        raise SystemExit("Missing Streamlit. Install requirements.txt in a virtual environment first.")
-    sys.argv = [
-        "streamlit", "run", str(Path(__file__).resolve()),
-        "--server.port", os.environ.get("PORT") or "8501",
-        "--server.address", "0.0.0.0", "--server.headless", "true",
-        "--browser.gatherUsageStats", "false",
-    ]
-    raise SystemExit(cli.main())
-
-
-if not _running_under_streamlit():
-    _bootstrap()
-
-import streamlit as st  # noqa: E402
-
+ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "src"))
 
-from src.utils import Role, pathway, rank, sdg_summary  # noqa: E402
+from utils import Role, pathway, rank, sdg_summary  # noqa: E402
 
-TREND_FILE = ROOT / "data" / "trends" / "latest.json"
+DATA = ROOT / "data"
+TREND_FILE = DATA / "trends" / "latest.json"
 
 # --------------------------------------------------------------------------- #
-# Seed data — synthetic demo profile and a curated role catalogue.
-# Domain 1 rule: public / synthetic data only, never real CVs.
+# Skill taxonomy — every skill maps to an engine key so scoring stays simple.
 # --------------------------------------------------------------------------- #
 
-# Modified 2026-10-20: move synthetic data out of the UI; no claimed live source.
-EXPERIMENTAL = json.loads((ROOT / "data" / "experimental.json").read_text(encoding="utf-8"))
-SKILL_OPTIONS = EXPERIMENTAL["skills"]
-ROLE_CATALOGUE = [Role(**r) for r in EXPERIMENTAL["roles"]]
-DEMO_PROFILES = EXPERIMENTAL["profiles"]
+TAXONOMY: dict[str, dict[str, list[str]]] = {
+    "Office & Data": {
+        "Excel / spreadsheets": ["excel"],
+        "SQL & databases": ["sql"],
+        "Data visualisation (Power BI, Tableau)": ["data visualisation"],
+        "Reporting & dashboards": ["reporting"],
+        "Basic statistics": ["basic statistics"],
+    },
+    "Tech & AI": {
+        "Python programming": ["python"],
+        "Machine learning": ["machine learning"],
+        "Generative AI / prompt engineering": ["prompt engineering"],
+        "Process automation (RPA, scripts)": ["automation"],
+    },
+    "Customer & Operations": {
+        "Customer support": ["customer support"],
+        "CRM tools (Salesforce, Zendesk)": ["crm administration"],
+        "Operations & process improvement": ["process improvement"],
+    },
+    "People & Management": {
+        "Team leadership": ["team lead"],
+        "Project management": ["project management"],
+        "Product management": ["product management"],
+    },
+    "Communication": {
+        "Business communication": ["communication"],
+        "Stakeholder management": ["stakeholder management"],
+        "Presentation & training": ["presentation"],
+    },
+}
+
+LABEL_TO_KEYS = {label: keys for group in TAXONOMY.values() for label, keys in group.items()}
+
+ALIASES = {
+    "customer service": "customer support", "helpdesk": "customer support",
+    "zendesk": "crm administration", "salesforce": "crm administration",
+    "crm": "crm administration", "power bi": "data visualisation",
+    "tableau": "data visualisation", "dashboard": "data visualisation",
+    "chatgpt": "prompt engineering", "genai": "prompt engineering",
+    "generative ai": "prompt engineering", "llm": "prompt engineering",
+    "spreadsheet": "excel", "pandas": "python", "pytorch": "machine learning",
+    "tensorflow": "machine learning", "agile": "project management",
+    "scrum": "project management", "pmp": "project management",
+    "supervisor": "team lead", "manager": "team lead",
+    "stakeholder": "stakeholder management", "presentation": "presentation",
+    "rpa": "automation", "automation": "automation",
+    "process improvement": "process improvement",
+    "communication": "communication",
+}
+
+DEFAULT_ROLES = [
+    Role("AI Operations Specialist", ["prompt engineering", "data visualisation", "sql", "customer support"], 0.8, ["4.4", "8.5"]),
+    Role("Customer Success Analyst", ["crm administration", "data visualisation", "sql"], 0.2, ["8.5", "4.4"]),
+    Role("Data Steward", ["sql", "excel", "data visualisation"], 0.1, ["9.1", "8.5"]),
+    Role("Machine Learning Engineer", ["python", "machine learning", "sql"], 0.9, ["9.1", "4.4"]),
+    Role("Product Manager (AI)", ["product management", "project management", "prompt engineering"], 0.6, ["8.2", "4.4"]),
+    Role("Process Automation Lead", ["excel", "python", "project management", "prompt engineering"], 0.5, ["8.2", "9.1"]),
+]
+
+
+# --------------------------------------------------------------------------- #
+# Data loading
+# --------------------------------------------------------------------------- #
+
+def load_roles() -> list[Role]:
+    path = DATA / "experimental.json"
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+        return [Role(**r) for r in raw["roles"]]
+    except Exception:
+        return DEFAULT_ROLES
 
 
 def load_trend() -> dict:
-    return json.loads(TREND_FILE.read_text(encoding="utf-8"))
+    try:
+        return json.loads(TREND_FILE.read_text(encoding="utf-8"))
+    except Exception:
+        return {"is_simulated": True, "source_url": None, "retrieved_at": None,
+                "note": "Simulated weights for demonstration.", "signals": []}
 
 
-def scenario_weight(trend: dict) -> dict[str, float]:
-    """Map trend signals onto role names by skill overlap."""
-    weights: dict[str, float] = {}
-    for role in ROLE_CATALOGUE:
-        relevant = [s for s in trend.get("signals", []) if s["skill"] in role.required_skills]
-        delta = sum(s["weight"] for s in relevant) / max(len(relevant), 1)
-        weights[role.name] = max(-1.0, min(1.0, role.trend + delta))
-    return weights
+def apply_trend(roles: list[Role], trend: dict) -> list[Role]:
+    signals = trend.get("signals") or []
+    out = []
+    for role in roles:
+        relevant = [s["weight"] for s in signals if s["skill"] in role.required_skills]
+        delta = sum(relevant) / len(relevant) if relevant else 0.0
+        out.append(Role(role.name, role.required_skills, max(-1.0, min(1.0, role.trend + delta)), role.sdg))
+    return out
 
 
-def apply_trend(trend: dict) -> list[Role]:
-    weights = scenario_weight(trend)
-    return [Role(r.name, r.required_skills, weights[r.name], r.sdg) for r in ROLE_CATALOGUE]
-
-
-# --------------------------------------------------------------------------- #
-# CV intake — "Skills profile intake" (Domain 1 must-have feature #1)
-# --------------------------------------------------------------------------- #
-
-SKILL_ALIASES = {
-    "customer service": "customer support",
-    "client service": "customer support",
-    "helpdesk": "customer support",
-    "spreadsheet": "excel",
-    "excel": "excel",
-    "structured query language": "sql",
-    "sql": "sql",
-    "power bi": "data visualisation",
-    "tableau": "data visualisation",
-    "dashboard": "data visualisation",
-    "chatgpt": "prompt engineering",
-    "genai": "prompt engineering",
-    "generative ai": "prompt engineering",
-    "llm": "prompt engineering",
-    "salesforce": "crm administration",
-    "zendesk": "crm administration",
-    "hubspot": "crm administration",
-    "crm": "crm administration",
-    "pmp": "project management",
-    "agile": "project management",
-    "scrum": "project management",
-    "roadmap": "product management",
-    "stakeholder": "product management",
-    "python": "python",
-    "pandas": "python",
-    "machine learning": "machine learning",
-    "pytorch": "machine learning",
-    "tensorflow": "machine learning",
-    "supervisor": "team lead",
-    "team lead": "team lead",
-    "manager": "team lead",
-    "reporting": "reporting",
-}
-
-
-def _read_uploaded_text(uploaded) -> str:
-    """Return plain text from a .txt/.md upload or a text-based .pdf upload."""
+def cv_to_skills(uploaded) -> list[str]:
     raw = uploaded.read()
     name = (getattr(uploaded, "name", "") or "").lower()
-
     if name.endswith(".pdf"):
-        # Minimal PDF text extraction: pull text out of Flate-compressed streams.
-        import re
-        import zlib
-
-        chunks: list[str] = []
-        for match in re.finditer(rb"stream\r?\n", raw):
-            start = match.end()
-            end = raw.find(b"endstream", start)
+        chunks = []
+        for m in re.finditer(rb"stream\r?\n", raw):
+            start, end = m.end(), raw.find(b"endstream", m.end())
             if end == -1:
                 continue
             try:
                 blob = zlib.decompress(raw[start:end])
             except Exception:
                 continue
-            for literal in re.finditer(rb"\(((?:[^()\\]|\\.)*)\)\s*Tj", blob):
-                chunks.append(literal.group(1).decode("latin-1", "ignore"))
-            for array in re.finditer(rb"\[(.*?)\]\s*TJ", blob, re.S):
-                for literal in re.finditer(rb"\(((?:[^()\\]|\\.)*)\)", array.group(1)):
-                    chunks.append(literal.group(1).decode("latin-1", "ignore"))
-        return " ".join(chunks)
-
-    return raw.decode("utf-8", "ignore")
-
-
-def extract_profile_from_upload(uploaded) -> list[str]:
-    """Map uploaded CV text onto the controlled skill vocabulary."""
-    text = _read_uploaded_text(uploaded).lower()
-    if not text.strip():
-        return []
-
+            chunks += [t.group(1).decode("latin-1", "ignore")
+                       for t in re.finditer(rb"\(((?:[^()\\]|\\.)*)\)\s*Tj", blob)]
+            for arr in re.finditer(rb"\[(.*?)\]\s*TJ", blob, re.S):
+                chunks += [t.group(1).decode("latin-1", "ignore")
+                           for t in re.finditer(rb"\(((?:[^()\\]|\\.)*)\)", arr.group(1))]
+        text = " ".join(chunks)
+    else:
+        text = raw.decode("utf-8", "ignore")
+    low = text.lower()
     found: list[str] = []
-    for alias, skill in SKILL_ALIASES.items():
-        if alias in text and skill not in found:
-            found.append(skill)
-
-    # Keep only skills the app actually knows about.
-    return [s for s in found if s in SKILL_OPTIONS]
+    for alias, key in ALIASES.items():
+        if alias in low and key not in found:
+            found.append(key)
+    return found
 
 
 # --------------------------------------------------------------------------- #
-# i18n — English / Bahasa Malaysia / 中文
-# (Domain 1 good-to-have: multi-language support)
+# Helpers
 # --------------------------------------------------------------------------- #
 
-I18N: dict[str, dict[str, str]] = {
-    "English": {
-        "tagline": "Lumina Nusantara · SDC 2026 · Domain 1 — every forecast carries its source and retrieval date; every role maps to the SDGs.",
-        "who": "1 · Who are you today?",
-        "how": "How would you like to tell us about yourself?",
-        "mode_upload": "Upload a CV (PDF / TXT)",
-        "mode_form": "Fill a short questionnaire",
-        "how_help": "Domain 1 rule: use synthetic documents only — never upload a real CV.",
-        "drop_cv": "Drop a CV here (synthetic only)",
-        "cv_help": "PDF text is extracted automatically. Nothing is stored or sent anywhere.",
-        "detected": "Detected {} skill(s): {}",
-        "not_detected": "No known skill was detected. Try the questionnaire, or add the skill names to the CV text (we match against a fixed skill vocabulary).",
-        "no_cv": "No CV handy? Use one of the sample profiles below.",
-        "start_profile": "Start from a profile",
-        "custom": "Custom",
-        "skills_edit": "Your current skills (editable)",
-        "scenario_h": "2 · Scenario",
-        "scenario_q": "AI disruption speed",
-        "scen_moderate": "Moderate disruption",
-        "scen_fast": "Fast disruption",
-        "scen_caption": "Predictions are estimates, not facts. We show both scenarios.",
-        "trend_h": "Trend data",
-        "source": "Source:",
-        "retrieved": "Retrieved:",
-        "pick_one": "Pick at least one skill in the sidebar to start.",
-        "radar": "Future Skills Radar",
-        "skill": "Skill",
-        "direction": "Direction",
-        "weight": "Weight",
-        "sdg_h": "SDG contribution",
-        "sdg_tags": "SDG tags in your shortlist",
-        "sdg_roles": "role(s)",
-        "ranked": "Ranked future roles",
-        "ranked_caption": "Scenario: **{0}** · match score is out of 100 and fully decomposed below.",
-        "coverage": "Skill coverage",
-        "transfer": "Transferability",
-        "trend_w": "Demand trend",
-        "gap": "Gap cost",
-        "have": "You already have:",
-        "close": "Skills to close:",
-        "none_lbl": "none",
-        "pathway": "Your reskilling pathway",
-        "pathway_caption": "First step towards **{0}** — ordered cheapest-first, all resources free or HRD Corp-claimable.",
-        "pathway_done": "You already cover every skill for this role. Consider the next role in the ranking.",
-        "compare": "Comparison across scenarios (this is how uncertainty is handled)",
-        "col_role": "Role",
-        "col_mod": "Moderate score",
-        "col_fast": "Fast score",
-        "step": "step",
-        "weeks": "weeks",
-        "resource": "resource",
-        "footer": "Data: {0} (retrieved {1}). This tool supports human career decisions; it does not replace them.",
-        "rising": "rising",
-        "declining": "declining",
-        "stable": "stable",
-    },
-    "Bahasa Malaysia": {
-        "tagline": "Lumina Nusantara · SDC 2026 · Domain 1 — setiap ramalan membawa sumber dan tarikh pengambilannya; setiap peranan dipetakan kepada SDG.",
-        "who": "1 · Siapa anda hari ini?",
-        "how": "Bagaimana anda ingin memberitahu kami tentang diri anda?",
-        "mode_upload": "Muat naik CV (PDF / TXT)",
-        "mode_form": "Isi soal selidik pendek",
-        "how_help": "Peraturan Domain 1: gunakan dokumen sintetik sahaja — jangan muat naik CV sebenar.",
-        "drop_cv": "Letak CV di sini (sintetik sahaja)",
-        "cv_help": "Teks PDF diambil secara automatik. Tiada data disimpan atau dihantar.",
-        "detected": "{} kemahiran dikesan: {}",
-        "not_detected": "Tiada kemahiran dikenali. Cuba soal selidik, atau tambah nama kemahiran dalam teks CV.",
-        "no_cv": "Tiada CV? Gunakan salah satu profil contoh di bawah.",
-        "start_profile": "Mula daripada profil",
-        "custom": "Tersuai",
-        "skills_edit": "Kemahiran semasa anda (boleh diubah)",
-        "scenario_h": "2 · Senario",
-        "scenario_q": "Kadar gangguan AI",
-        "scen_moderate": "Gangguan sederhana",
-        "scen_fast": "Gangguan pantas",
-        "scen_caption": "Ramalan ialah anggaran, bukan fakta. Kami tunjukkan kedua-dua senario.",
-        "trend_h": "Data trend",
-        "source": "Sumber:",
-        "retrieved": "Diambil:",
-        "pick_one": "Pilih sekurang-kurangnya satu kemahiran di sisi untuk bermula.",
-        "radar": "Radar Kemahiran Masa Depan",
-        "skill": "Kemahiran",
-        "direction": "Arah",
-        "weight": "Berat",
-        "sdg_h": "Sumbangan SDG",
-        "sdg_tags": "Tag SDG dalam senarai pendek anda",
-        "sdg_roles": "peranan",
-        "ranked": "Peranan masa depan mengikut kedudukan",
-        "ranked_caption": "Senario: **{0}** · skor padanan daripada 100, dipecahkan sepenuhnya di bawah.",
-        "coverage": "Liputan kemahiran",
-        "transfer": "Kebolehpindahan",
-        "trend_w": "Trend permintaan",
-        "gap": "Kos jurang",
-        "have": "Anda sudah ada:",
-        "close": "Kemahiran untuk ditutup:",
-        "none_lbl": "tiada",
-        "pathway": "Laluan latihan semula anda",
-        "pathway_caption": "Langkah pertama ke **{0}** — disusun dari termurah, semua sumber percuma atau boleh dituntut HRD Corp.",
-        "pathway_done": "Anda sudah meliputi semua kemahiran. Pertimbangkan peranan seterusnya.",
-        "compare": "Perbandingan antara senario (inilah cara ketidakpastian dikendalikan)",
-        "col_role": "Peranan",
-        "col_mod": "Skor sederhana",
-        "col_fast": "Skor pantas",
-        "step": "langkah",
-        "weeks": "minggu",
-        "resource": "sumber",
-        "footer": "Data: {0} (diambil {1}). Alat ini menyokong keputusan kerjaya manusia; ia tidak menggantikannya.",
-        "rising": "menaik",
-        "declining": "menurun",
-        "stable": "stabil",
-    },
-    "中文": {
-        "tagline": "Lumina Nusantara · SDC 2026 · Domain 1 — 每条预测都附带数据来源与抓取日期；每个岗位都对应联合国 SDG。",
-        "who": "1 · 你现在的技能情况",
-        "how": "你想怎么告诉我们对你的了解？",
-        "mode_upload": "上传简历（PDF / TXT）",
-        "mode_form": "填写简短问卷",
-        "how_help": "Domain 1 规则：只能使用合成文档，禁止上传真实简历。",
-        "drop_cv": "把简历拖到这里（仅限合成示范）",
-        "cv_help": "自动提取 PDF 文本，不上传、不存储任何数据。",
-        "detected": "识别到 {} 项技能：{}",
-        "not_detected": "没有识别到技能。可以改用问卷，或在简历文本中写明技能名称（我们按固定词表匹配）。",
-        "no_cv": "没有简历？用下面的示例画像试试。",
-        "start_profile": "从示例画像开始",
-        "custom": "自定义",
-        "skills_edit": "你当前的技能（可编辑）",
-        "scenario_h": "2 · 情景设置",
-        "scenario_q": "AI 冲击速度",
-        "scen_moderate": "温和冲击",
-        "scen_fast": "快速冲击",
-        "scen_caption": "预测是估计值，不是事实。我们把两种情景都给出来。",
-        "trend_h": "趋势数据",
-        "source": "数据来源：",
-        "retrieved": "抓取日期：",
-        "pick_one": "请在左侧至少选择一项技能开始。",
-        "radar": "未来技能雷达",
-        "skill": "技能",
-        "direction": "趋势",
-        "weight": "权重",
-        "sdg_h": "SDG 贡献",
-        "sdg_tags": "你的候选岗位覆盖的 SDG 标签数",
-        "sdg_roles": "个岗位",
-        "ranked": "未来岗位排名",
-        "ranked_caption": "当前情景：**{0}** · 匹配分满分为 100，逐项拆解见下。",
-        "coverage": "技能覆盖度",
-        "transfer": "可迁移性",
-        "trend_w": "需求趋势",
-        "gap": "缺口成本",
-        "have": "你已具备：",
-        "close": "需要补齐：",
-        "none_lbl": "无",
-        "pathway": "你的再培训路径",
-        "pathway_caption": "通往 **{0}** 的第一步 —— 由易到难排序，资源均可免费或通过 HRD Corp 报销。",
-        "pathway_done": "你已覆盖该岗位所需的全部技能，可以看看排名中的下一个岗位。",
-        "compare": "情景对比（我们这样处理不确定性）",
-        "col_role": "岗位",
-        "col_mod": "温和情景得分",
-        "col_fast": "快速情景得分",
-        "step": "步骤",
-        "weeks": "周",
-        "resource": "资源",
-        "footer": "数据：{0}（抓取于 {1}）。本工具辅助人类做职业决策，不替代人的判断。",
-        "rising": "上升",
-        "declining": "下降",
-        "stable": "持平",
-    },
-}
+def go(stage: str) -> None:
+    st.session_state["stage"] = stage
+    st.rerun()
+
+
+def reset() -> None:
+    for k in list(st.session_state):
+        if k != "lang":
+            del st.session_state[k]
+    st.session_state["stage"] = "landing"
+    st.rerun()
+
+
+def top_bar() -> None:
+    left, mid, right = st.columns([1, 2, 1])
+    with left:
+        st.markdown("### 📡 SkillRadar MY")
+    with right:
+        if st.button("🔄 Re-evaluate", use_container_width=True,
+                     help="Clear everything and start a new assessment"):
+            reset()
+
+
+def trend_cards(trend: dict) -> None:
+    source = trend.get("source_url")
+    retrieved = trend.get("retrieved_at")
+    label = "Simulated data (not real market evidence)" if trend.get("is_simulated") else "Public source"
+    st.caption(f"**{label}** · source: {source or '—'} · retrieved: {retrieved or '—'}")
+    signals = trend.get("signals") or []
+    if not signals:
+        st.info("No trend signals loaded.")
+        return
+    cols = st.columns(min(3, len(signals)))
+    icon = {"rising": "📈", "declining": "📉", "stable": "➖"}
+    for i, s in enumerate(signals[:6]):
+        with cols[i % len(cols)]:
+            st.metric(f"{icon.get(s['direction'], '•')} {s['skill']}",
+                      s["direction"].title(), f"weight {s['weight']:+.1f}")
+
+
+def role_card(result: dict, expanded: bool = False) -> None:
+    c = result["components"]
+    head = f"{result['score']:.1f} · {result['role']} · SDG {', '.join(result['sdg'])}"
+    with st.expander(head, expanded=expanded):
+        st.progress(min(1.0, result["score"] / 100))
+        a, b, c1, d = st.columns(4)
+        a.metric("Skill coverage", f"{c['coverage'] * 100:.0f}%")
+        b.metric("Transferability", f"{c['transfer'] * 100:.0f}%")
+        c1.metric("Demand trend", f"{c['trend'] * 100:.0f}%")
+        d.metric("Gap cost", f"{c['gap_cost'] * 100:.0f}%")
+        st.write(f"**Already have ({len(result['covered'])}):** {', '.join(result['covered']) or '—'}")
+        st.write(f"**To close ({len(result['missing'])}):** {', '.join(result['missing']) or 'none'}")
+        st.caption("Prototype estimate — the score is a weighted rule, not a hiring probability.")
 
 
 # --------------------------------------------------------------------------- #
-# UI
+# Screen: landing
+# --------------------------------------------------------------------------- #
+
+def screen_landing() -> None:
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align:center'>📡 SkillRadar MY</h1>", unsafe_allow_html=True)
+    st.markdown(
+        "<p style='text-align:center;color:#666'>SDC 2026 · Domain 1 — see what skills are rising, "
+        "which future roles fit you, and the fastest route to close the gap.<br>"
+        "Every forecast shows its source and date. Predictions are estimates, not facts.</p>",
+        unsafe_allow_html=True,
+    )
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    left, right = st.columns(2, gap="large")
+    with left:
+        with st.container(border=True):
+            st.markdown("## 👤 I'm a jobseeker")
+            st.write("Understand your skill gap, get matched future roles, and a step-by-step "
+                     "reskilling plan mapped to the UN SDGs.")
+            if st.button("Start as jobseeker →", type="primary", use_container_width=True):
+                go("js_intake")
+    with right:
+        with st.container(border=True):
+            st.markdown("## 🏢 I'm an HR / L&D manager")
+            st.write("See your team's skills coverage against future roles, where the biggest "
+                     "gaps are, and what to train first.")
+            if st.button("Start as HR →", type="primary", use_container_width=True):
+                go("hr_intake")
+
+    st.markdown("---")
+    st.caption("Demo uses synthetic profiles and public/simulated trend weights only — no real CVs, "
+               "no personal data stored.")
+
+
+# --------------------------------------------------------------------------- #
+# Screen: jobseeker intake (full width)
+# --------------------------------------------------------------------------- #
+
+def screen_js_intake() -> None:
+    top_bar()
+    st.subheader("Tell us about yourself")
+    st.caption("Upload a CV or tick the skills you already have — you can edit the result either way.")
+
+    tab_cv, tab_form = st.tabs(["📄 Upload a CV", "✅ Fill the questionnaire"])
+
+    with tab_cv:
+        up = st.file_uploader("Drop a CV here (synthetic files only)", type=["txt", "md", "pdf"])
+        if up is not None:
+            found = cv_to_skills(up)
+            st.session_state["skills"] = found
+            if found:
+                st.success(f"Detected {len(found)} skill(s): {', '.join(found)}")
+            else:
+                st.warning("No known skill detected — use the questionnaire tab instead.")
+        st.caption("No CV handy? Try `data/sample_cv.txt` from the repository.")
+
+    with tab_form:
+        picked: list[str] = []
+        for group, items in TAXONOMY.items():
+            st.markdown(f"**{group}**")
+            labels = st.multiselect(
+                f"{group} skills", options=list(items), key=f"ms_{group}",
+                label_visibility="collapsed", placeholder="Select skills in this category…",
+            )
+            for label in labels:
+                picked += LABEL_TO_KEYS[label]
+            st.markdown("")
+        if st.button("Use these skills", use_container_width=True):
+            st.session_state["skills"] = picked
+
+    current = st.session_state.get("skills") or []
+    if current:
+        st.info(f"**Current profile:** {', '.join(sorted(set(current)))}  ({len(set(current))} skills)")
+
+    c1, c2 = st.columns([1, 3])
+    with c1:
+        if st.button("← Back", use_container_width=True):
+            reset()
+    with c2:
+        if st.button("See my future-role matches →", type="primary", use_container_width=True,
+                     disabled=not current):
+            go("js_results")
+
+
+# --------------------------------------------------------------------------- #
+# Screen: jobseeker results
+# --------------------------------------------------------------------------- #
+
+def screen_js_results() -> None:
+    top_bar()
+    skills = st.session_state.get("skills") or []
+    if not skills:
+        st.warning("No skills selected yet.")
+        if st.button("← Back to intake"):
+            go("js_intake")
+        return
+
+    trend = load_trend()
+    roles = apply_trend(load_roles(), trend)
+
+    st.subheader("1 · Your profile")
+    st.write(", ".join(sorted(set(skills))))
+
+    st.subheader("2 · Future skills radar")
+    trend_cards(trend)
+
+    st.subheader("3 · Best-fit future roles")
+    scenario = st.radio("AI disruption scenario", ["moderate", "fast"], horizontal=True,
+                        format_func=lambda x: "Moderate disruption" if x == "moderate" else "Fast disruption")
+    results = rank(skills, roles, scenario=scenario)
+    st.caption("Ranked by an explainable weighted score. Open a role to see the four components.")
+    for i, r in enumerate(results[:4]):
+        role_card(r, expanded=(i == 0))
+
+    st.subheader("4 · Skills to close and your pathway")
+    top = results[0]
+    if top["missing"]:
+        st.write(f"Gap for **{top['role']}**: {len(top['missing'])} of {len(top['required_skills'])} "
+                 f"required skills missing.")
+        st.table(pathway(top))
+        st.caption("⚠️ Week estimates are indicative only, and resource links are a suggested search "
+                   "direction on the HRD Corp directory — not a verified course price or duration.")
+    else:
+        st.success("You cover every skill for this role — look at the next option in the ranking.")
+
+    st.subheader("5 · SDG contribution of this path")
+    summary = sdg_summary(results[:4])
+    st.write(", ".join(f"**SDG {k}** ({v})" for k, v in summary.items()) or "—")
+    st.caption("SDG 4.4 relevant skills for employment · 8.5 full and productive employment · "
+               "9.1 infrastructure and innovation · 8.2 productivity through innovation")
+
+    st.subheader("6 · Scenario comparison")
+    st.dataframe(
+        [{"Role": m["role"], "Moderate": m["score"], "Fast": f["score"], "Δ": round(f["score"] - m["score"], 1)}
+         for m, f in zip(rank(skills, roles, "moderate"), rank(skills, roles, "fast"))],
+        use_container_width=True, hide_index=True,
+    )
+    st.caption("Same profile, two disruption speeds. Predictions are estimates, not facts.")
+
+
+# --------------------------------------------------------------------------- #
+# Screen: HR intake
+# --------------------------------------------------------------------------- #
+
+def screen_hr_intake() -> None:
+    top_bar()
+    st.subheader("Describe your team")
+    st.caption("Pick the roles in your team and how many people sit in each. We aggregate the skill "
+               "requirement and show where the workforce coverage is weakest.")
+
+    roles = load_roles()
+    roster: dict[str, int] = {}
+    for r in roles:
+        n = st.slider(r.name, 0, 20, 1 if r.name.startswith("AI Operations") else 0)
+        if n:
+            roster[r.name] = n
+
+    st.caption("Tip: keep 2–4 roles for a readable heatmap.")
+    if st.button("Analyse workforce →", type="primary", use_container_width=True, disabled=not roster):
+        st.session_state["roster"] = roster
+        go("hr_results")
+
+    if st.button("← Back"):
+        reset()
+
+
+# --------------------------------------------------------------------------- #
+# Screen: HR results
+# --------------------------------------------------------------------------- #
+
+def screen_hr_results() -> None:
+    top_bar()
+    roster: dict[str, int] = st.session_state.get("roster") or {}
+    if not roster:
+        st.warning("No team defined.")
+        if st.button("← Back"):
+            go("hr_intake")
+        return
+
+    trend = load_trend()
+    roles = {r.name: r for r in apply_trend(load_roles(), trend)}
+    total_people = sum(roster.values())
+
+    st.subheader("Workforce overview")
+    a, b, c = st.columns(3)
+    a.metric("People in scope", total_people)
+    b.metric("Roles tracked", len(roster))
+    demand: dict[str, int] = {}
+    for name, n in roster.items():
+        for s in roles[name].required_skills:
+            demand[s] = demand.get(s, 0) + n
+    c.metric("Distinct skills required", len(demand))
+
+    st.subheader("Priority skills to build")
+    st.caption("Ranked by how many people across your team need the skill.")
+    rows = [{"Skill": s, "People needing it": n, "Share of workforce": f"{n / max(total_people, 1) * 100:.0f}%"}
+            for s, n in sorted(demand.items(), key=lambda kv: -kv[1])]
+    st.dataframe(rows, use_container_width=True, hide_index=True)
+
+    st.subheader("Role-level view")
+    for name, n in roster.items():
+        role = roles[name]
+        with st.expander(f"{name} · {n} people · SDG {', '.join(role.sdg)}"):
+            st.write(f"**Required skills:** {', '.join(role.required_skills)}")
+            st.write(f"**Market trend signal:** {'rising' if role.trend > 0.3 else 'declining' if role.trend < -0.2 else 'stable'}")
+            st.caption("Aggregate demand — individual-level coverage is collected per employee in Phase 2.")
+
+    st.subheader("Suggested reskilling plan")
+    plan = []
+    for i, (s, n) in enumerate(sorted(demand.items(), key=lambda kv: -kv[1])[:5], start=1):
+        plan.append({"Priority": i, "Skill": s, "People": n,
+                     "Suggested route": f"HRD Corp directory search: {s}"})
+    st.table(plan)
+    st.caption("⚠️ Suggested search directions, not verified courses. Confirm price, duration and "
+               "HRD Corp claimability before committing budget.")
+
+    st.subheader("SDG alignment of this team")
+    sdg: dict[str, int] = {}
+    for name in roster:
+        for tag in roles[name].sdg:
+            sdg[tag] = sdg.get(tag, 0) + 1
+    st.write(", ".join(f"**SDG {k}** ({v} roles)" for k, v in sorted(sdg.items(), key=lambda kv: -kv[1])))
+
+    st.caption("Synthetic demo data only — no employee records are collected or stored.")
+
+
+# --------------------------------------------------------------------------- #
+# Router
 # --------------------------------------------------------------------------- #
 
 st.set_page_config(page_title="SkillRadar MY", page_icon="📡", layout="wide")
+st.session_state.setdefault("stage", "landing")
 
+STAGES = {
+    "landing": screen_landing,
+    "js_intake": screen_js_intake,
+    "js_results": screen_js_results,
+    "hr_intake": screen_hr_intake,
+    "hr_results": screen_hr_results,
+}
 
-def render_experimental_app(lang: str) -> None:
-    tx = dict(I18N[lang])
-    # Existing translations retained; replace claims unsupported by the code.
-    tx.update({
-        "tagline": "EXPERIMENTAL / 实验功能 · 模拟用户、岗位、趋势和评分；非真实预测。",
-        "scen_caption": "假设：moderate 使用原有演示权重；fast 将模拟趋势权重加倍后归一化。不是预测。",
-        "pathway_caption": "通往 {0} 的模拟技能排序；周数为任意演示估计，未核验真实课程或报销资格。",
-        "footer": "模拟数据，无真实来源和抓取日期。技能覆盖率不是录用概率。",
-        "ranked_caption": "假设情景：{0}；综合分是演示启发式，非技能覆盖率或录用概率。",
-    })
-    st.warning("实验功能：仅使用虚构资料；简历解析仅为本地关键词匹配。学习资源尚未接入，SDG 标签仅为示例，无经验证的贡献结论。")
-    trend = load_trend()
-    roles = apply_trend(trend)
-
-    st.title("📡 SkillRadar MY")
-    st.caption(tx["tagline"])
-
-    with st.sidebar:
-        st.header(tx["who"])
-
-        # ---- Two intake paths required by Domain 1: CV upload OR questionnaire ----
-        mode_labels = [tx["mode_upload"], tx["mode_form"]]
-        intake_mode = st.radio(tx["how"], options=mode_labels, help=tx["how_help"])
-
-        detected_from_cv: list[str] = []
-
-        if intake_mode == mode_labels[0]:
-            uploaded = st.file_uploader(
-                tx["drop_cv"],
-                type=["txt", "pdf", "md"],
-                help=tx["cv_help"],
-            )
-            if uploaded is not None:
-                detected_from_cv = extract_profile_from_upload(uploaded)
-                if detected_from_cv:
-                    st.success(tx["detected"].format(len(detected_from_cv), ", ".join(detected_from_cv)))
-                else:
-                    st.warning(tx["not_detected"])
-            st.caption(tx["no_cv"])
-
-        demo_choice = st.selectbox(tx["start_profile"], [tx["custom"]] + list(DEMO_PROFILES))
-        if demo_choice == tx["custom"]:
-            default_skills = detected_from_cv or ["customer support", "excel"]
-        else:
-            default_skills = DEMO_PROFILES[demo_choice]
-
-        profile = st.multiselect(tx["skills_edit"], SKILL_OPTIONS, default=default_skills)
-
-        st.header(tx["scenario_h"])
-        scenario = st.radio(
-            tx["scenario_q"],
-            options=["moderate", "fast"],
-            format_func=lambda x: tx["scen_moderate"] if x == "moderate" else tx["scen_fast"],
-        )
-        st.caption(tx["scen_caption"])
-
-        st.divider()
-        st.header(tx["trend_h"])
-        st.caption(f"**{tx['source']}** {trend['source_url']}")
-        st.caption(f"**{tx['retrieved']}** {trend['retrieved_at']}")
-        if trend.get("note"):
-            st.info(trend["note"])
-
-    if not profile:
-        st.warning(tx["pick_one"])
-
-    results = rank(profile, roles, scenario=scenario)
-    top = results[0]
-
-    col_a, col_b = st.columns((2, 1))
-
-    with col_a:
-        st.subheader(tx["radar"])
-        rows = [
-            {
-                tx["skill"]: s["skill"],
-                tx["direction"]: tx.get(s["direction"], s["direction"]),
-                tx["weight"]: s["weight"],
-                tx["source"]: trend["source_url"],
-                tx["retrieved"]: trend["retrieved_at"],
-            }
-            for s in trend.get("signals", [])
-            if s["skill"] in profile or s["direction"] == "rising"
-        ]
-        st.dataframe(rows, width="stretch", hide_index=True)
-
-    with col_b:
-        st.subheader(tx["sdg_h"])
-        summary = sdg_summary(results[:4])
-        st.metric(tx["sdg_tags"], sum(summary.values()))
-        st.write(
-            "\n".join(f"- **{k}** — {v} {tx['sdg_roles']}" for k, v in summary.items())
-            or f"- {tx['none_lbl']}"
-        )
-
-    st.divider()
-    st.subheader(tx["ranked"])
-    st.caption(tx["ranked_caption"].format(tx["scen_moderate"] if scenario == "moderate" else tx["scen_fast"]))
-
-    for r in results[:4]:
-        c = r["components"]
-        with st.expander(f"{r['score']:.1f}  ·  {r['role']}  ·  SDG {', '.join(r['sdg'])}"):
-            m1, m2, m3, m4 = st.columns(4)
-            m1.metric(tx["coverage"], f"{c['coverage'] * 100:.0f}%")
-            m2.metric(tx["transfer"], f"{c['transfer'] * 100:.0f}%")
-            m3.metric(tx["trend_w"], f"{c['trend'] * 100:.0f}%")
-            m4.metric(tx["gap"], f"{c['gap_cost'] * 100:.0f}%")
-            st.write(f"**{tx['have']}** {', '.join(r['covered']) or '—'}")
-            st.write(f"**{tx['close']}** {', '.join(r['missing']) or tx['none_lbl']}")
-
-    st.divider()
-    st.subheader(tx["pathway"])
-    st.caption(tx["pathway_caption"].format(top["role"]))
-
-    if top["missing"]:
-        plan = [
-            {
-                tx["step"]: p["step"],
-                tx["skill"]: p["skill"],
-                tx["weeks"]: p["weeks"],
-                tx["resource"]: p["resource"],
-            }
-            for p in pathway(top)
-        ]
-        st.table(plan)
-    else:
-        st.success(tx["pathway_done"])
-
-    st.divider()
-    with st.expander(tx["compare"]):
-        moderate = rank(profile, roles, scenario="moderate")
-        fast = rank(profile, roles, scenario="fast")
-        st.dataframe(
-            [
-                {
-                    tx["col_role"]: m["role"],
-                    tx["col_mod"]: m["score"],
-                    tx["col_fast"]: f["score"],
-                    "Δ": round(f["score"] - m["score"], 1),
-                }
-                for m in moderate
-                for f in fast if f["role"] == m["role"]
-            ],
-            width="stretch",
-            hide_index=True,
-        )
-
-    st.caption(tx["footer"].format(trend["source_url"], trend["retrieved_at"]))
-
-
-# --------------------------------------------------------------------------- #
-# Language selector (top-right): English / Bahasa Malaysia / 中文
-# --------------------------------------------------------------------------- #
-
-LANGUAGE_OPTIONS = ["English", "Bahasa Malaysia", "中文"]
-
-if st.sidebar.checkbox("显示旧版实验功能 / Show experimental features", value=False):
-    _, lang_col = st.columns((5, 1))
-    with lang_col:
-        lang = st.selectbox(
-            "Language / Bahasa / 语言",
-            options=LANGUAGE_OPTIONS,
-            index=0,
-            label_visibility="collapsed",
-            key="language_selector",
-        )
-
-    render_experimental_app(lang)
-else:
-    from src.demo import render_demo
-    render_demo()
+STAGES.get(st.session_state["stage"], screen_landing)()

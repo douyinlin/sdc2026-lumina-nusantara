@@ -1,38 +1,15 @@
 {
   "is_simulated": true,
-  "source_url": null,
+  "source_url": "https://www.weforum.org/publications/the-future-of-jobs-report-2025/",
+  "report_published": "2025-01",
   "retrieved_at": null,
-  "note": "SIMULATED / 模拟趋势：未接入真实趋势。权重为既有演示假设，不来自 WEF，不代表统计或预测。",
+  "note": "SIMULATED weights for demonstration. Directional signals are inspired by the WEF Future of Jobs Report 2025, but the numeric weights are hand-set by the team and were NOT scraped on the date shown. Replace this file with a real ingestion run before claiming fresh data.",
   "signals": [
-    {
-      "skill": "prompt engineering",
-      "direction": "rising",
-      "weight": 0.4
-    },
-    {
-      "skill": "data visualisation",
-      "direction": "rising",
-      "weight": 0.2
-    },
-    {
-      "skill": "sql",
-      "direction": "stable",
-      "weight": 0.1
-    },
-    {
-      "skill": "customer support",
-      "direction": "declining",
-      "weight": -0.3
-    },
-    {
-      "skill": "excel",
-      "direction": "stable",
-      "weight": 0.0
-    },
-    {
-      "skill": "machine learning",
-      "direction": "rising",
-      "weight": 0.5
-    }
+    { "skill": "prompt engineering", "direction": "rising", "weight": 0.4 },
+    { "skill": "machine learning", "direction": "rising", "weight": 0.5 },
+    { "skill": "data visualisation", "direction": "rising", "weight": 0.2 },
+    { "skill": "sql", "direction": "stable", "weight": 0.1 },
+    { "skill": "excel", "direction": "stable", "weight": 0.0 },
+    { "skill": "customer support", "direction": "declining", "weight": -0.3 }
   ]
 }
