@@ -174,13 +174,13 @@ Proof of use: [`submission/RUNPOD PROOF OF USE.pdf`](submission/RUNPOD%20PROOF%2
 
 ## 10. Team
 
-| Name | Role | GitHub |
-| --- | --- | --- |
-| DU YULIN | Team Lead / Product & AI | [@douyinlin](https://github.com/douyinlin) |
-| `<member 2>` | Frontend / UX | `<TODO>` |
-| `<member 3>` | Data & trend pipeline | `<TODO>` |
-| `<member 4>` | Matching & evaluation | `<TODO>` |
-| `<member 5>` | Docs, demo video, submission | `<TODO>` |
+| Name | Role |
+| --- | --- |
+| DU YULIN | Team Lead / Product & AI / Submission |
+| GAO TANGLINYUE | Frontend & UX (Streamlit interface) |
+| ZHENG QUANYING | Data & trend pipeline |
+| WU ZHUOLI | Matching & evaluation logic |
+| ZHANG BORAN | Documentation, slide deck & demo video |
 
 ## 11. Submission Checklist
 
