@@ -1,5 +1,9 @@
-# Add your project dependencies here, one per line.
-runpod
+﻿# Core app
 streamlit
 pandas
-sentence-transformers
+
+# RunPod serverless client (used by runpod/handler.py and the app integration)
+runpod
+
+# Optional: embeddings on the GPU endpoint
+# sentence-transformers
