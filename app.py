@@ -354,6 +354,117 @@ ORBS_HTML = """
 <div class="sr-orb sr-o4"></div>
 """
 
+# Shared look for every screen after the landing: same palette, calmer motion.
+APP_CSS = """
+<style>
+@keyframes sr-sky { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+@keyframes sr-rise { 0%{opacity:0; transform:translateY(12px)} 100%{opacity:1; transform:translateY(0)} }
+@keyframes sr-glow { 0%,100%{opacity:.45} 50%{opacity:.95} }
+
+[data-testid="stAppViewContainer"] {
+  background: linear-gradient(135deg, #f7faf2 0%, #eef3e6 34%, #eaf0f6 68%, #f8f4ec 100%);
+  background-size: 200% 200%;
+  animation: sr-sky 26s ease-in-out infinite;
+}
+[data-testid="stHeader"] { background: transparent; }
+[data-testid="stSidebar"] { background: rgba(255,255,255,.55); backdrop-filter: blur(10px); }
+
+h1, h2, h3, h4 { color: #3f4a26 !important; letter-spacing: -.01em; }
+h3 { border-left: 4px solid #8A9A5B; padding-left: 10px; }
+p, li, label, .stMarkdown { color: #4c5540; }
+
+/* glass panels */
+[data-testid="stVerticalBlockBorderWrapper"] {
+  background: rgba(255,255,255,.62) !important;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,.9) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 14px 34px rgba(76,86,52,.12);
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+[data-testid="stVerticalBlockBorderWrapper"]:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 44px rgba(76,86,52,.18);
+}
+
+/* buttons */
+.stButton > button, .stDownloadButton > button {
+  border-radius: 999px !important; font-weight: 640 !important;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.stButton > button:hover, .stDownloadButton > button:hover {
+  transform: translateY(-2px); box-shadow: 0 10px 22px rgba(76,86,52,.20);
+}
+.stButton > button[kind="primary"] {
+  background: linear-gradient(96deg, #8A9A5B 0%, #6f8140 55%, #5b7fa6 130%) !important;
+  border: none !important; color: #fff !important;
+  box-shadow: 0 10px 26px rgba(111,129,64,.30);
+}
+.stButton > button[kind="primary"]:hover { filter: brightness(1.06); }
+.stButton > button:not([kind="primary"]) {
+  background: rgba(255,255,255,.75) !important;
+  border: 1px solid rgba(138,154,91,.45) !important;
+  color: #4b5a2a !important;
+}
+
+/* tabs */
+.stTabs [data-baseweb="tab-list"] { gap: 6px; border-bottom: 1px solid rgba(138,154,91,.25); }
+.stTabs [data-baseweb="tab"] {
+  background: rgba(255,255,255,.6); border-radius: 12px 12px 0 0;
+  padding: 8px 16px; color: #55603f;
+}
+.stTabs [aria-selected="true"] {
+  background: linear-gradient(180deg, rgba(138,154,91,.22), rgba(138,154,91,.08)) !important;
+  color: #3f4a26 !important; font-weight: 650;
+}
+
+/* metrics */
+[data-testid="stMetric"] {
+  background: rgba(255,255,255,.68);
+  border: 1px solid rgba(255,255,255,.9);
+  border-radius: 16px; padding: 12px 14px;
+  box-shadow: 0 8px 22px rgba(76,86,52,.10);
+}
+[data-testid="stMetricLabel"] { color: #6b7560 !important; }
+[data-testid="stMetricValue"] { color: #3f4a26 !important; font-weight: 700 !important; }
+
+/* tables and dataframes */
+[data-testid="stDataFrame"], [data-testid="stTable"] {
+  border-radius: 14px; overflow: hidden;
+  border: 1px solid rgba(138,154,91,.22);
+  box-shadow: 0 10px 26px rgba(76,86,52,.08);
+}
+[data-testid="stDataFrame"] table, [data-testid="stTable"] table { background: rgba(255,255,255,.72); }
+
+/* expanders */
+[data-testid="stExpander"] {
+  background: rgba(255,255,255,.62);
+  border: 1px solid rgba(255,255,255,.9) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 26px rgba(76,86,52,.08);
+  margin-bottom: 8px;
+}
+[data-testid="stExpander"] summary { font-weight: 620; color: #3f4a26; }
+
+/* inputs */
+[data-testid="stFileUploaderDropzone"] {
+  background: rgba(255,255,255,.7); border: 1.5px dashed rgba(138,154,91,.55);
+  border-radius: 16px;
+}
+.stMultiSelect [data-baseweb="tag"] {
+  background: linear-gradient(96deg, #8A9A5B, #6f8140) !important;
+  border-radius: 999px !important;
+}
+.stProgress > div > div > div > div {
+  background: linear-gradient(90deg, #8A9A5B, #5b7fa6) !important;
+}
+.sr-enter { animation: sr-rise .5s ease-out both; }
+.sr-pill { display:inline-block; padding:4px 12px; border-radius:999px; font-size:12px;
+           color:#5d6b36; background:rgba(138,154,91,.14);
+           border:1px solid rgba(138,154,91,.32); margin-bottom:8px; }
+</style>
+"""
+
 
 def play_intro() -> None:
     """Show the 1-second curtain once per browser session."""
@@ -736,5 +847,8 @@ STAGES = {
     "hr_intake": screen_hr_intake,
     "hr_results": screen_hr_results,
 }
+
+if st.session_state["stage"] != "landing":
+    st.markdown(APP_CSS, unsafe_allow_html=True)
 
 STAGES.get(st.session_state["stage"], screen_landing)()
