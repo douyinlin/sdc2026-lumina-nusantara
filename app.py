@@ -16,6 +16,7 @@ import zlib
 from pathlib import Path
 
 import streamlit as st
+from streamlit import components
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
@@ -515,12 +516,22 @@ def transition_into(stage: str) -> None:
     st.rerun()
 
 
+def scroll_top() -> None:
+    """Jump the page back to the top so a new step never opens mid-scroll."""
+    components.html(
+        "<script>window.parent.scrollTo({top:0, behavior:'instant'});</script>",
+        height=0,
+        width=0,
+    )
+
+
 def screen_wrap() -> None:
-    """Fade content in when arriving from a transition."""
+    """Fade content in and reset scroll when arriving from a transition."""
     if st.session_state.pop("entering", False):
         st.markdown(ANIM_CSS, unsafe_allow_html=True)
         st.markdown('<div class="sr-enter">', unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
+        scroll_top()
 
 
 def go(stage: str) -> None:
