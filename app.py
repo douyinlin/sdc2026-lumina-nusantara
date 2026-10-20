@@ -516,13 +516,23 @@ def transition_into(stage: str) -> None:
     st.rerun()
 
 
+SCROLL_JS = """
+<script>
+(function () {
+  const doc = window.parent.document;
+  // Streamlit scrolls an inner container, not the window: reset every scroller.
+  doc.querySelectorAll('section, div, main').forEach(function (el) {
+    if (el.scrollTop && el.scrollTop > 0) { el.scrollTop = 0; }
+  });
+  window.parent.scrollTo(0, 0);
+})();
+</script>
+"""
+
+
 def scroll_top() -> None:
-    """Jump the page back to the top so a new step never opens mid-scroll."""
-    components.html(
-        "<script>window.parent.scrollTo({top:0, behavior:'instant'});</script>",
-        height=0,
-        width=0,
-    )
+    """Jump back to the top so a new step never opens mid-scroll."""
+    components.html(SCROLL_JS, height=0, width=0)
 
 
 def screen_wrap() -> None:
