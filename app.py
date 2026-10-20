@@ -756,7 +756,8 @@ def screen_js_results() -> None:
     st.subheader("4 · Skills to close and your pathway")
     top = results[0]
     if top["missing"]:
-        st.write(f"Gap for **{top['role']}**: {len(top['missing'])} of {len(top['required_skills'])} "
+        total_required = len(top["covered"]) + len(top["missing"])
+        st.write(f"Gap for **{top['role']}**: {len(top['missing'])} of {total_required} "
                  f"required skills missing.")
         st.table(pathway(top))
         st.caption("⚠️ Week estimates are indicative only, and resource links are a suggested search "
