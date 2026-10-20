@@ -525,16 +525,42 @@ def screen_wrap() -> None:
         st.markdown("</div>", unsafe_allow_html=True)
 
 
+def _sync_url(stage: str) -> None:
+    """Keep the stage in the URL so a websocket reconnect restores the screen."""
+    try:
+        st.query_params["stage"] = stage
+    except Exception:
+        pass
+
+
 def go(stage: str) -> None:
-    transition_into(stage)
+    st.session_state["stage"] = stage
+    st.session_state["entering"] = True
+    _sync_url(stage)
+    st.rerun()
 
 
 def reset() -> None:
     for k in list(st.session_state):
-        if k != "lang":
+        if k not in ("lang", "intro_done"):
             del st.session_state[k]
     st.session_state["stage"] = "landing"
+    _sync_url("landing")
     st.rerun()
+
+
+def current_stage() -> str:
+    """Session state first, then the URL — survives a reconnect or a reload."""
+    stage = st.session_state.get("stage")
+    if not stage:
+        try:
+            stage = st.query_params.get("stage", "landing")
+        except Exception:
+            stage = "landing"
+        if stage not in ("landing", "js_intake", "js_results", "hr_intake", "hr_results"):
+            stage = "landing"
+        st.session_state["stage"] = stage
+    return stage
 
 
 def top_bar() -> None:
@@ -873,7 +899,7 @@ def screen_hr_results() -> None:
 # --------------------------------------------------------------------------- #
 
 st.set_page_config(page_title="SkillRadar MY", page_icon="📡", layout="wide")
-st.session_state.setdefault("stage", "landing")
+
 
 play_intro()
 
@@ -885,7 +911,15 @@ STAGES = {
     "hr_results": screen_hr_results,
 }
 
-if st.session_state["stage"] != "landing":
+STAGE = current_stage()
+
+if STAGE != "landing":
     st.markdown(APP_CSS, unsafe_allow_html=True)
 
-STAGES.get(st.session_state["stage"], screen_landing)()
+try:
+    STAGES.get(STAGE, screen_landing)()
+except Exception as exc:  # keep the user on the screen with a readable message
+    st.error("Something went wrong on this step. Nothing was saved.")
+    st.caption(f"{type(exc).__name__}: {exc}")
+    if st.button("← Back to start"):
+        reset()
