@@ -16,7 +16,7 @@ import zlib
 from pathlib import Path
 
 import streamlit as st
-from streamlit import components
+import streamlit.components.v1 as components
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
