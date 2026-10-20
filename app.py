@@ -23,6 +23,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "src"))
 
 from utils import Role, pathway, rank, sdg_summary  # noqa: E402
+from i18n import STRINGS, T, cat  # noqa: E402
 
 DATA = ROOT / "data"
 TREND_FILE = DATA / "trends" / "latest.json"
@@ -562,46 +563,68 @@ def current_stage() -> str:
     return st.session_state.get("stage") or "landing"
 
 
-def top_bar() -> None:
-    left, mid, right = st.columns([2, 1, 1])
+def lang_selector(compact: bool = False) -> None:
+    """Language switch — English / 中文."""
+    options = ["en", "zh"]
+    labels = {"en": "English", "zh": "中文"}
+    current = st.session_state.get("lang", "en")
+    choice = st.selectbox(
+        "" if compact else "Language / 语言",
+        options=options,
+        index=options.index(current),
+        format_func=lambda k: labels[k],
+        label_visibility="collapsed" if compact else "visible",
+        key=f"lang_{'c' if compact else 'f'}",
+    )
+    if choice != current:
+        st.session_state["lang"] = choice
+        st.rerun()
+
+
+def top_bar(t: dict) -> None:
+    left, mid, right, far = st.columns([2, 2, 1, 1])
     with left:
         st.markdown("### 📡 SkillRadar MY")
     with right:
-        if st.button("🔄 Re-evaluate", use_container_width=True,
-                     help="Clear everything and start again"):
+        if st.button(t["reeval"], use_container_width=True, help=t["reeval_help"]):
             reset()
+    with far:
+        lang_selector(compact=True)
 
 
-def trend_cards(trend: dict) -> None:
+def trend_cards(t: dict, trend: dict) -> None:
     source = trend.get("source_url")
     retrieved = trend.get("retrieved_at")
-    label = "Simulated data (not real market evidence)" if trend.get("is_simulated") else "Public source"
-    st.caption(f"**{label}** · source: {source or '—'} · retrieved: {retrieved or '—'}")
+    label = t["simulated"]
+    st.caption(f"**{label}** · {t['source']}: {source or '—'} · {t['retrieved']}: {retrieved or '—'}")
     signals = trend.get("signals") or []
     if not signals:
-        st.info("No trend signals loaded.")
+        st.info("—")
         return
     cols = st.columns(min(3, len(signals)))
     icon = {"rising": "📈", "declining": "📉", "stable": "➖"}
     for i, s in enumerate(signals[:6]):
         with cols[i % len(cols)]:
-            st.metric(f"{icon.get(s['direction'], '•')} {s['skill']}",
-                      s["direction"].title(), f"weight {s['weight']:+.1f}")
+            st.metric(
+                f"{icon.get(s['direction'], '•')} {s['skill']}",
+                t.get(s["direction"], s["direction"]),
+                t["weight"].format(f"{s['weight']:+.1f}"),
+            )
 
 
-def role_card(result: dict, expanded: bool = False) -> None:
+def role_card(t: dict, result: dict, expanded: bool = False) -> None:
     c = result["components"]
     head = f"{result['score']:.1f} · {result['role']} · SDG {', '.join(result['sdg'])}"
     with st.expander(head, expanded=expanded):
         st.progress(min(1.0, result["score"] / 100))
         a, b, c1, d = st.columns(4)
-        a.metric("Skill coverage", f"{c['coverage'] * 100:.0f}%")
-        b.metric("Transferability", f"{c['transfer'] * 100:.0f}%")
-        c1.metric("Demand trend", f"{c['trend'] * 100:.0f}%")
-        d.metric("Gap cost", f"{c['gap_cost'] * 100:.0f}%")
-        st.write(f"**Already have ({len(result['covered'])}):** {', '.join(result['covered']) or '—'}")
-        st.write(f"**To close ({len(result['missing'])}):** {', '.join(result['missing']) or 'none'}")
-        st.caption("Prototype estimate — the score is a weighted rule, not a hiring probability.")
+        a.metric(t["coverage"], f"{c['coverage'] * 100:.0f}%")
+        b.metric(t["transfer"], f"{c['transfer'] * 100:.0f}%")
+        c1.metric(t["trend"], f"{c['trend'] * 100:.0f}%")
+        d.metric(t["gapcost"], f"{c['gap_cost'] * 100:.0f}%")
+        st.write(f"**{t['have']} ({len(result['covered'])}):** {', '.join(result['covered']) or '—'}")
+        st.write(f"**{t['close']} ({len(result['missing'])}):** {', '.join(result['missing']) or t['none']}")
+        st.caption(t["estimate"])
 
 
 # --------------------------------------------------------------------------- #
@@ -612,138 +635,126 @@ def screen_landing() -> None:
     screen_wrap()
     st.markdown(LANDING_CSS + ORBS_HTML, unsafe_allow_html=True)
 
+    _, lang_col = st.columns([5, 1])
+    with lang_col:
+        lang_selector(compact=True)
+
+    t = T(st.session_state.get("lang", "en"))
+
     st.markdown(
-        """
+        f"""
         <div class="sr-hero">
-          <div class="sr-badge">SDC 2026 · Domain 1 · Future-Ready Workforce</div>
-          <div class="sr-h1">📡 SkillRadar MY</div>
+          <div class="sr-badge">{t['eyebrow']}</div>
+          <div class="sr-h1">{t['h1']}</div>
           <div class="sr-sub">
-            See which skills are actually rising, which future roles fit you,
-            and the fastest route to close the gap.<br>
-            <span style="font-size:13px;color:#7a836a">
-              Every forecast carries its source and date · predictions are estimates, not facts
-            </span>
+            {t['hero_sub']}<br>
+            <span style="font-size:13px;color:#7a836a">{t['hero_note']}</span>
           </div>
         </div>
         """,
         unsafe_allow_html=True,
     )
-    st.markdown("<div style='height:18px'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
 
     left, right = st.columns(2, gap="large")
     with left:
         with st.container(border=True):
             st.markdown(
-                """
+                f"""
                 <div class="sr-icon">👤</div>
-                <div class="sr-title">I'm a jobseeker</div>
-                <div class="sr-desc">Turn your current skills into a ranked list of future roles.</div>
+                <div class="sr-title">{t['js_title']}</div>
+                <div class="sr-desc">{t['js_desc']}</div>
                 <ul class="sr-list">
-                  <li>📄 Upload a CV or tick your skills by category</li>
-                  <li>📈 See which skills are rising or declining</li>
-                  <li>🎯 Get matched roles with an explainable score</li>
-                  <li>🛣️ Follow a step-by-step reskilling pathway</li>
+                  <li>📄 {t['js_b1']}</li>
+                  <li>📈 {t['js_b2']}</li>
+                  <li>🎯 {t['js_b3']}</li>
+                  <li>🛣️ {t['js_b4']}</li>
                 </ul>
                 """,
                 unsafe_allow_html=True,
             )
-            if st.button("Start as jobseeker →", type="primary", use_container_width=True):
+            if st.button(t["js_btn"], type="primary", use_container_width=True):
                 go("js_intake")
     with right:
         with st.container(border=True):
             st.markdown(
-                """
+                f"""
                 <div class="sr-icon">🏢</div>
-                <div class="sr-title">I'm an HR / L&amp;D manager</div>
-                <div class="sr-desc">See where your team's skills stand against future roles.</div>
+                <div class="sr-title">{t['hr_title']}</div>
+                <div class="sr-desc">{t['hr_desc']}</div>
                 <ul class="sr-list">
-                  <li>👥 Describe your team in 30 seconds</li>
-                  <li>🔥 See the biggest workforce skill gaps</li>
-                  <li>💸 Decide what to train first, and why</li>
-                  <li>🌱 Map the plan to the UN SDGs</li>
+                  <li>👥 {t['hr_b1']}</li>
+                  <li>🔥 {t['hr_b2']}</li>
+                  <li>💸 {t['hr_b3']}</li>
+                  <li>🌱 {t['hr_b4']}</li>
                 </ul>
                 """,
                 unsafe_allow_html=True,
             )
-            if st.button("Start as HR →", type="primary", use_container_width=True):
+            if st.button(t["hr_btn"], type="primary", use_container_width=True):
                 go("hr_intake")
 
     st.markdown(
-        """
+        f"""
         <div class="sr-steps">
-          <div class="sr-step"><em>📄</em><b>1 · Tell us about you</b>
-            <span>CV upload or tick your skills by category</span></div>
-          <div class="sr-step"><em>📈</em><b>2 · See the radar</b>
-            <span>dated public trend signals, source shown</span></div>
-          <div class="sr-step"><em>🎯</em><b>3 · Get matched</b>
-            <span>roles with an explainable score and gap</span></div>
-          <div class="sr-step"><em>🛣️</em><b>4 · Follow a path</b>
-            <span>reskilling plan mapped to the UN SDGs</span></div>
+          <div class="sr-step"><em>📄</em><b>{t['step1']}</b><span>{t['step1s']}</span></div>
+          <div class="sr-step"><em>📈</em><b>{t['step2']}</b><span>{t['step2s']}</span></div>
+          <div class="sr-step"><em>🎯</em><b>{t['step3']}</b><span>{t['step3s']}</span></div>
+          <div class="sr-step"><em>🛣️</em><b>{t['step4']}</b><span>{t['step4s']}</span></div>
         </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    st.markdown(
-        """
-        <div class="sr-foot">
-          <span class="sr-pulse"></span>
-          Demo runs on synthetic profiles and simulated trend weights —
-          no real CVs, no personal data stored.
-        </div>
+        <div class="sr-foot"><span class="sr-pulse"></span>{t['foot']}</div>
         """,
         unsafe_allow_html=True,
     )
 
 
 # --------------------------------------------------------------------------- #
-# Screen: jobseeker intake (full width)
+# Screen: jobseeker intake
 # --------------------------------------------------------------------------- #
 
 def screen_js_intake() -> None:
+    t = T(st.session_state.get("lang", "en"))
     screen_wrap()
-    top_bar()
-    st.subheader("Tell us about yourself")
-    st.caption("Upload a CV or tick the skills you already have — you can edit the result either way.")
+    top_bar(t)
+    st.subheader(t["intake_h"])
+    st.caption(t["intake_sub"])
 
-    st.markdown('<div class="sr-pill">Option A — upload a synthetic CV</div>', unsafe_allow_html=True)
-    if True:
-        up = st.file_uploader("Drop a CV here (synthetic files only)", type=["txt", "md", "pdf"])
-        if up is not None:
-            found = cv_to_skills(up)
-            st.session_state["skills"] = found
-            if found:
-                st.success(f"Detected {len(found)} skill(s): {', '.join(found)}")
-            else:
-                st.warning("No known skill detected — use the questionnaire tab instead.")
-        st.caption("No CV handy? Try `data/sample_cv.txt` from the repository.")
+    st.markdown(f'<div class="sr-pill">{t["opt_a"]}</div>', unsafe_allow_html=True)
+    up = st.file_uploader(t["uploader"], type=["txt", "md", "pdf"])
+    if up is not None:
+        found = cv_to_skills(up)
+        st.session_state["skills"] = found
+        if found:
+            st.success(t["detected"].format(len(found), ", ".join(found)))
+        else:
+            st.warning(t["not_detected"])
+    st.caption(t["uploader_hint"])
 
-    st.markdown('<div class="sr-pill">Option B — tick your skills by category</div>', unsafe_allow_html=True)
-    if True:
-        picked: list[str] = []
-        for group, items in TAXONOMY.items():
-            st.markdown(f"**{group}**")
-            labels = st.multiselect(
-                f"{group} skills", options=list(items), key=f"ms_{group}",
-                label_visibility="collapsed", placeholder="Select skills in this category…",
-            )
-            for label in labels:
-                picked += LABEL_TO_KEYS[label]
-            st.markdown("")
-        if st.button("Use these skills", use_container_width=True):
-            st.session_state["skills"] = picked
+    st.markdown(f'<div class="sr-pill">{t["opt_b"]}</div>', unsafe_allow_html=True)
+    picked: list[str] = []
+    lang = st.session_state.get("lang", "en")
+    for group, items in TAXONOMY.items():
+        st.markdown(f"**{cat(lang, group)}**")
+        labels = st.multiselect(
+            group, options=list(items), key=f"ms_{group}",
+            label_visibility="collapsed", placeholder=t["ms_placeholder"],
+        )
+        for label in labels:
+            picked += LABEL_TO_KEYS[label]
+        st.markdown("")
+    if st.button(t["use_skills"], use_container_width=True):
+        st.session_state["skills"] = picked
 
     current = st.session_state.get("skills") or []
     if current:
-        st.info(f"**Current profile:** {', '.join(sorted(set(current)))}  ({len(set(current))} skills)")
+        st.info(f"**{t['current']}:** {', '.join(sorted(set(current)))}  ({len(set(current))})")
 
     c1, c2 = st.columns([1, 3])
     with c1:
-        if st.button("← Back", use_container_width=True):
+        if st.button(t["back"], use_container_width=True):
             reset()
     with c2:
-        if st.button("See my future-role matches →", type="primary", use_container_width=True,
-                     disabled=not current):
+        if st.button(t["continue"], type="primary", use_container_width=True, disabled=not current):
             go("js_results")
 
 
@@ -752,57 +763,63 @@ def screen_js_intake() -> None:
 # --------------------------------------------------------------------------- #
 
 def screen_js_results() -> None:
+    t = T(st.session_state.get("lang", "en"))
     screen_wrap()
-    top_bar()
+    top_bar(t)
     skills = st.session_state.get("skills") or []
     if not skills:
-        st.warning("No skills selected yet.")
-        if st.button("← Back to intake"):
+        st.warning(t["not_detected"])
+        if st.button(t["back"]):
             go("js_intake")
         return
 
     trend = load_trend()
     roles = apply_trend(load_roles(), trend)
 
-    st.subheader("1 · Your profile")
+    st.subheader(t["p1"])
     st.write(", ".join(sorted(set(skills))))
 
-    st.subheader("2 · Future skills radar")
-    trend_cards(trend)
+    st.subheader(t["p2"])
+    trend_cards(t, trend)
 
-    st.subheader("3 · Best-fit future roles")
-    scenario = st.radio("AI disruption scenario", ["moderate", "fast"], horizontal=True,
-                        format_func=lambda x: "Moderate disruption" if x == "moderate" else "Fast disruption")
+    st.subheader(t["p3"])
+    scenario = st.radio(
+        t["scenario"], ["moderate", "fast"], horizontal=True,
+        format_func=lambda x: t["moderate"] if x == "moderate" else t["fast"],
+    )
     results = rank(skills, roles, scenario=scenario)
-    st.caption("Ranked by an explainable weighted score. Open a role to see the four components.")
+    st.caption(t["ranked_note"])
     for i, r in enumerate(results[:4]):
-        role_card(r, expanded=(i == 0))
+        role_card(t, r, expanded=(i == 0))
 
-    st.subheader("4 · Skills to close and your pathway")
+    st.subheader(t["p4"])
     top = results[0]
     if top["missing"]:
         total_required = len(top["covered"]) + len(top["missing"])
-        st.write(f"Gap for **{top['role']}**: {len(top['missing'])} of {total_required} "
-                 f"required skills missing.")
-        st.table(pathway(top))
-        st.caption("⚠️ Week estimates are indicative only, and resource links are a suggested search "
-                   "direction on the HRD Corp directory — not a verified course price or duration.")
+        st.write(t["gap"].format(top["role"], len(top["missing"]), total_required))
+        plan = pathway(top)
+        st.table([
+            {"step": p["step"], "skill": p["skill"], "weeks": p["weeks"],
+             "resource": t["search_hint"].format(p["skill"])}
+            for p in plan
+        ])
+        st.caption(t["path_note"])
     else:
-        st.success("You cover every skill for this role — look at the next option in the ranking.")
+        st.success(t["covered_all"])
 
-    st.subheader("5 · SDG contribution of this path")
+    st.subheader(t["p5"])
     summary = sdg_summary(results[:4])
     st.write(", ".join(f"**SDG {k}** ({v})" for k, v in summary.items()) or "—")
-    st.caption("SDG 4.4 relevant skills for employment · 8.5 full and productive employment · "
-               "9.1 infrastructure and innovation · 8.2 productivity through innovation")
+    st.caption(t["sdg_note"])
 
-    st.subheader("6 · Scenario comparison")
+    st.subheader(t["p6"])
     st.dataframe(
-        [{"Role": m["role"], "Moderate": m["score"], "Fast": f["score"], "Δ": round(f["score"] - m["score"], 1)}
+        [{t["col_role"]: m["role"], t["col_mod"]: m["score"], t["col_fast"]: f["score"],
+          t["col_delta"]: round(f["score"] - m["score"], 1)}
          for m, f in zip(rank(skills, roles, "moderate"), rank(skills, roles, "fast"))],
         use_container_width=True, hide_index=True,
     )
-    st.caption("Same profile, two disruption speeds. Predictions are estimates, not facts.")
+    st.caption(t["scen_note"])
 
 
 # --------------------------------------------------------------------------- #
@@ -810,25 +827,23 @@ def screen_js_results() -> None:
 # --------------------------------------------------------------------------- #
 
 def screen_hr_intake() -> None:
+    t = T(st.session_state.get("lang", "en"))
     screen_wrap()
-    top_bar()
-    st.subheader("Describe your team")
-    st.caption("Pick the roles in your team and how many people sit in each. We aggregate the skill "
-               "requirement and show where the workforce coverage is weakest.")
+    top_bar(t)
+    st.subheader(t["hr_h"])
+    st.caption(t["hr_sub"])
 
-    roles = load_roles()
     roster: dict[str, int] = {}
-    for r in roles:
+    for r in load_roles():
         n = st.slider(r.name, 0, 20, 1 if r.name.startswith("AI Operations") else 0)
         if n:
             roster[r.name] = n
 
-    st.caption("Tip: keep 2–4 roles for a readable heatmap.")
-    if st.button("Analyse workforce →", type="primary", use_container_width=True, disabled=not roster):
+    st.caption(t["hr_tip"])
+    if st.button(t["analyse"], type="primary", use_container_width=True, disabled=not roster):
         st.session_state["roster"] = roster
         go("hr_results")
-
-    if st.button("← Back"):
+    if st.button(t["back"]):
         reset()
 
 
@@ -837,12 +852,13 @@ def screen_hr_intake() -> None:
 # --------------------------------------------------------------------------- #
 
 def screen_hr_results() -> None:
+    t = T(st.session_state.get("lang", "en"))
     screen_wrap()
-    top_bar()
+    top_bar(t)
     roster: dict[str, int] = st.session_state.get("roster") or {}
     if not roster:
-        st.warning("No team defined.")
-        if st.button("← Back"):
+        st.warning(t["hr_h"])
+        if st.button(t["back"]):
             go("hr_intake")
         return
 
@@ -850,47 +866,50 @@ def screen_hr_results() -> None:
     roles = {r.name: r for r in apply_trend(load_roles(), trend)}
     total_people = sum(roster.values())
 
-    st.subheader("Workforce overview")
+    st.subheader(t["hr_h"])
     a, b, c = st.columns(3)
-    a.metric("People in scope", total_people)
-    b.metric("Roles tracked", len(roster))
+    a.metric(t["people"], total_people)
+    b.metric(t["roles"], len(roster))
     demand: dict[str, int] = {}
     for name, n in roster.items():
         for s in roles[name].required_skills:
             demand[s] = demand.get(s, 0) + n
-    c.metric("Distinct skills required", len(demand))
+    c.metric(t["skills"], len(demand))
 
-    st.subheader("Priority skills to build")
-    st.caption("Ranked by how many people across your team need the skill.")
-    rows = [{"Skill": s, "People needing it": n, "Share of workforce": f"{n / max(total_people, 1) * 100:.0f}%"}
-            for s, n in sorted(demand.items(), key=lambda kv: -kv[1])]
-    st.dataframe(rows, use_container_width=True, hide_index=True)
+    st.subheader(t["priority"])
+    st.caption(t["priority_note"])
+    st.dataframe(
+        [{t["col_skill"]: s, t["col_people"]: n,
+          t["col_share"]: f"{n / max(total_people, 1) * 100:.0f}%"}
+         for s, n in sorted(demand.items(), key=lambda kv: -kv[1])],
+        use_container_width=True, hide_index=True,
+    )
 
-    st.subheader("Role-level view")
+    st.subheader(t["role_view"])
     for name, n in roster.items():
         role = roles[name]
-        with st.expander(f"{name} · {n} people · SDG {', '.join(role.sdg)}"):
-            st.write(f"**Required skills:** {', '.join(role.required_skills)}")
-            st.write(f"**Market trend signal:** {'rising' if role.trend > 0.3 else 'declining' if role.trend < -0.2 else 'stable'}")
-            st.caption("Aggregate demand — individual-level coverage is collected per employee in Phase 2.")
+        with st.expander(f"{name} · {n} · SDG {', '.join(role.sdg)}"):
+            st.write(f"**{t['required']}:** {', '.join(role.required_skills)}")
+            sig = "rising" if role.trend > 0.3 else "declining" if role.trend < -0.2 else "stable"
+            st.write(f"**{t['signal']}:** {t.get(sig, sig)}")
+            st.caption(t["agg_note"])
 
-    st.subheader("Suggested reskilling plan")
+    st.subheader(t["plan"])
     plan = []
     for i, (s, n) in enumerate(sorted(demand.items(), key=lambda kv: -kv[1])[:5], start=1):
-        plan.append({"Priority": i, "Skill": s, "People": n,
-                     "Suggested route": f"HRD Corp directory search: {s}"})
+        plan.append({t["col_pri"]: i, t["col_skill"]: s, t["col_people"]: n,
+                     t["col_route"]: t["search_hint"].format(s)})
     st.table(plan)
-    st.caption("⚠️ Suggested search directions, not verified courses. Confirm price, duration and "
-               "HRD Corp claimability before committing budget.")
+    st.caption(t["plan_note"])
 
-    st.subheader("SDG alignment of this team")
+    st.subheader(t["team_sdg"])
     sdg: dict[str, int] = {}
     for name in roster:
         for tag in roles[name].sdg:
             sdg[tag] = sdg.get(tag, 0) + 1
-    st.write(", ".join(f"**SDG {k}** ({v} roles)" for k, v in sorted(sdg.items(), key=lambda kv: -kv[1])))
+    st.write(", ".join(f"**SDG {k}** ({v})" for k, v in sorted(sdg.items(), key=lambda kv: -kv[1])))
 
-    st.caption("Synthetic demo data only — no employee records are collected or stored.")
+    st.caption(t["hr_foot"])
 
 
 # --------------------------------------------------------------------------- #
@@ -899,7 +918,7 @@ def screen_hr_results() -> None:
 
 st.set_page_config(page_title="SkillRadar MY", page_icon="📡", layout="wide")
 
-
+st.session_state.setdefault("lang", "en")
 play_intro()
 
 STAGES = {
@@ -913,6 +932,7 @@ STAGES = {
 st.session_state.setdefault("stage", "landing")
 
 STAGE = current_stage()
+_T = T(st.session_state.get("lang", "en"))
 
 if STAGE != "landing":
     st.markdown(APP_CSS, unsafe_allow_html=True)
@@ -920,7 +940,7 @@ if STAGE != "landing":
 try:
     STAGES.get(STAGE, screen_landing)()
 except Exception as exc:  # keep the user on the screen with a readable message
-    st.error("Something went wrong on this step. Nothing was saved.")
+    st.error(_T["error"])
     st.caption(f"{type(exc).__name__}: {exc}")
-    if st.button("← Back to start"):
+    if st.button(_T["back_start"]):
         reset()
