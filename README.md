@@ -178,7 +178,7 @@ Proof of use: [`submission/RUNPOD PROOF OF USE.pdf`](submission/RUNPOD%20PROOF%2
 | --- | --- |
 | DU YULIN | Team Lead / Core development & submission |
 | GAO TANGLINYUE | UI design & bug testing |
-| ZHENG QUANYING | Core development (data pipeline & trend layer) |
+| ZHENG QUANYING | UI design & bug testing |
 | WU ZHUOLI | Core development (matching & pathway engine) |
 | ZHANG BORAN | Core development & documentation |
 
