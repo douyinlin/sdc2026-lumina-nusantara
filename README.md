@@ -24,9 +24,9 @@ every role mapped to the UN SDGs.
 | Resource | Link |
 | --- | --- |
 | GitHub Repository | https://github.com/douyinlin/sdc2026-lumina-nusantara |
-| Replit Project | `<TODO — after Replit import>` |
-| Live Demo | `<TODO — after Replit Deploy>` |
-| RunPod Endpoint | `<TODO — after RunPod endpoint is deployed>` |
+| Replit Project | https://replit.com/@duyulin18 |
+| Live Demo | `<TODO after Replit Deploy>` |
+| RunPod Endpoint | `<TODO after RunPod endpoint is deployed>` |
 | Slide Deck | `<TODO>` |
 | Demo Video | `<TODO>` |
 
@@ -74,38 +74,40 @@ See [`docs/tech-stack.md`](docs/tech-stack.md) for the full table and block diag
 
 ## 4. Project Structure
 
-```
+```text
 .
-├── docs/                          # Documentation
-│   ├── proposals/                 # Proposal drafting material
-│   │   └── proposal-draft.md      # All answers for the two submission PDFs
-│   ├── screenshots/               # UI screenshots for the README and video
-│   ├── tech-stack.md              # Stack table + system block diagram
-│   ├── GitHub上传步骤.md            # How we push to GitHub
-│   └── README.md                  # Documentation index
-├── data/                          # Trend snapshots (source_url + retrieved_at)
-├── runpod/
-│   └── handler.py                 # RunPod serverless handler (GPU workload)
-├── src/
-│   ├── main.py                    # Application entry point
-│   └── utils.py                   # Matching, pathway and SDG engine
-├── submission/                    # Required submission documents
-│   ├── SDC2026_LuminaNusantara_Preliminary.pdf
-│   ├── SDC2026_LuminaNusantara_TechDeclaration.pdf
-│   ├── REPLIT PROOF OF USE.pdf
-│   └── RUNPOD PROOF OF USE.pdf
-├── tests/
-│   └── test_utils.py              # Unit tests
-├── .env.example
-├── .gitignore
-├── .replit
-├── LICENSE
-├── requirements.txt
-├── 任务清单.md                     # Team checklist (Chinese)
-└── README.md
+|-- app.py                      # Streamlit entry point (the demo)
+|-- README.md
+|-- docs/
+|   |-- README.md               # Documentation index
+|   |-- architecture.png        # System block diagram (proposal appendix)
+|   |-- tech-stack.md           # Stack table + block diagram
+|   |-- proposals/
+|   |   `-- proposal-draft.md   # All answers for the two submission PDFs
+|   `-- screenshots/
+|       `-- app-home.png        # UI screenshot
+|-- data/
+|   `-- trends/latest.json      # Trend snapshot (source_url + retrieved_at)
+|-- runpod/
+|   `-- handler.py              # RunPod serverless handler
+|-- src/
+|   |-- main.py                 # CLI demo
+|   `-- utils.py                # Matching, pathway and SDG engine
+|-- submission/                 # Required submission documents
+|   |-- SDC2026_LuminaNusantara_Preliminary.pdf
+|   |-- SDC2026_LuminaNusantara_TechDeclaration.pdf
+|   |-- REPLIT PROOF OF USE.pdf
+|   `-- RUNPOD PROOF OF USE.pdf
+|-- tests/
+|   `-- test_utils.py           # Unit tests
+|-- .env.example
+|-- .gitignore
+|-- .replit
+|-- LICENSE
+`-- requirements.txt
 ```
 
-> The three PDFs currently in `submission/` are the **blank official templates**.
+> The PDFs currently in `submission/` are the **blank official templates**.
 > Replace them with the filled versions before submitting.
 
 ## 5. How to Run
@@ -113,8 +115,8 @@ See [`docs/tech-stack.md`](docs/tech-stack.md) for the full table and block diag
 ### Option 1 — Run on Replit (Recommended)
 
 1. Create a Repl → **Import from GitHub** → select this repository.
-2. Open **Secrets** (🔒) and add the variables from `.env.example`.
-3. Click **Run**. `.replit` starts `python src/main.py`.
+2. Open **Secrets** (the lock icon) and add the variables from `.env.example`.
+3. Click **Run**. `.replit` starts the Streamlit app.
 
 ### Option 2 — Run Locally
 
@@ -125,7 +127,7 @@ python -m venv venv
 venv\Scripts\activate          # Windows
 pip install -r requirements.txt
 cp .env.example .env           # then fill in your values
-python src/main.py
+streamlit run app.py
 ```
 
 ### Run Tests
@@ -140,7 +142,7 @@ python -m unittest discover tests
 - **Hosting:** deployed with Replit Deployments at the Live Demo link above.
 - **Secrets:** `RUNPOD_API_KEY` and `RUNPOD_ENDPOINT_ID` live in Replit Secrets and are never committed.
 
-📄 Proof of use: [`submission/REPLIT PROOF OF USE.pdf`](submission/REPLIT%20PROOF%20OF%20USE.pdf)
+Proof of use: [`submission/REPLIT PROOF OF USE.pdf`](submission/REPLIT%20PROOF%20OF%20USE.pdf)
 
 ## 7. How We Use RunPod *(Required)*
 
@@ -155,7 +157,7 @@ curl -X POST https://api.runpod.ai/v2/$RUNPOD_ENDPOINT_ID/runsync \
   -d '{"input": {"text": "5 years customer service team lead, Excel, Zendesk"}}'
 ```
 
-📄 Proof of use: [`submission/RUNPOD PROOF OF USE.pdf`](submission/RUNPOD%20PROOF%20OF%20USE.pdf)
+Proof of use: [`submission/RUNPOD PROOF OF USE.pdf`](submission/RUNPOD%20PROOF%20OF%20USE.pdf)
 
 ## 8. Challenges & Learnings
 
