@@ -523,55 +523,31 @@ def screen_wrap() -> None:
         st.markdown("</div>", unsafe_allow_html=True)
 
 
-def _sync_url(stage: str) -> None:
-    """Keep the stage in the URL so a websocket reconnect restores the screen."""
-    try:
-        st.query_params["stage"] = stage
-    except Exception:
-        pass
-
-
 def go(stage: str) -> None:
     st.session_state["stage"] = stage
     st.session_state["entering"] = True
-    _sync_url(stage)
     st.rerun()
 
 
 def reset() -> None:
     for k in list(st.session_state):
-        if k not in ("lang", "intro_done"):
+        if k != "intro_done":
             del st.session_state[k]
     st.session_state["stage"] = "landing"
-    _sync_url("landing")
     st.rerun()
 
 
 def current_stage() -> str:
-    """Session state first, then the URL — survives a reconnect or a reload."""
-    stage = st.session_state.get("stage")
-    if not stage:
-        try:
-            stage = st.query_params.get("stage", "landing")
-        except Exception:
-            stage = "landing"
-        if stage not in ("landing", "js_intake", "js_results", "hr_intake", "hr_results"):
-            stage = "landing"
-        st.session_state["stage"] = stage
-    return stage
+    return st.session_state.get("stage") or "landing"
 
 
 def top_bar() -> None:
-    left, mid, right, far = st.columns([2, 1, 1, 1])
+    left, mid, right = st.columns([2, 1, 1])
     with left:
         st.markdown("### 📡 SkillRadar MY")
     with right:
         if st.button("🔄 Re-evaluate", use_container_width=True,
-                     help="Clear everything and start a new assessment"):
-            reset()
-    with far:
-        if st.button("🏠 Home", use_container_width=True,
-                     help="Back to the identity selection screen"):
+                     help="Clear everything and start again"):
             reset()
 
 
@@ -613,11 +589,6 @@ def role_card(result: dict, expanded: bool = False) -> None:
 
 def screen_landing() -> None:
     screen_wrap()
-    try:
-        if "stage" in st.query_params:
-            del st.query_params["stage"]
-    except Exception:
-        pass
     st.markdown(LANDING_CSS + ORBS_HTML, unsafe_allow_html=True)
 
     st.markdown(
@@ -917,6 +888,8 @@ STAGES = {
     "hr_intake": screen_hr_intake,
     "hr_results": screen_hr_results,
 }
+
+st.session_state.setdefault("stage", "landing")
 
 STAGE = current_stage()
 
