@@ -262,6 +262,98 @@ INTRO_HTML = """
 </div>
 """
 
+# --------------------------------------------------------------------------- #
+# Landing look — animated gradient sky, floating orbs, glass cards.
+# --------------------------------------------------------------------------- #
+
+LANDING_CSS = """
+<style>
+@keyframes sr-float-a { 0%{transform:translate3d(0,0,0) scale(1)} 50%{transform:translate3d(30px,-38px,0) scale(1.08)} 100%{transform:translate3d(0,0,0) scale(1)} }
+@keyframes sr-float-b { 0%{transform:translate3d(0,0,0) scale(1)} 50%{transform:translate3d(-42px,26px,0) scale(1.12)} 100%{transform:translate3d(0,0,0) scale(1)} }
+@keyframes sr-float-c { 0%{transform:translate3d(0,0,0) scale(1)} 50%{transform:translate3d(24px,34px,0) scale(0.92)} 100%{transform:translate3d(0,0,0) scale(1)} }
+@keyframes sr-sky     { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+@keyframes sr-glow    { 0%,100%{opacity:.45} 50%{opacity:.95} }
+
+[data-testid="stAppViewContainer"] {
+  background: linear-gradient(135deg, #f6faf0 0%, #eaf1dd 28%, #e6eef6 62%, #f7f3ea 100%);
+  background-size: 220% 220%;
+  animation: sr-sky 22s ease-in-out infinite;
+}
+[data-testid="stHeader"] { background: transparent; }
+
+.sr-orb { position: fixed; border-radius: 50%; filter: blur(40px); pointer-events: none; z-index: 0; }
+.sr-o1 { width: 340px; height: 340px; top: -70px; left: -60px;
+         background: radial-gradient(circle, rgba(138,154,91,.50), rgba(138,154,91,0) 70%);
+         animation: sr-float-a 16s ease-in-out infinite; }
+.sr-o2 { width: 300px; height: 300px; top: 12%; right: -80px;
+         background: radial-gradient(circle, rgba(91,127,166,.42), rgba(91,127,166,0) 70%);
+         animation: sr-float-b 19s ease-in-out infinite; }
+.sr-o3 { width: 260px; height: 260px; bottom: 4%; left: 18%;
+         background: radial-gradient(circle, rgba(192,138,75,.35), rgba(192,138,75,0) 70%);
+         animation: sr-float-c 21s ease-in-out infinite; }
+.sr-o4 { width: 220px; height: 220px; bottom: 24%; right: 20%;
+         background: radial-gradient(circle, rgba(120,170,140,.32), rgba(120,170,140,0) 70%);
+         animation: sr-float-a 26s ease-in-out infinite reverse; }
+
+.sr-hero { text-align: center; position: relative; z-index: 2; padding: 22px 0 4px; }
+.sr-badge { display: inline-block; padding: 5px 14px; border-radius: 999px; font-size: 11.5px;
+            letter-spacing: .12em; text-transform: uppercase; color: #5d6b36;
+            background: rgba(138,154,91,.14); border: 1px solid rgba(138,154,91,.35); }
+.sr-h1 { font-size: 50px; font-weight: 800; margin: 12px 0 4px; letter-spacing: -1.5px;
+         background: linear-gradient(92deg, #4b5a2a 0%, #7b8f4a 45%, #4e6b8a 100%);
+         -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.sr-sub { color: #5f6b52; font-size: 15.5px; max-width: 720px; margin: 0 auto; line-height: 1.6; }
+
+[data-testid="stVerticalBlockBorderWrapper"] {
+  background: rgba(255,255,255,.62) !important;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,.9) !important;
+  border-radius: 22px !important;
+  box-shadow: 0 18px 46px rgba(76,86,52,.14);
+  transition: transform .28s ease, box-shadow .28s ease;
+}
+[data-testid="stVerticalBlockBorderWrapper"]:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 26px 62px rgba(76,86,52,.22);
+}
+.sr-icon { font-size: 40px; line-height: 1; }
+.sr-title { font-size: 24px; font-weight: 750; color: #38401f; margin: 6px 0 4px; }
+.sr-desc { color: #5f6b52; font-size: 14px; line-height: 1.55; margin-bottom: 8px; }
+.sr-list { list-style: none; padding: 0; margin: 0 0 12px; }
+.sr-list li { color: #55603f; font-size: 13px; line-height: 1.7; }
+
+.stButton > button {
+  border-radius: 999px !important; font-weight: 650 !important;
+  padding: .62rem 1rem !important; transition: transform .2s ease, box-shadow .2s ease;
+}
+.stButton > button:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(76,86,52,.22); }
+.stButton > button[kind="primary"] {
+  background: linear-gradient(96deg, #8A9A5B 0%, #6f8140 55%, #5b7fa6 130%) !important;
+  border: none !important; color: #fff !important; letter-spacing: .02em;
+  box-shadow: 0 10px 26px rgba(111,129,64,.32);
+}
+.stButton > button[kind="primary"]:hover { filter: brightness(1.06); }
+
+.sr-steps { display:flex; gap:14px; justify-content:center; margin: 20px auto 0; max-width: 900px; }
+.sr-step { flex:1; background: rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.85);
+           border-radius:16px; padding:12px 14px; text-align:center; backdrop-filter: blur(8px); }
+.sr-step b { display:block; color:#3f4a26; font-size:13.5px; margin-bottom:3px; }
+.sr-step span { color:#6b7560; font-size:12px; line-height:1.5; }
+.sr-step em { font-style:normal; font-size:17px; }
+
+.sr-foot { text-align: center; color: #7a836a; font-size: 12.5px; margin-top: 16px; }
+.sr-pulse { display:inline-block; width:8px; height:8px; border-radius:50%;
+            background:#8A9A5B; margin-right:7px; animation: sr-glow 1.8s ease-in-out infinite; }
+</style>
+"""
+
+ORBS_HTML = """
+<div class="sr-orb sr-o1"></div>
+<div class="sr-orb sr-o2"></div>
+<div class="sr-orb sr-o3"></div>
+<div class="sr-orb sr-o4"></div>
+"""
+
 
 def play_intro() -> None:
     """Show the 1-second curtain once per browser session."""
@@ -346,35 +438,90 @@ def role_card(result: dict, expanded: bool = False) -> None:
 
 def screen_landing() -> None:
     screen_wrap()
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("<h1 style='text-align:center'>📡 SkillRadar MY</h1>", unsafe_allow_html=True)
+    st.markdown(LANDING_CSS + ORBS_HTML, unsafe_allow_html=True)
+
     st.markdown(
-        "<p style='text-align:center;color:#666'>SDC 2026 · Domain 1 — see what skills are rising, "
-        "which future roles fit you, and the fastest route to close the gap.<br>"
-        "Every forecast shows its source and date. Predictions are estimates, not facts.</p>",
+        """
+        <div class="sr-hero">
+          <div class="sr-badge">SDC 2026 · Domain 1 · Future-Ready Workforce</div>
+          <div class="sr-h1">📡 SkillRadar MY</div>
+          <div class="sr-sub">
+            See which skills are actually rising, which future roles fit you,
+            and the fastest route to close the gap.<br>
+            <span style="font-size:13px;color:#7a836a">
+              Every forecast carries its source and date · predictions are estimates, not facts
+            </span>
+          </div>
+        </div>
+        """,
         unsafe_allow_html=True,
     )
-    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<div style='height:18px'></div>", unsafe_allow_html=True)
 
     left, right = st.columns(2, gap="large")
     with left:
         with st.container(border=True):
-            st.markdown("## 👤 I'm a jobseeker")
-            st.write("Understand your skill gap, get matched future roles, and a step-by-step "
-                     "reskilling plan mapped to the UN SDGs.")
+            st.markdown(
+                """
+                <div class="sr-icon">👤</div>
+                <div class="sr-title">I'm a jobseeker</div>
+                <div class="sr-desc">Turn your current skills into a ranked list of future roles.</div>
+                <ul class="sr-list">
+                  <li>📄 Upload a CV or tick your skills by category</li>
+                  <li>📈 See which skills are rising or declining</li>
+                  <li>🎯 Get matched roles with an explainable score</li>
+                  <li>🛣️ Follow a step-by-step reskilling pathway</li>
+                </ul>
+                """,
+                unsafe_allow_html=True,
+            )
             if st.button("Start as jobseeker →", type="primary", use_container_width=True):
                 go("js_intake")
     with right:
         with st.container(border=True):
-            st.markdown("## 🏢 I'm an HR / L&D manager")
-            st.write("See your team's skills coverage against future roles, where the biggest "
-                     "gaps are, and what to train first.")
+            st.markdown(
+                """
+                <div class="sr-icon">🏢</div>
+                <div class="sr-title">I'm an HR / L&amp;D manager</div>
+                <div class="sr-desc">See where your team's skills stand against future roles.</div>
+                <ul class="sr-list">
+                  <li>👥 Describe your team in 30 seconds</li>
+                  <li>🔥 See the biggest workforce skill gaps</li>
+                  <li>💸 Decide what to train first, and why</li>
+                  <li>🌱 Map the plan to the UN SDGs</li>
+                </ul>
+                """,
+                unsafe_allow_html=True,
+            )
             if st.button("Start as HR →", type="primary", use_container_width=True):
                 go("hr_intake")
 
-    st.markdown("---")
-    st.caption("Demo uses synthetic profiles and public/simulated trend weights only — no real CVs, "
-               "no personal data stored.")
+    st.markdown(
+        """
+        <div class="sr-steps">
+          <div class="sr-step"><em>📄</em><b>1 · Tell us about you</b>
+            <span>CV upload or tick your skills by category</span></div>
+          <div class="sr-step"><em>📈</em><b>2 · See the radar</b>
+            <span>dated public trend signals, source shown</span></div>
+          <div class="sr-step"><em>🎯</em><b>3 · Get matched</b>
+            <span>roles with an explainable score and gap</span></div>
+          <div class="sr-step"><em>🛣️</em><b>4 · Follow a path</b>
+            <span>reskilling plan mapped to the UN SDGs</span></div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        """
+        <div class="sr-foot">
+          <span class="sr-pulse"></span>
+          Demo runs on synthetic profiles and simulated trend weights —
+          no real CVs, no personal data stored.
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 # --------------------------------------------------------------------------- #
