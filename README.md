@@ -28,7 +28,7 @@ every role mapped to the UN SDGs.
 | GitHub Repository | https://github.com/douyinlin/sdc2026-lumina-nusantara |
 | Replit Project | https://replit.com/@duyulin18 |
 | **Live Demo** | https://sdc2026-lumina-nusantara-65cnugvuxdle5dgp9ky3fs.streamlit.app |
-| RunPod Endpoint | Official SDC sponsor-provided RunPod credits (see Technical Declaration §5) |
+| RunPod Endpoint | Not used — the app runs no GPU endpoint (see Technical Declaration §5) |
 | Slide Deck | `<TODO>` |
 | Demo Video | `<TODO>` |
 
@@ -71,7 +71,7 @@ and two disruption scenarios so the user sees how robust each choice is.
 | Frontend | Streamlit (Python) |
 | Backend | Python service modules (`src/`) |
 | Database | SQLite locally, Postgres when hosted |
-| AI / Compute | RunPod Serverless — CV parsing and embeddings |
+| AI / Compute | No external AI service — deterministic rule engine runs in-app |
 | Hosting / Dev | Streamlit Community Cloud; Replit workspace |
 
 ---
@@ -91,7 +91,7 @@ and two disruption scenarios so the user sees how robust each choice is.
 |-- src/                    # Engine: demo UI, matching, pathway, SDG
 |-- data/                   # Synthetic profiles, sample CV, trend snapshot
 |-- tests/                  # 13 unit tests
-|-- runpod/                 # RunPod serverless handler
+|-- runpod/                 # Optional RunPod handler (not used by the demo)
 |-- team/                   # Team-only material (not part of the submission)
 |-- LICENSE                 # Apache License 2.0
 |-- requirements.txt
@@ -144,25 +144,9 @@ from GitHub so `main` stays the single source of truth.
 
 Proof of use: [`submission/REPLIT PROOF OF USE.pdf`](submission/REPLIT%20PROOF%20OF%20USE.pdf)
 
-## How We Use RunPod *(Required)*
+## On RunPod
 
-RunPod Serverless provides GPU inference for CV text parsing and skill embeddings.
-The Streamlit app calls the endpoint; if the endpoint is unavailable the app falls
-back to a local rule-based parser so a live demo never breaks.
-
-- **Workload:** CV parsing and sentence embeddings on a GPU serverless endpoint.
-- **Setup:** `runpod/handler.py` is deployed as a RunPod Serverless Endpoint.
-- **Resources:** provided through the official SDC sponsor programme (declared in
-  the Technical Tools Declaration, Section 5).
-
-```bash
-curl -X POST https://api.runpod.ai/v2/$RUNPOD_ENDPOINT_ID/runsync \
-  -H "Authorization: Bearer $RUNPOD_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"input": {"text": "5 years customer service team lead, Excel, Zendesk"}}'
-```
-
-Proof of use: [`submission/RUNPOD PROOF OF USE.pdf`](submission/RUNPOD%20PROOF%20OF%20USE.pdf)
+This application does **not** call a RunPod endpoint. CV parsing is a local regex/alias extractor and every score is a deterministic rule set in `src/utils.py`, so the demo needs no GPU and no API key. `runpod/handler.py` is kept only as an optional deployment path for a future version and is not on the request path. This is declared in the Technical Tools Declaration, Section 5.
 
 ---
 
@@ -203,7 +187,7 @@ Proof of use: [`submission/RUNPOD PROOF OF USE.pdf`](submission/RUNPOD%20PROOF%2
 - [ ] Slide deck link added
 - [ ] Demo video link added
 - [x] Replit used, with proof of use in `submission/`
-- [x] RunPod used, with proof of use in `submission/`
+- [ ] RunPod — **not used**; CV parsing and scoring run locally in the app
 - [x] Submission template completed in `submission/`
 - [x] "How to Run" steps verified
 - [x] No API keys or secrets committed to the repository

@@ -1,38 +1,10 @@
-# pip runtime lock, resolved on Windows / Python 3.12, 2026-10-20.
-# Direct dependency: Streamlit. Transitive versions pinned for repeatability.
-# Replit/Linux installation is not yet verified.
-altair==6.3.0
-anyio==4.15.1
-attrs==26.1.0
-certifi==2026.10.19
-charset-normalizer==3.5.2
-click==8.5.0
-h11==0.16.0
-idna==3.20
-itsdangerous==2.2.0
-jinja2==3.1.6
-jsonschema==4.26.0
-jsonschema-specifications==2025.9.1
-markupsafe==3.0.4
-narwhals==2.27.1
-numpy==2.5.4
-packaging==26.3
-pandas==3.0.6
-pillow==12.3.0
-protobuf==7.36.2
-pyarrow==26.0.0
-pydeck==0.9.3
-python-dateutil==2.9.0.post0
-python-multipart==0.0.32
-referencing==0.37.0
-requests==2.34.2
-rpds-py==2026.9.1
-six==1.17.0
-starlette==1.9.0
-streamlit==1.66.0
-typing-extensions==4.16.0
-tzdata==2026.5
-urllib3==2.8.0
-uvicorn==0.54.0
-watchdog==6.0.0
-websockets==17.3
+# Runtime dependencies. Major versions only, so the app installs on any
+# Linux/Python 3.11-3.12 host (Replit, Streamlit Cloud, local) without wheels
+# that do not exist for the platform.
+streamlit>=1.30,<2
+pandas>=2.0,<4
+numpy>=1.24
+pyarrow>=14.0
+
+# Optional, only needed inside the RunPod container image (see runpod/requirements.txt).
+# runpod
