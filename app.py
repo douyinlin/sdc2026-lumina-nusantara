@@ -1215,9 +1215,11 @@ def screen_js_results() -> None:
             st.session_state.get("intern", 0),
         ))
 
+    # Section 2 stays open: the official DOSM counts and the named-skill evidence are
+    # the proof behind every recommendation, so they must be visible without a click.
     st.caption(copy_for(st.session_state.get("lang", "en"))["market_note"])
-    with st.expander(t["p2"], expanded=False):
-        trend_cards(t, trend, st.session_state.get('lang', 'en'))
+    st.subheader(t["p2"])
+    trend_cards(t, trend, st.session_state.get('lang', 'en'))
 
     st.subheader(t["p3"])
     scenario = st.radio(
