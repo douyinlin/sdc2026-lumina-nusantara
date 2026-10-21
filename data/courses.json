@@ -1,0 +1,88 @@
+{
+  "is_simulated": false,
+  "scope": "Malaysia-friendly free or low-cost providers",
+  "retrieved_at": "2026-10-21",
+  "extraction_note": "Course titles, providers, links and cost model were verified by opening each provider page on 2026-10-21. Estimated hours are the provider's published estimate where available, otherwise the provider's stated weekly commitment multiplied by its stated length. Fees change; the link is the source of truth.",
+  "courses": [
+    {
+      "skill": "data visualisation",
+      "title": "Google Data Analytics Professional Certificate",
+      "provider": "Coursera (Google)",
+      "hours": 180,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.coursera.org/professional-certificates/google-data-analytics"
+    },
+    {
+      "skill": "sql",
+      "title": "SQL Tutorial (interactive, full course)",
+      "provider": "freeCodeCamp",
+      "hours": 20,
+      "cost": "Free",
+      "url": "https://www.freecodecamp.org/learn/relational-database/"
+    },
+    {
+      "skill": "communication",
+      "title": "Communication Skills Professional Certificate",
+      "provider": "edX (Rochester Institute of Technology)",
+      "hours": 48,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.edx.org/certificates/professional-certificate/ritx-communication-skills"
+    },
+    {
+      "skill": "prompt engineering",
+      "title": "ChatGPT Prompt Engineering for Developers",
+      "provider": "DeepLearning.AI",
+      "hours": 2,
+      "cost": "Free",
+      "url": "https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/"
+    },
+    {
+      "skill": "machine learning",
+      "title": "Machine Learning Specialization",
+      "provider": "Coursera (DeepLearning.AI / Stanford)",
+      "hours": 60,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.coursera.org/specializations/machine-learning-introduction"
+    },
+    {
+      "skill": "excel",
+      "title": "Excel Skills for Business Specialization",
+      "provider": "Coursera (Macquarie University)",
+      "hours": 60,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.coursera.org/specializations/excel"
+    },
+    {
+      "skill": "python",
+      "title": "Python for Everybody Specialization",
+      "provider": "Coursera (University of Michigan)",
+      "hours": 90,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.coursera.org/specializations/python"
+    },
+    {
+      "skill": "cybersecurity",
+      "title": "Introduction to Cyber Security Specialization",
+      "provider": "Coursera (New York University)",
+      "hours": 40,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.coursera.org/specializations/intro-cyber-security"
+    },
+    {
+      "skill": "project management",
+      "title": "Google Project Management Professional Certificate",
+      "provider": "Coursera (Google)",
+      "hours": 150,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.coursera.org/professional-certificates/google-project-management"
+    },
+    {
+      "skill": "digital marketing",
+      "title": "Google Digital Marketing & E-commerce Certificate",
+      "provider": "Coursera (Google)",
+      "hours": 150,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.coursera.org/professional-certificates/google-digital-marketing-ecommerce"
+    }
+  ]
+}

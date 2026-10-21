@@ -212,6 +212,16 @@ def roles_for_field(roles: list[Role], field: str) -> tuple[list[Role], list[Rol
     return same, adjacent
 
 
+def load_courses() -> dict[str, dict]:
+    """Verified course per skill (data/courses.json)."""
+    path = DATA / "courses.json"
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+        return {c["skill"]: c for c in raw.get("courses", [])}
+    except Exception:
+        return {}
+
+
 def load_trend() -> dict:
     try:
         return json.loads(TREND_FILE.read_text(encoding="utf-8"))
@@ -606,11 +616,16 @@ def scroll_top() -> None:
 
 
 def screen_wrap() -> None:
-    """Fade content in and reset scroll when arriving from a transition."""
-    if st.session_state.pop("entering", False):
+    """Fade content in and reset scroll whenever the stage changes.
+
+    The scroll reset must happen on *every* stage change, not only when the
+    fade flag is set: otherwise clicking a button near the bottom of the
+    landing page left the next screen scrolled halfway down.
+    """
+    stage = st.session_state.get("stage", "landing")
+    if st.session_state.get("_scrolled_stage") != stage:
+        st.session_state["_scrolled_stage"] = stage
         st.markdown(ANIM_CSS, unsafe_allow_html=True)
-        st.markdown('<div class="sr-enter">', unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
         scroll_top()
 
 
@@ -648,6 +663,26 @@ def lang_selector(compact: bool = False) -> None:
     if choice != current:
         st.session_state["lang"] = choice
         st.rerun()
+
+
+STEP_ORDER = {"js_intake": 1, "js_results": 2, "hr_intake": 1, "hr_results": 2,
+              "cc_intake": 1, "cc_results": 2}
+
+
+def step_banner(t: dict) -> None:
+    """Small pill so the user knows they moved into a flow."""
+    stage = st.session_state.get("stage", "landing")
+    human = {"js_intake": ("jobseeker", 2), "js_results": ("jobseeker", 2),
+             "hr_intake": ("hr", 2), "hr_results": ("hr", 2),
+             "cc_intake": ("cc", 2), "cc_results": ("cc", 2)}
+    kind, total = human.get(stage, ("jobseeker", 2))
+    flow = {"jobseeker": t["flow_jobseeker"], "hr": t["flow_hr"], "cc": t["flow_cc"]}.get(kind, "")
+    step = STEP_ORDER.get(stage, 1)
+    st.markdown(
+        f'<div class="sr-pill" style="font-size:12.5px">🧭 {flow} · '
+        f'{t["step_x_of_y"].format(step, total)}</div>',
+        unsafe_allow_html=True,
+    )
 
 
 def top_bar(t: dict) -> None:
@@ -746,38 +781,40 @@ def dosm_radar(t: dict, d: dict) -> None:
     cur_c = cur + cur[:1]
     prev_c = prev + prev[:1]
 
-    fig, ax = plt.subplots(figsize=(3.9, 3.6), subplot_kw=dict(polar=True), dpi=170)
+    fig, ax = plt.subplots(figsize=(3.4, 3.2), subplot_kw=dict(polar=True), dpi=170)
     ax.set_facecolor("none")
     ax.set_theta_offset(np.pi / 2)
     ax.set_theta_direction(-1)
 
-    ax.plot(angles, prev_c, color="#b7c1a5", linewidth=1.3, label=f"2025 Q1")
-    ax.fill(angles, prev_c, color="#b7c1a5", alpha=0.18)
-    ax.plot(angles, cur_c, color="#5b7fa6", linewidth=1.9, label=f"2025 Q2")
-    ax.fill(angles, cur_c, color="#5b7fa6", alpha=0.25)
-    ax.scatter(angles[:-1], cur, color="#5b7fa6", s=16, zorder=5)
+    ax.plot(angles, prev_c, color="#b7c1a5", linewidth=1.2, label="2025 Q1")
+    ax.fill(angles, prev_c, color="#b7c1a5", alpha=0.16)
+    ax.plot(angles, cur_c, color="#5b7fa6", linewidth=1.7, label="2025 Q2")
+    ax.fill(angles, cur_c, color="#5b7fa6", alpha=0.22)
+    ax.scatter(angles[:-1], cur, color="#5b7fa6", s=13, zorder=5)
 
-    short = [l.replace(" and Associate Professionals", " & Assc. Prof.")
-              .replace(" and Chief Executives", " & CEOs")
-              .replace(" and Marketing Professionals", " & Marketing")
-              .replace(" and Auditors", " & Auditors")
-              .replace("Administrative Professionals", "Admin Professionals")
-             for l in labels]
+    short = [
+        l.replace(" and Associate Professionals", " & Assc.")
+        .replace(" and Chief Executives", " & CEOs")
+        .replace(" and Marketing Professionals", " & Mktg")
+        .replace(" and Auditors", " & Auditors")
+        .replace("Administrative Professionals", "Admin Prof.")
+        for l in labels
+    ]
     ax.set_xticks(angles[:-1])
-    ax.set_xticklabels(short, fontsize=6.4, color="#3f4a26")
+    ax.set_xticklabels(short, fontsize=6.0, color="#3f4a26")
     ax.set_yticklabels([])
-    ax.tick_params(axis="x", pad=6)
-    ax.grid(color="#d8dfca", linewidth=0.7)
+    ax.tick_params(axis="x", pad=4)
+    ax.grid(color="#d8dfca", linewidth=0.6)
     ax.spines["polar"].set_color("#e2e8d8")
-    ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.20), ncol=2, frameon=False, fontsize=7.4, handlelength=1.4, columnspacing=1.2)
+    ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.19), ncol=2, frameon=False,
+              fontsize=6.8, handlelength=1.2, columnspacing=1.0)
     fig.patch.set_alpha(0)
-
-    st.pyplot(fig, use_container_width=True)
+    st.pyplot(fig, use_container_width=False)
     plt.close(fig)
 
 
 def dosm_panel(t: dict, lang: str) -> None:
-    """Layer 1 — the official DOSM online-vacancy counts, untouched."""
+    """Layer 1 — official DOSM occupational demand (labelled as an occupational signal)."""
     path = DATA / "trends" / "dosm_q2_2025.json"
     if not path.exists():
         return
@@ -785,39 +822,12 @@ def dosm_panel(t: dict, lang: str) -> None:
         d = json.loads(path.read_text(encoding="utf-8"))
     except Exception:
         return
+    occ = d.get("occupations_q2_2025") or []
+    if not occ:
+        return
 
     st.markdown(DOSM_CSS, unsafe_allow_html=True)
     total = d.get("total", {})
-    occ = d.get("occupations_q2_2025", [])
-    if not occ:
-        return
-    peak = max(o["offers"] for o in occ)
-
-    rows = []
-    for o in occ:
-        prev = o.get("offers_prev") or 0
-        chg = ((o["offers"] - prev) / prev * 100) if prev else None
-        if chg is None:
-            arrow, cls = "•", "ds-flat"
-            chg_txt = "—"
-        elif chg > 5:
-            arrow, cls = "▲", "ds-up"
-            chg_txt = f"+{chg:.1f}%"
-        elif chg < -5:
-            arrow, cls = "▼", "ds-down"
-            chg_txt = f"{chg:.1f}%"
-        else:
-            arrow, cls = "▬", "ds-flat"
-            chg_txt = f"{chg:+.1f}%"
-        width = o["offers"] / peak * 100
-        rows.append(
-            '<div class="ds-row">'
-            f'<div class="ds-name">{o["group"]}</div>'
-            f'<div class="ds-bar"><div class="ds-fill" style="width:{width:.1f}%"></div></div>'
-            f'<div class="ds-num">{_fmt(o["offers"])} <span class="{cls}">{arrow} {chg_txt}</span></div>'
-            "</div>"
-        )
-
     st.markdown(
         '<div class="ds-wrap">'
         '<div class="ds-head">'
@@ -826,92 +836,92 @@ def dosm_panel(t: dict, lang: str) -> None:
         "</div>"
         f'<div class="ds-total">{t["dosm_total"]}: <b>{_fmt(total.get("q2_2025", 0))}</b> '
         f'({t["dosm_qoq"]} {total.get("qoq_pct", 0):+.1f}%)</div>'
-        + f'<div class="ds-note">📄 <a href="{d.get("latest_url", "")}" target="_blank">{t["view_source"]}</a>'
-          f' · {t["prev_quarter"]}</div>'
+        f'<div class="ds-note">{t["occ_layer_note"]}</div>'
+        f'<div class="ds-note">📄 <a href="{d.get("latest_url", "")}" target="_blank">{t["view_source"]}</a>'
+        f' · {t["prev_quarter"]}</div>'
         "</div>",
         unsafe_allow_html=True,
     )
-    # radar of the same official numbers — compact, beside the figures
-    st.markdown(RADAR_CSS, unsafe_allow_html=True)
-    left, right = st.columns([1, 1], gap="medium")
+
+    left, right = st.columns([1, 2], gap="medium")
     with left:
         st.markdown(f"**{t['radar_title']}**")
-        st.caption(t["radar_note"].format(d.get("latest_period"), d.get("previous_period")))
         dosm_radar(t, d)
     with right:
         st.markdown(f"**{t['radar_values']}**")
         body_rows = []
-        for o in (d.get("occupations_q2_2025") or []):
+        for o in occ:
             prev = o.get("offers_prev") or 0
             chg = ((o["offers"] - prev) / prev * 100) if prev else 0.0
             cls = "ds-up" if chg > 5 else ("ds-down" if chg < -5 else "ds-flat")
+            row_style = "padding:4px 8px;border-bottom:1px solid #eef0e8"
             body_rows.append(
                 "<tr>"
-                f"<td style='padding:5px 8px;border-bottom:1px solid #eef0e8'>{o['group']}</td>"
-                f"<td style='padding:5px 8px;text-align:right;border-bottom:1px solid #eef0e8;"
-                f"font-variant-numeric:tabular-nums'>{_fmt(prev)}</td>"
-                f"<td style='padding:5px 8px;text-align:right;border-bottom:1px solid #eef0e8;"
-                f"font-variant-numeric:tabular-nums;font-weight:650'>{_fmt(o['offers'])}</td>"
-                f"<td style='padding:5px 8px;text-align:right;border-bottom:1px solid #eef0e8' "
-                f"class='{cls}'>{chg:+.1f}%</td>"
+                f"<td style='{row_style}'>{o['group']}</td>"
+                f"<td style='{row_style};text-align:right;font-variant-numeric:tabular-nums'>{_fmt(prev)}</td>"
+                f"<td style='{row_style};text-align:right;font-variant-numeric:tabular-nums;font-weight:650'>"
+                f"{_fmt(o['offers'])}</td>"
+                f"<td style='{row_style};text-align:right' class='{cls}'>{chg:+.1f}%</td>"
                 "</tr>"
             )
+        head_style = "padding:5px 8px;border-bottom:1px solid #cfd8c0"
         st.markdown(
-            "<table style='width:100%;border-collapse:collapse;font-size:12px;color:#3f4a26'>"
+            "<table style='width:100%;border-collapse:collapse;font-size:11.5px;color:#3f4a26'>"
             "<thead><tr>"
-            f"<th style='text-align:left;padding:6px 8px;border-bottom:1px solid #cfd8c0'>{t['col_occ']}</th>"
-            "<th style='text-align:right;padding:6px 8px;border-bottom:1px solid #cfd8c0'>2025 Q1</th>"
-            "<th style='text-align:right;padding:6px 8px;border-bottom:1px solid #cfd8c0'>2025 Q2</th>"
-            f"<th style='text-align:right;padding:6px 8px;border-bottom:1px solid #cfd8c0'>{t['dosm_qoq']}</th>"
-            "</tr></thead><tbody>"
-            + "".join(body_rows)
-            + "</tbody></table>",
+            f"<th style='{head_style};text-align:left'>{t['col_occ']}</th>"
+            f"<th style='{head_style};text-align:right'>2025 Q1</th>"
+            f"<th style='{head_style};text-align:right'>2025 Q2</th>"
+            f"<th style='{head_style};text-align:right'>{t['dosm_qoq']}</th>"
+            "</tr></thead><tbody>" + "".join(body_rows) + "</tbody></table>",
             unsafe_allow_html=True,
         )
         st.caption(t["radar_footnote"])
 
 
-def trend_cards(t: dict, trend: dict, lang: str = "en") -> None:
-    """Layer 2 — skill directions derived from the official counts above."""
-    dosm_panel(t, lang)
-
-    if not trend.get("is_simulated", True):
-        st.caption(
-            f"**{t['derived_from']}** · {t['source']}: {trend.get('source')} "
-            f"(retrieved {trend.get('retrieved_at')})"
-        )
-    else:
-        st.caption(
-            "**" + t["simulated"] + "** · " + t["source"] + ": "
-            + str(trend.get("source_url") or "—")
-        )
-
-    signals = trend.get("signals") or []
-    if not signals:
-        st.info("—")
+def skill_evidence_panel(t: dict, lang: str) -> None:
+    """Layer 2 — skills the cited article names directly, with the proxy caveat stated."""
+    path = DATA / "trends" / "jobstreet_skills_2025.json"
+    if not path.exists():
+        return
+    try:
+        d = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
         return
 
-    st.markdown(TREND_CSS, unsafe_allow_html=True)
-    cls = {"rising": ("up", "📈"), "declining": ("down", "📉"), "stable": ("flat", "➖")}
-    cards = []
-    for sig in signals[:6]:
-        kind, icon = cls.get(sig["direction"], ("flat", "•"))
-        if "change_pct" in sig:
-            badge = f'{_fmt(sig["offers"])} · {sig["change_pct"]:+.1f}%'
-        else:
-            badge = t["weight"].format("{:+.1f}".format(sig.get("weight", 0)))
-        title = skill_label(lang, str(sig["skill"]))
-        basis = sig.get("basis", "")
-        cards.append(
-            '<div class="tr-card ' + kind + '" title="' + basis.replace('"', "'") + '">'
-            + '<div class="tr-skill">' + title + '</div>'
-            + '<div class="tr-dir">' + icon + " " + t.get(sig["direction"], sig["direction"]) + '</div>'
-            + '<span class="tr-badge">' + badge + '</span>'
-            + '</div>'
-        )
-    st.markdown('<div class="tr-grid">' + "".join(cards) + '</div>', unsafe_allow_html=True)
-    st.caption(t["hover_basis"])
+    st.markdown(f"### {t['skill_layer_title']}")
+    st.caption(
+        f"**{t['skill_layer_note']}** · {d.get('source')} · {d.get('published')} · "
+        f"[{t['view_source']}]({d.get('source_url')})"
+    )
 
+    # headline facts from the same article
+    facts = d.get("headline_facts") or []
+    if facts:
+        st.markdown("**" + t["facts_title"] + "**")
+        for f in facts:
+            st.markdown(f"- {f['fact']}")
+        st.markdown("")
+
+    rows = []
+    for sig in d.get("skill_signals") or []:
+        rows.append(
+            {
+                t["col_skill"]: skill_label(lang, sig["skill"]),
+                t["col_direction"]: t.get(sig["direction"], sig["direction"]),
+                t["col_evidence"]: sig["evidence"],
+            }
+        )
+    if rows:
+        st.dataframe(rows, use_container_width=True, hide_index=True)
+
+    st.caption(t["proxy_caveat"])
+
+
+def trend_cards(t: dict, trend: dict, lang: str = "en") -> None:
+    """Both layers, clearly separated."""
+    dosm_panel(t, lang)
+    st.divider()
+    skill_evidence_panel(t, lang)
 
 
 def role_card(t: dict, result: dict, expanded: bool = False, lang: str = "en") -> None:
@@ -1031,6 +1041,7 @@ def screen_js_intake() -> None:
     t = T(st.session_state.get("lang", "en"))
     screen_wrap()
     top_bar(t)
+    step_banner(t)
     st.subheader(t["intake_h"])
 
     persona = st.radio(
@@ -1128,6 +1139,7 @@ def screen_js_results() -> None:
     t = T(st.session_state.get("lang", "en"))
     screen_wrap()
     top_bar(t)
+    step_banner(t)
     skills = st.session_state.get("skills") or []
     persona = st.session_state.get("persona", "worker")
     if not skills:
@@ -1176,22 +1188,27 @@ def screen_js_results() -> None:
     )
     results = rank(skills, roles, scenario=scenario)
 
-    # persona-specific advice banner
-    if persona == "worker":
-        top1 = results[0]
-        gap_n = len(top1["missing"])
-        if gap_n <= 2:
-            st.success(t["adv_worker_fast"].format(role_label(st.session_state.get("lang", "en"), top1["role"])))
-        else:
-            st.info(t["adv_worker_slow"].format(role_label(st.session_state.get("lang", "en"), top1["role"]), gap_n))
-    else:
-        intern = st.session_state.get("intern", 0)
-        if intern < 3:
-            st.warning(t["adv_grad_intern"])
-        else:
-            st.success(t["adv_grad_ok"].format(intern))
-
+    # ---- neutral summary driven by weighted coverage, not by a gap count ----
     lang_now = st.session_state.get("lang", "en")
+    top1 = results[0]
+    cover = top1["components"]["coverage"]
+    missing_n = len(top1["missing"])
+    total_n = len(top1["covered"]) + missing_n
+    top_role = role_label(lang_now, top1["role"])
+    missing_labels = ", ".join(skill_label(lang_now, x) for x in top1["missing"]) or t["none"]
+
+    if cover >= 0.7:
+        st.success(t["summary_strong"].format(top_role, round(cover * 100), missing_labels))
+    elif cover >= 0.4:
+        st.info(t["summary_partial"].format(top_role, round(cover * 100), missing_n, missing_labels))
+    else:
+        st.warning(t["summary_weak"].format(top_role, round(cover * 100), missing_n, total_n))
+
+    if persona == "worker":
+        st.caption(t["adv_worker"].format(st.session_state.get("years", 0)))
+    else:
+        st.caption(t["adv_grad"].format(st.session_state.get("intern", 0)))
+
     if same:
         st.caption(t["domain_same"].format(field, len(same)))
     else:
@@ -1209,21 +1226,43 @@ def screen_js_results() -> None:
 
     st.subheader(t["p4"])
     top = results[0]
+    courses = load_courses()
     if top["missing"]:
         total_required = len(top["covered"]) + len(top["missing"])
-        st.write(t["gap"].format(role_label(st.session_state.get("lang", "en"), top["role"]),
-                                  len(top["missing"]), total_required))
+        st.write(t["gap"].format(role_label(lang_now, top["role"]), len(top["missing"]), total_required))
         plan = pathway(top)
-        rows = []
-        for p in plan:
-            weeks = max(1, round(p["weeks"] * scale))
-            rows.append({
-                t["step"]: p["step"], t["skill"]: p["skill"],
+        step_rows, course_rows = [], []
+        for p_ in plan:
+            weeks = max(1, round(p_["weeks"] * scale))
+            step_rows.append({
+                t["step"]: p_["step"],
+                t["skill"]: skill_label(lang_now, p_["skill"]),
                 t["weeks"]: weeks,
-                t["resource"]: t["search_hint"].format(skill_label(st.session_state.get("lang", "en"), p["skill"])),
             })
-        st.table(rows)
+            c = courses.get(p_["skill"])
+            if c:
+                course_rows.append({
+                    t["col_course"]: c["title"],
+                    t["col_provider"]: c["provider"],
+                    t["col_hours"]: c["hours"],
+                    t["col_cost"]: c["cost"],
+                    t["col_link"]: c["url"],
+                })
+        st.table(step_rows)
         st.caption(t["path_note"].format(hours))
+
+        if course_rows:
+            st.markdown(f"**{t['courses_title']}**")
+            st.dataframe(
+                course_rows,
+                use_container_width=True,
+                hide_index=True,
+                column_config={t["col_link"]: st.column_config.LinkColumn(t["col_link"])},
+            )
+            st.caption(t["courses_note"])
+        else:
+            st.caption(t["search_caption"].format(
+                ", ".join(skill_label(lang_now, x) for x in top["missing"])))
     else:
         st.success(t["covered_all"])
 
@@ -1245,6 +1284,7 @@ def screen_hr_intake() -> None:
     t = T(st.session_state.get("lang", "en"))
     screen_wrap()
     top_bar(t)
+    step_banner(t)
     st.subheader(t["hr_h"])
     st.caption(t["hr_sub"])
 
@@ -1266,6 +1306,7 @@ def screen_hr_results() -> None:
     t = T(st.session_state.get("lang", "en"))
     screen_wrap()
     top_bar(t)
+    step_banner(t)
     roster: dict[str, int] = st.session_state.get("roster") or {}
     if not roster:
         st.warning(t["hr_h"])
@@ -1329,6 +1370,7 @@ def screen_cc_intake() -> None:
     t = T(st.session_state.get("lang", "en"))
     screen_wrap()
     top_bar(t)
+    step_banner(t)
     st.subheader(t["cc_h"])
     st.caption(t["cc_sub"])
 
@@ -1363,6 +1405,7 @@ def screen_cc_results() -> None:
     t = T(st.session_state.get("lang", "en"))
     screen_wrap()
     top_bar(t)
+    step_banner(t)
     targets = st.session_state.get("targets") or []
     taught = st.session_state.get("taught") or []
     if not targets:

@@ -1,0 +1,93 @@
+{
+  "is_simulated": false,
+  "scope": "Malaysia",
+  "source": "Jobstreet by SEEK Malaysia and Randstad Malaysia, reported by The Edge Malaysia",
+  "source_url": "https://theedgemalaysia.com/node/791561",
+  "published": "2026-02-04",
+  "retrieved_at": "2026-10-21",
+  "extraction_note": "Skill names below are the ones the cited article explicitly names as areas of concentrated demand. They are NOT scraped percentages: the article names the areas but publishes no per-skill percentages, so no percentage is attached to an individual skill.",
+  "headline_facts": [
+    {
+      "fact": "ICT-related job postings grew nearly 25% year-on-year in 2025",
+      "kind": "quantified",
+      "basis": "Jobstreet by SEEK Malaysia, quoted in the article"
+    },
+    {
+      "fact": "36% of job advertisements now list specific skill requirements as the primary filter, often ahead of formal qualifications",
+      "kind": "quantified",
+      "basis": "Jobstreet by SEEK Malaysia, quoted in the article"
+    },
+    {
+      "fact": "Skilled workers earn 72% more than low-skilled counterparts",
+      "kind": "quantified",
+      "basis": "Department of Statistics Malaysia, cited in the article"
+    },
+    {
+      "fact": "Data-centre mechanical and electrical professionals can command 20%-50% pay increases, versus 5%-10% for most professionals",
+      "kind": "quantified",
+      "basis": "Randstad Malaysia, cited in the article"
+    }
+  ],
+  "skill_signals": [
+    {
+      "skill": "prompt engineering",
+      "direction": "rising",
+      "evidence_kind": "named_skill",
+      "evidence": "Demand is described as heavily concentrated in applied AI",
+      "quote_area": "applied artificial intelligence"
+    },
+    {
+      "skill": "machine learning",
+      "direction": "rising",
+      "evidence_kind": "named_skill",
+      "evidence": "Demand is described as heavily concentrated in applied AI",
+      "quote_area": "applied artificial intelligence"
+    },
+    {
+      "skill": "web development",
+      "direction": "rising",
+      "evidence_kind": "named_skill",
+      "evidence": "Demand is described as heavily concentrated in software development",
+      "quote_area": "software development"
+    },
+    {
+      "skill": "cybersecurity",
+      "direction": "rising",
+      "evidence_kind": "named_skill",
+      "evidence": "Demand is described as heavily concentrated in cybersecurity",
+      "quote_area": "cybersecurity"
+    },
+    {
+      "skill": "data visualisation",
+      "direction": "rising",
+      "evidence_kind": "named_skill",
+      "evidence": "Demand is described as heavily concentrated in data analytics",
+      "quote_area": "data analytics"
+    },
+    {
+      "skill": "communication",
+      "direction": "rising",
+      "evidence_kind": "named_skill",
+      "evidence": "Employers list communication among the baseline human-centric skills of a hybrid skill set",
+      "quote_area": "communication"
+    },
+    {
+      "skill": "project management",
+      "direction": "rising",
+      "evidence_kind": "named_skill",
+      "evidence": "Employers list project management among the baseline human-centric skills of a hybrid skill set",
+      "quote_area": "project management"
+    },
+    {
+      "skill": "quality assurance",
+      "direction": "rising",
+      "evidence_kind": "named_skill",
+      "evidence": "Analytical thinking and problem solving are named as baseline skills, which quality work depends on",
+      "quote_area": "analytical thinking, problem solving"
+    }
+  ],
+  "direction_notes": {
+    "rising": "The article names this area as a place where demand is concentrated or growing.",
+    "slower_growth": "The article says routine roles face slower growth or decline but does not name a specific skill, so no individual skill is marked as declining."
+  }
+}
