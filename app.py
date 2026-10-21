@@ -746,16 +746,16 @@ def dosm_radar(t: dict, d: dict) -> None:
     cur_c = cur + cur[:1]
     prev_c = prev + prev[:1]
 
-    fig, ax = plt.subplots(figsize=(6.4, 5.2), subplot_kw=dict(polar=True), dpi=150)
+    fig, ax = plt.subplots(figsize=(3.9, 3.6), subplot_kw=dict(polar=True), dpi=170)
     ax.set_facecolor("none")
     ax.set_theta_offset(np.pi / 2)
     ax.set_theta_direction(-1)
 
-    ax.plot(angles, prev_c, color="#b7c1a5", linewidth=1.6, label=f"2025 Q1")
+    ax.plot(angles, prev_c, color="#b7c1a5", linewidth=1.3, label=f"2025 Q1")
     ax.fill(angles, prev_c, color="#b7c1a5", alpha=0.18)
-    ax.plot(angles, cur_c, color="#5b7fa6", linewidth=2.2, label=f"2025 Q2")
+    ax.plot(angles, cur_c, color="#5b7fa6", linewidth=1.9, label=f"2025 Q2")
     ax.fill(angles, cur_c, color="#5b7fa6", alpha=0.25)
-    ax.scatter(angles[:-1], cur, color="#5b7fa6", s=26, zorder=5)
+    ax.scatter(angles[:-1], cur, color="#5b7fa6", s=16, zorder=5)
 
     short = [l.replace(" and Associate Professionals", " & Assc. Prof.")
               .replace(" and Chief Executives", " & CEOs")
@@ -764,12 +764,12 @@ def dosm_radar(t: dict, d: dict) -> None:
               .replace("Administrative Professionals", "Admin Professionals")
              for l in labels]
     ax.set_xticks(angles[:-1])
-    ax.set_xticklabels([f"{s}\n{v:,}" for s, v in zip(short, cur)], fontsize=7.6, color="#3f4a26")
+    ax.set_xticklabels(short, fontsize=6.4, color="#3f4a26")
     ax.set_yticklabels([])
-    ax.tick_params(axis="x", pad=12)
+    ax.tick_params(axis="x", pad=6)
     ax.grid(color="#d8dfca", linewidth=0.7)
     ax.spines["polar"].set_color("#e2e8d8")
-    ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.14), ncol=2, frameon=False, fontsize=8.4)
+    ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.20), ncol=2, frameon=False, fontsize=7.4, handlelength=1.4, columnspacing=1.2)
     fig.patch.set_alpha(0)
 
     st.pyplot(fig, use_container_width=True)
@@ -831,11 +831,44 @@ def dosm_panel(t: dict, lang: str) -> None:
         "</div>",
         unsafe_allow_html=True,
     )
-    # radar of the same official numbers
+    # radar of the same official numbers — compact, beside the figures
     st.markdown(RADAR_CSS, unsafe_allow_html=True)
-    st.markdown(f"**{t['radar_title']}**")
-    st.caption(t["radar_note"].format(d.get("latest_period"), d.get("previous_period")))
-    dosm_radar(t, d)
+    left, right = st.columns([1, 1], gap="medium")
+    with left:
+        st.markdown(f"**{t['radar_title']}**")
+        st.caption(t["radar_note"].format(d.get("latest_period"), d.get("previous_period")))
+        dosm_radar(t, d)
+    with right:
+        st.markdown(f"**{t['radar_values']}**")
+        body_rows = []
+        for o in (d.get("occupations_q2_2025") or []):
+            prev = o.get("offers_prev") or 0
+            chg = ((o["offers"] - prev) / prev * 100) if prev else 0.0
+            cls = "ds-up" if chg > 5 else ("ds-down" if chg < -5 else "ds-flat")
+            body_rows.append(
+                "<tr>"
+                f"<td style='padding:5px 8px;border-bottom:1px solid #eef0e8'>{o['group']}</td>"
+                f"<td style='padding:5px 8px;text-align:right;border-bottom:1px solid #eef0e8;"
+                f"font-variant-numeric:tabular-nums'>{_fmt(prev)}</td>"
+                f"<td style='padding:5px 8px;text-align:right;border-bottom:1px solid #eef0e8;"
+                f"font-variant-numeric:tabular-nums;font-weight:650'>{_fmt(o['offers'])}</td>"
+                f"<td style='padding:5px 8px;text-align:right;border-bottom:1px solid #eef0e8' "
+                f"class='{cls}'>{chg:+.1f}%</td>"
+                "</tr>"
+            )
+        st.markdown(
+            "<table style='width:100%;border-collapse:collapse;font-size:12px;color:#3f4a26'>"
+            "<thead><tr>"
+            f"<th style='text-align:left;padding:6px 8px;border-bottom:1px solid #cfd8c0'>{t['col_occ']}</th>"
+            "<th style='text-align:right;padding:6px 8px;border-bottom:1px solid #cfd8c0'>2025 Q1</th>"
+            "<th style='text-align:right;padding:6px 8px;border-bottom:1px solid #cfd8c0'>2025 Q2</th>"
+            f"<th style='text-align:right;padding:6px 8px;border-bottom:1px solid #cfd8c0'>{t['dosm_qoq']}</th>"
+            "</tr></thead><tbody>"
+            + "".join(body_rows)
+            + "</tbody></table>",
+            unsafe_allow_html=True,
+        )
+        st.caption(t["radar_footnote"])
 
 
 def trend_cards(t: dict, trend: dict, lang: str = "en") -> None:
