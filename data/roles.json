@@ -1,0 +1,54 @@
+{
+  "is_simulated": true,
+  "note": "Team-curated role catalogue. Skill requirements are modelled on O*NET / ESCO occupation skill lists but are a hand-curated subset, not an official extract. Trend values are simulated for the demo.",
+  "roles": [
+    {"name": "AI Operations Specialist", "domain": "it", "level": "mid", "required_skills": ["prompt engineering", "data visualisation", "sql", "customer support"], "trend": 0.8, "sdg": ["4.4", "8.5"]},
+    {"name": "Data Steward", "domain": "it", "level": "entry", "required_skills": ["sql", "excel", "data visualisation"], "trend": 0.1, "sdg": ["9.1", "8.5"]},
+    {"name": "Machine Learning Engineer", "domain": "it", "level": "senior", "required_skills": ["python", "machine learning", "sql"], "trend": 0.9, "sdg": ["9.1", "4.4"]},
+    {"name": "Cloud Support Engineer", "domain": "it", "level": "mid", "required_skills": ["cloud", "it support", "cybersecurity"], "trend": 0.6, "sdg": ["9.1"]},
+    {"name": "Application Support Analyst", "domain": "it", "level": "entry", "required_skills": ["it support", "sql", "communication"], "trend": 0.2, "sdg": ["8.5"]},
+    {"name": "Cybersecurity Analyst", "domain": "it", "level": "mid", "required_skills": ["cybersecurity", "python", "reporting"], "trend": 0.7, "sdg": ["9.1", "8.5"]},
+    {"name": "Web Developer", "domain": "it", "level": "entry", "required_skills": ["web development", "python", "ui ux"], "trend": 0.4, "sdg": ["9.1"]},
+
+    {"name": "Clinical Data Coordinator", "domain": "health", "level": "entry", "required_skills": ["patient care", "clinic admin", "data entry"], "trend": 0.3, "sdg": ["3.8", "4.4"]},
+    {"name": "AI Clinical Support Specialist", "domain": "health", "level": "mid", "required_skills": ["patient care", "prompt engineering", "data visualisation"], "trend": 0.8, "sdg": ["3.8", "9.1"]},
+    {"name": "Health Informatics Officer", "domain": "health", "level": "mid", "required_skills": ["clinic admin", "sql", "reporting"], "trend": 0.6, "sdg": ["3.8", "9.1"]},
+    {"name": "Medical Records Officer", "domain": "health", "level": "entry", "required_skills": ["documentation", "clinic admin", "quality assurance"], "trend": 0.0, "sdg": ["3.8"]},
+    {"name": "Care Coordinator", "domain": "health", "level": "entry", "required_skills": ["patient care", "communication", "counselling"], "trend": 0.2, "sdg": ["3.8", "8.5"]},
+    {"name": "Public Health Programme Officer", "domain": "health", "level": "mid", "required_skills": ["research", "reporting", "stakeholder management"], "trend": 0.3, "sdg": ["3.8", "4.4"]},
+
+    {"name": "Business Operations Associate", "domain": "business", "level": "entry", "required_skills": ["excel", "communication", "basic statistics"], "trend": 0.1, "sdg": ["8.5"]},
+    {"name": "Customer Success Analyst", "domain": "business", "level": "entry", "required_skills": ["crm administration", "data visualisation", "sql"], "trend": 0.2, "sdg": ["8.5", "4.4"]},
+    {"name": "Process Automation Lead", "domain": "business", "level": "mid", "required_skills": ["excel", "python", "project management", "prompt engineering"], "trend": 0.5, "sdg": ["8.2", "9.1"]},
+    {"name": "Product Manager (AI)", "domain": "business", "level": "senior", "required_skills": ["product management", "project management", "prompt engineering"], "trend": 0.6, "sdg": ["8.2", "4.4"]},
+    {"name": "Financial Analyst", "domain": "business", "level": "entry", "required_skills": ["financial modelling", "excel", "financial reporting"], "trend": 0.2, "sdg": ["8.5"]},
+    {"name": "Accounts Executive", "domain": "business", "level": "entry", "required_skills": ["bookkeeping", "excel", "reporting"], "trend": 0.0, "sdg": ["8.5"]},
+    {"name": "HR Operations Officer", "domain": "business", "level": "entry", "required_skills": ["hr operations", "communication", "excel"], "trend": 0.1, "sdg": ["8.5", "5.1"]},
+    {"name": "Talent Acquisition Partner", "domain": "business", "level": "mid", "required_skills": ["recruitment", "communication", "negotiation"], "trend": 0.2, "sdg": ["8.5"]},
+
+    {"name": "Mechanical Design Engineer", "domain": "engineering", "level": "mid", "required_skills": ["machine operation", "quality assurance", "project management"], "trend": 0.2, "sdg": ["9.1"]},
+    {"name": "Manufacturing Process Engineer", "domain": "engineering", "level": "mid", "required_skills": ["lean", "quality assurance", "process improvement"], "trend": 0.3, "sdg": ["9.1", "8.2"]},
+    {"name": "Maintenance Technician", "domain": "engineering", "level": "entry", "required_skills": ["machine operation", "osh", "quality assurance"], "trend": 0.0, "sdg": ["8.5"]},
+    {"name": "Smart Factory Analyst", "domain": "engineering", "level": "mid", "required_skills": ["data visualisation", "python", "lean"], "trend": 0.7, "sdg": ["9.1", "8.2"]},
+    {"name": "Safety and Compliance Officer", "domain": "engineering", "level": "mid", "required_skills": ["osh", "compliance", "reporting"], "trend": 0.1, "sdg": ["8.8"]},
+    {"name": "Logistics Coordinator", "domain": "engineering", "level": "entry", "required_skills": ["logistics", "inventory", "excel"], "trend": 0.1, "sdg": ["8.5"]},
+
+    {"name": "Digital Marketing Executive", "domain": "design", "level": "entry", "required_skills": ["digital marketing", "content", "copywriting"], "trend": 0.3, "sdg": ["8.5"]},
+    {"name": "UX Designer", "domain": "design", "level": "entry", "required_skills": ["ui ux", "graphic design", "research"], "trend": 0.5, "sdg": ["9.1", "4.4"]},
+    {"name": "Content Producer", "domain": "design", "level": "entry", "required_skills": ["content", "video editing", "copywriting"], "trend": 0.2, "sdg": ["8.5"]},
+    {"name": "Brand Designer", "domain": "design", "level": "mid", "required_skills": ["graphic design", "copywriting", "presentation"], "trend": 0.1, "sdg": ["8.5"]},
+
+    {"name": "Corporate Trainer", "domain": "education", "level": "mid", "required_skills": ["teaching", "presentation", "coaching"], "trend": 0.2, "sdg": ["4.4", "8.5"]},
+    {"name": "Instructional Designer", "domain": "education", "level": "mid", "required_skills": ["teaching", "content", "ui ux"], "trend": 0.5, "sdg": ["4.4"]},
+    {"name": "Student Success Adviser", "domain": "education", "level": "entry", "required_skills": ["counselling", "communication", "documentation"], "trend": 0.2, "sdg": ["4.4", "4.3"]},
+    {"name": "Education Technology Officer", "domain": "education", "level": "entry", "required_skills": ["it support", "teaching", "data visualisation"], "trend": 0.4, "sdg": ["4.4", "9.1"]},
+
+    {"name": "Legal Executive", "domain": "law", "level": "entry", "required_skills": ["contract review", "documentation", "compliance"], "trend": 0.1, "sdg": ["16.3"]},
+    {"name": "Compliance Analyst", "domain": "law", "level": "mid", "required_skills": ["compliance", "reporting", "research"], "trend": 0.4, "sdg": ["16.3", "8.5"]},
+    {"name": "Contracts and Tender Officer", "domain": "law", "level": "entry", "required_skills": ["contract review", "negotiation", "documentation"], "trend": 0.0, "sdg": ["16.3"]},
+
+    {"name": "Hotel Operations Supervisor", "domain": "hospitality", "level": "mid", "required_skills": ["customer support", "team lead", "inventory"], "trend": 0.0, "sdg": ["8.5"]},
+    {"name": "Guest Experience Analyst", "domain": "hospitality", "level": "entry", "required_skills": ["customer support", "data visualisation", "communication"], "trend": 0.3, "sdg": ["8.5", "4.4"]},
+    {"name": "F&B Operations Executive", "domain": "hospitality", "level": "entry", "required_skills": ["customer support", "logistics", "excel"], "trend": -0.1, "sdg": ["8.5"]}
+  ]
+}

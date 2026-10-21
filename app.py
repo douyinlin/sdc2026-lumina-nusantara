@@ -155,13 +155,62 @@ DEFAULT_ROLES = [
 # Data loading
 # --------------------------------------------------------------------------- #
 
+ROLE_META: dict[str, dict] = {}
+
+FIELD_DOMAIN = {
+    "Business": "business",
+    "Computing / IT": "it",
+    "Engineering": "engineering",
+    "Health Sciences": "health",
+    "Education": "education",
+    "Design / Media": "design",
+    "Hospitality": "hospitality",
+    "Law": "law",
+}
+
+# Which neighbouring domains are still a credible move from each field.
+ADJACENT = {
+    "health": ["education", "business"],
+    "it": ["business", "engineering"],
+    "business": ["it", "law"],
+    "engineering": ["it", "business"],
+    "education": ["design", "business"],
+    "design": ["business", "education"],
+    "hospitality": ["business", "education"],
+    "law": ["business"],
+}
+
+
 def load_roles() -> list[Role]:
-    path = DATA / "experimental.json"
+    """Load the curated catalogue (data/roles.json) with domain metadata."""
+    path = DATA / "roles.json"
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
-        return [Role(**r) for r in raw["roles"]]
+        roles = []
+        ROLE_META.clear()
+        for r in raw["roles"]:
+            role = Role(r["name"], r["required_skills"], r["trend"], r["sdg"])
+            roles.append(role)
+            ROLE_META[r["name"]] = {"domain": r.get("domain", "business"), "level": r.get("level", "mid")}
+        return roles
     except Exception:
+        for r in DEFAULT_ROLES:
+            ROLE_META[r.name] = {"domain": "business", "level": "mid"}
         return DEFAULT_ROLES
+
+
+def roles_for_field(roles: list[Role], field: str) -> tuple[list[Role], list[Role]]:
+    """Split roles into (same field, adjacent field) for a study field."""
+    primary = FIELD_DOMAIN.get(field, "business")
+    near = ADJACENT.get(primary, [])
+    same, adjacent = [], []
+    for r in roles:
+        dom = ROLE_META.get(r.name, {}).get("domain", "business")
+        if dom == primary:
+            same.append(r)
+        elif dom in near:
+            adjacent.append(r)
+    return same, adjacent
 
 
 def load_trend() -> dict:
@@ -838,9 +887,17 @@ def screen_js_results() -> None:
         return
 
     trend = load_trend()
-    roles = apply_trend(load_roles(), trend)
+    all_roles = apply_trend(load_roles(), trend)
     hours = st.session_state.get("hours", 8)
     scale = 8.0 / max(hours, 1)
+
+    # Domain-aware filtering: never recommend a role from an unrelated field.
+    field = st.session_state.get("field", "Business")
+    same, adjacent = roles_for_field(all_roles, field)
+    pool = same if same else adjacent
+    if not pool:
+        pool = all_roles
+    roles = pool
 
     st.subheader(t["p1"])
     st.write(", ".join(sorted(set(skills))))
@@ -880,9 +937,17 @@ def screen_js_results() -> None:
         else:
             st.success(t["adv_grad_ok"].format(intern))
 
+    lang_now = st.session_state.get("lang", "en")
+    if same:
+        st.caption(t["domain_same"].format(field, len(same)))
+    else:
+        st.caption(t["domain_adjacent"].format(field))
     st.caption(t["ranked_note"])
     for i, r in enumerate(results[:4]):
-        role_card(t, r, expanded=(i == 0), lang=st.session_state.get('lang', 'en'))
+        dom = ROLE_META.get(r["role"], {}).get("domain", "")
+        badge = t["badge_same"] if dom == FIELD_DOMAIN.get(field) else t["badge_adjacent"]
+        st.caption(badge) if i == 0 else None
+        role_card(t, r, expanded=(i == 0), lang=lang_now)
 
     st.subheader(t["p4"])
     top = results[0]
