@@ -170,6 +170,7 @@ STRINGS = {
         "cc_complete": "Your programme already covers every required skill for these roles.",
         "cc_roles": "Target roles",
         "cc_foot": "Synthetic demo data only — no student records are collected or stored.",
+        "step": "Step", "weeks": "Weeks", "resource": "Resource",
         "search_hint": "HRD Corp directory search: {}",
     },
     "zh": {
@@ -332,6 +333,7 @@ STRINGS = {
         "cc_complete": "你的课程已经覆盖这些岗位的全部要求技能。",
         "cc_roles": "目标岗位",
         "cc_foot": "仅为合成演示数据 —— 不采集、不存储任何学生记录。",
+        "step": "步骤", "weeks": "周数", "resource": "资源",
         "search_hint": "HRD Corp 目录搜索：{}",
     },
     "ms": {
@@ -421,6 +423,7 @@ STRINGS = {
         "weight": "pemberat {}",
         "error": "Ada masalah pada langkah ini. Tiada apa-apa disimpan.",
         "back_start": "← Kembali ke mula",
+        "step": "Langkah", "weeks": "Minggu", "resource": "Sumber",
         "search_hint": "Carian direktori HRD Corp: {}",
         "brand": "📡 SkillRadar MY",
         "flow_s": "Ceritakan diri anda → lihat isyarat trend bertarikh → dapatkan padanan peranan → ikut laluan latihan semula yang dipetakan kepada SDG",
