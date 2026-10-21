@@ -1,15 +1,82 @@
 {
-  "is_simulated": true,
-  "source_url": null,
-  "report_published": null,
-  "retrieved_at": null,
-  "note": "SIMULATED / 模拟数据：权重由团队人工设定，方向灵感来自 WEF Future of Jobs 2025，但并未抓取任何官方数据，也不代表 WEF 的数值。演示前请替换为真实抓取结果。",
+  "is_simulated": false,
+  "derived": true,
+  "method": "Each skill direction is DERIVED from the DOSM online-vacancy counts in dosm_q2_2025.json. The link from an occupational group to a skill is our own mapping, stated in `basis` for every row.",
+  "source": "DOSM Big Data Analytics: Job Market Insights, 2025 Q2 (released 2026-02-26)",
+  "source_url": "https://www.dosm.gov.my/portal-main/release-content/big-data-analytics-job-market-insights-and-my-job-profile-second-quarter-of-",
+  "retrieved_at": "2026-10-21",
   "signals": [
-    { "skill": "prompt engineering", "direction": "rising", "weight": 0.4 },
-    { "skill": "machine learning", "direction": "rising", "weight": 0.5 },
-    { "skill": "data visualisation", "direction": "rising", "weight": 0.2 },
-    { "skill": "sql", "direction": "stable", "weight": 0.1 },
-    { "skill": "excel", "direction": "stable", "weight": 0.0 },
-    { "skill": "customer support", "direction": "declining", "weight": -0.3 }
+    {
+      "skill": "data visualisation",
+      "direction": "rising",
+      "basis": "Professional, Scientific and Technical Activities: 26,441 offers in 2025 Q2 vs 25,238 in Q1 (+4.8%)",
+      "occupation": "Professional, Scientific and Technical Activities",
+      "offers": 26441,
+      "offers_prev": 25238,
+      "change_pct": 4.8
+    },
+    {
+      "skill": "digital marketing",
+      "direction": "stable",
+      "basis": "Advertising and Marketing Professionals: 21,663 offers in 2025 Q2 vs 21,411 in Q1 (+1.2%)",
+      "occupation": "Advertising and Marketing Professionals",
+      "offers": 21663,
+      "offers_prev": 21411,
+      "change_pct": 1.2
+    },
+    {
+      "skill": "prompt engineering",
+      "direction": "rising",
+      "basis": "Technicians and Associate Professionals: 63,803 offers in 2025 Q2 vs 42,382 in Q1 (+50.5%) - the largest jump in the release",
+      "occupation": "Technicians and Associate Professionals",
+      "offers": 63803,
+      "offers_prev": 42382,
+      "change_pct": 50.5
+    },
+    {
+      "skill": "sql",
+      "direction": "rising",
+      "basis": "Administrative Associate Professionals: 34,034 offers in 2025 Q2 vs 13,001 in Q1 (+161.8%)",
+      "occupation": "Administrative Associate Professionals",
+      "offers": 34034,
+      "offers_prev": 13001,
+      "change_pct": 161.8
+    },
+    {
+      "skill": "bookkeeping",
+      "direction": "stable",
+      "basis": "Accountants and Auditors: 9,990 offers in 2025 Q2 vs 9,462 in Q1 (+5.6%)",
+      "occupation": "Accountants and Auditors",
+      "offers": 9990,
+      "offers_prev": 9462,
+      "change_pct": 5.6
+    },
+    {
+      "skill": "reporting",
+      "direction": "stable",
+      "basis": "Administrative Professionals: 7,544 offers in 2025 Q2 vs 7,996 in Q1 (-5.7%)",
+      "occupation": "Administrative Professionals",
+      "offers": 7544,
+      "offers_prev": 7996,
+      "change_pct": -5.7
+    },
+    {
+      "skill": "customer support",
+      "direction": "stable",
+      "basis": "Wholesale and Retail Trade: 44,927 offers in 2025 Q2 vs 38,061 in Q1 (+18.0%)",
+      "occupation": "Wholesale and Retail Trade",
+      "offers": 44927,
+      "offers_prev": 38061,
+      "change_pct": 18.0
+    },
+    {
+      "skill": "team lead",
+      "direction": "stable",
+      "basis": "Managers: 48,864 offers in 2025 Q2 vs 46,638 in Q1 (+4.8%)",
+      "occupation": "Managers",
+      "offers": 48864,
+      "offers_prev": 46638,
+      "change_pct": 4.8
+    }
   ]
 }

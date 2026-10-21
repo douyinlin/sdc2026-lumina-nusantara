@@ -1,0 +1,34 @@
+{
+  "source": "Department of Statistics Malaysia (DOSM) — Big Data Analytics: Job Market Insights and My Job Profile",
+  "publisher": "DOSM",
+  "publisher_url": "https://www.dosm.gov.my",
+  "dataset": "Online job offerings advertised through major private recruitment platforms",
+  "is_simulated": false,
+  "manually_entered": true,
+  "extraction_note": "Numbers transcribed by the team from the official DOSM release pages on 2026-10-21. No scraping; figures are as published by DOSM.",
+  "latest_period": "2025 Q2",
+  "latest_released": "2026-02-26",
+  "latest_url": "https://www.dosm.gov.my/portal-main/release-content/big-data-analytics-job-market-insights-and-my-job-profile-second-quarter-of-",
+  "previous_period": "2025 Q1",
+  "previous_released": "2026-01-30",
+  "previous_url": "https://www.dosm.gov.my/portal-main/release-content/big-data-analytics-job-market-insights-and-my-job-profile-first-q12025",
+  "total": {"q2_2025": 281736, "q1_2025": 263083, "qoq_pct": 7.1, "published_change": "increased 7.1% vs Q1 2025"},
+  "occupations_q2_2025": [
+    {"group": "Technicians and Associate Professionals", "offers": 63803, "offers_prev": 42382},
+    {"group": "Managers", "offers": 48864, "offers_prev": 46638},
+    {"group": "Administrative Associate Professionals", "offers": 34034, "offers_prev": 13001},
+    {"group": "Advertising and Marketing Professionals", "offers": 21663, "offers_prev": 21411},
+    {"group": "Managing Directors and Chief Executives", "offers": 12954, "offers_prev": 13088},
+    {"group": "Accountants and Auditors", "offers": 9990, "offers_prev": 9462},
+    {"group": "Administrative Professionals", "offers": 7544, "offers_prev": 7996}
+  ],
+  "sectors_q2_2025": [
+    {"sector": "Wholesale and Retail Trade", "offers": 44927, "offers_prev": 38061},
+    {"sector": "Professional, Scientific and Technical Activities", "offers": 26441, "offers_prev": 25238},
+    {"sector": "Administrative and Support Service Activities", "offers": 25673, "offers_prev": 25723},
+    {"sector": "Financial and Insurance / Takaful Activities", "offers": 22266, "offers_prev": 18917},
+    {"sector": "Manufacturing", "offers": 20816, "offers_prev": 17108}
+  ],
+  "professionals_share_q2_2025": 0.458,
+  "services_share_q2_2025": 0.647
+}

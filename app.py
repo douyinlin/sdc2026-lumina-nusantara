@@ -220,13 +220,34 @@ def load_trend() -> dict:
                 "note": "Simulated weights for demonstration.", "signals": []}
 
 
+def _signal_strength(sig: dict) -> float:
+    """Turn either a simulated weight or a real % change into a -1..1 signal."""
+    if "weight" in sig:
+        return float(sig["weight"])
+    pct = sig.get("change_pct")
+    if pct is None:
+        return 0.0
+    # +50% or more -> +1.0 ; -50% or worse -> -1.0 ; scaled linearly in between
+    return max(-1.0, min(1.0, float(pct) / 50.0))
+
+
 def apply_trend(roles: list[Role], trend: dict) -> list[Role]:
+    """Blend the curated role trend with the live skill signals."""
     signals = trend.get("signals") or []
     out = []
     for role in roles:
-        relevant = [s["weight"] for s in signals if s["skill"] in role.required_skills]
+        relevant = [_signal_strength(s) for s in signals if s["skill"] in (role.required_skills or [])]
         delta = sum(relevant) / len(relevant) if relevant else 0.0
-        out.append(Role(role.name, role.required_skills, max(-1.0, min(1.0, role.trend + delta)), role.sdg))
+        blended = 0.5 * role.trend + 0.5 * delta
+        out.append(
+            Role(
+                role.name,
+                role.required_skills,
+                max(-1.0, min(1.0, blended)),
+                role.sdg,
+                dict(role.tiers),
+            )
+        )
     return out
 
 
@@ -664,31 +685,135 @@ TREND_CSS = """
 """
 
 
-def trend_cards(t: dict, trend: dict, lang: str = "en") -> None:
-    source = trend.get("source_url")
-    retrieved = trend.get("retrieved_at")
-    st.caption(
-        "**" + t["simulated"] + "** · " + t["source"] + ": " + str(source or "—")
-        + " · " + t["retrieved"] + ": " + str(retrieved or "—")
+DOSM_CSS = """
+<style>
+.ds-wrap { background:rgba(255,255,255,.9); border:1px solid rgba(138,154,91,.28);
+           border-radius:18px; padding:16px 18px 10px; margin:4px 0 14px;
+           box-shadow:0 12px 30px rgba(76,86,52,.10); }
+.ds-head { display:flex; justify-content:space-between; align-items:baseline; gap:12px;
+           border-bottom:1px solid rgba(138,154,91,.22); padding-bottom:9px; margin-bottom:10px; }
+.ds-title { font-size:15.5px; font-weight:750; color:#33401f; }
+.ds-src { font-size:11.5px; color:#7a836a; }
+.ds-total { font-size:13px; color:#4a5a2a; font-weight:600; margin-bottom:10px; }
+.ds-total b { font-size:19px; }
+.ds-row { display:flex; align-items:center; gap:10px; margin-bottom:7px; }
+.ds-name { flex:0 0 300px; font-size:12.5px; color:#3f4a26; }
+.ds-bar { flex:1; height:10px; background:rgba(138,154,91,.14); border-radius:6px; overflow:hidden; }
+.ds-fill { height:100%; border-radius:6px;
+           background:linear-gradient(90deg,#8A9A5B,#5b7fa6); }
+.ds-num { flex:0 0 130px; text-align:right; font-size:12px; font-variant-numeric:tabular-nums;
+          color:#33401f; font-weight:650; }
+.ds-up { color:#4a7a2f; font-weight:700; }
+.ds-down { color:#b2403d; font-weight:700; }
+.ds-flat { color:#6b7075; font-weight:700; }
+.ds-note { font-size:11px; color:#8a927e; margin-top:8px; }
+</style>
+"""
+
+
+def _fmt(n: int) -> str:
+    return f"{n:,}"
+
+
+def dosm_panel(t: dict, lang: str) -> None:
+    """Layer 1 — the official DOSM online-vacancy counts, untouched."""
+    path = DATA / "trends" / "dosm_q2_2025.json"
+    if not path.exists():
+        return
+    try:
+        d = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return
+
+    st.markdown(DOSM_CSS, unsafe_allow_html=True)
+    total = d.get("total", {})
+    occ = d.get("occupations_q2_2025", [])
+    if not occ:
+        return
+    peak = max(o["offers"] for o in occ)
+
+    rows = []
+    for o in occ:
+        prev = o.get("offers_prev") or 0
+        chg = ((o["offers"] - prev) / prev * 100) if prev else None
+        if chg is None:
+            arrow, cls = "•", "ds-flat"
+            chg_txt = "—"
+        elif chg > 5:
+            arrow, cls = "▲", "ds-up"
+            chg_txt = f"+{chg:.1f}%"
+        elif chg < -5:
+            arrow, cls = "▼", "ds-down"
+            chg_txt = f"{chg:.1f}%"
+        else:
+            arrow, cls = "▬", "ds-flat"
+            chg_txt = f"{chg:+.1f}%"
+        width = o["offers"] / peak * 100
+        rows.append(
+            '<div class="ds-row">'
+            f'<div class="ds-name">{o["group"]}</div>'
+            f'<div class="ds-bar"><div class="ds-fill" style="width:{width:.1f}%"></div></div>'
+            f'<div class="ds-num">{_fmt(o["offers"])} <span class="{cls}">{arrow} {chg_txt}</span></div>'
+            "</div>"
+        )
+
+    st.markdown(
+        '<div class="ds-wrap">'
+        '<div class="ds-head">'
+        f'<div class="ds-title">🇲🇾 {t["dosm_title"]}</div>'
+        f'<div class="ds-src">{t["dosm_source"]} · {d.get("latest_period")} · {d.get("latest_released")}</div>'
+        "</div>"
+        f'<div class="ds-total">{t["dosm_total"]}: <b>{_fmt(total.get("q2_2025", 0))}</b> '
+        f'({t["dosm_qoq"]} {total.get("qoq_pct", 0):+.1f}%)</div>'
+        + "".join(rows)
+        + f'<div class="ds-note">📄 <a href="{d.get("latest_url", "")}" target="_blank">{t["view_source"]}</a>'
+          f' · {t["dosm_q1_link"]}: <a href="{d.get("previous_url", "")}" target="_blank">2025 Q1</a></div>'
+        "</div>",
+        unsafe_allow_html=True,
     )
+
+
+def trend_cards(t: dict, trend: dict, lang: str = "en") -> None:
+    """Layer 2 — skill directions derived from the official counts above."""
+    dosm_panel(t, lang)
+
+    if not trend.get("is_simulated", True):
+        st.caption(
+            f"**{t['derived_from']}** · {t['source']}: {trend.get('source')} "
+            f"(retrieved {trend.get('retrieved_at')})"
+        )
+    else:
+        st.caption(
+            "**" + t["simulated"] + "** · " + t["source"] + ": "
+            + str(trend.get("source_url") or "—")
+        )
+
     signals = trend.get("signals") or []
     if not signals:
         st.info("—")
         return
+
     st.markdown(TREND_CSS, unsafe_allow_html=True)
     cls = {"rising": ("up", "📈"), "declining": ("down", "📉"), "stable": ("flat", "➖")}
     cards = []
-    for s in signals[:6]:
-        kind, icon = cls.get(s["direction"], ("flat", "•"))
-        weight_txt = t["weight"].format("{:+.1f}".format(s["weight"]))
+    for sig in signals[:6]:
+        kind, icon = cls.get(sig["direction"], ("flat", "•"))
+        if "change_pct" in sig:
+            badge = f'{_fmt(sig["offers"])} · {sig["change_pct"]:+.1f}%'
+        else:
+            badge = t["weight"].format("{:+.1f}".format(sig.get("weight", 0)))
+        title = skill_label(lang, str(sig["skill"]))
+        basis = sig.get("basis", "")
         cards.append(
-            '<div class="tr-card ' + kind + '">'
-            + '<div class="tr-skill">' + skill_label(lang, str(s["skill"])) + '</div>'
-            + '<div class="tr-dir">' + icon + " " + t.get(s["direction"], s["direction"]) + '</div>'
-            + '<span class="tr-badge">' + weight_txt + '</span>'
+            '<div class="tr-card ' + kind + '" title="' + basis.replace('"', "'") + '">'
+            + '<div class="tr-skill">' + title + '</div>'
+            + '<div class="tr-dir">' + icon + " " + t.get(sig["direction"], sig["direction"]) + '</div>'
+            + '<span class="tr-badge">' + badge + '</span>'
             + '</div>'
         )
     st.markdown('<div class="tr-grid">' + "".join(cards) + '</div>', unsafe_allow_html=True)
+    st.caption(t["hover_basis"])
+
 
 
 def role_card(t: dict, result: dict, expanded: bool = False, lang: str = "en") -> None:
