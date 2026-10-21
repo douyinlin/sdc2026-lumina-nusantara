@@ -152,6 +152,13 @@ GAP_COST = {
 
 WEIGHTS = {"coverage": 0.30, "focus": 0.25, "transfer": 0.15, "trend": 0.15, "gap": 0.15}
 
+# "fast" disruption: demand trend dominates and volatile roles swing harder.
+WEIGHTS_FAST = {"coverage": 0.24, "focus": 0.18, "transfer": 0.11, "trend": 0.35, "gap": 0.12}
+TREND_AMPLIFY_FAST = 1.8
+GAP_DISCOUNT_FAST = 0.7
+FAST_FLAT_PENALTY = 0.20      # flat roles are crowded out when disruption accelerates
+FAST_DECLINE_PENALTY = 0.40   # declining roles lose real ground
+
 
 # Modified 2026-10-20: normalize distinct skills and reject malformed records.
 def normalize_skills(skills: object) -> list[str]:
@@ -235,11 +242,17 @@ def evaluate(profile: list[str], role: Role, scenario: str = "moderate") -> dict
     else:
         gap_cost = 0.0
 
-    w = dict(WEIGHTS)
     if scenario == "fast":
-        w["trend"] *= 2.0
-        total_w = sum(w.values())
-        w = {k: v / total_w for k, v in w.items()}
+        # a fast-moving market rewards rising roles and punishes flat/declining ones
+        if role.trend > 0:
+            trend = min(1.0, 0.5 + (trend - 0.5) * TREND_AMPLIFY_FAST)
+        elif role.trend == 0:
+            trend = max(0.0, 0.5 - FAST_FLAT_PENALTY)          # stalling roles lose ground
+        else:
+            trend = max(0.0, 0.5 - FAST_DECLINE_PENALTY)
+        gap_cost = gap_cost * GAP_DISCOUNT_FAST
+
+    w = dict(WEIGHTS_FAST) if scenario == "fast" else dict(WEIGHTS)
 
     score = (
         w["coverage"] * coverage
