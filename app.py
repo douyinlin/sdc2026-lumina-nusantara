@@ -676,11 +676,13 @@ def step_banner(t: dict) -> None:
              "hr_intake": ("hr", 2), "hr_results": ("hr", 2),
              "cc_intake": ("cc", 2), "cc_results": ("cc", 2)}
     kind, total = human.get(stage, ("jobseeker", 2))
-    flow = {"jobseeker": t["flow_jobseeker"], "hr": t["flow_hr"], "cc": t["flow_cc"]}.get(kind, "")
+    flow_key = {"jobseeker": "flow_jobseeker", "hr": "flow_hr", "cc": "flow_cc"}.get(kind)
+    flow = t.get(flow_key, "") if flow_key else ""
     step = STEP_ORDER.get(stage, 1)
+    label = t.get("step_x_of_y", "step {} of {}").format(step, total)
+    pill = f"🧭 {flow} · {label}" if flow else f"🧭 {label}"
     st.markdown(
-        f'<div class="sr-pill" style="font-size:12.5px">🧭 {flow} · '
-        f'{t["step_x_of_y"].format(step, total)}</div>',
+        f'<div class="sr-pill" style="font-size:12.5px">{pill}</div>',
         unsafe_allow_html=True,
     )
 
