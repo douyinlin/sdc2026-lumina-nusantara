@@ -24,6 +24,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from utils import Role, pathway, rank, sdg_summary  # noqa: E402
 from i18n import STRINGS, T, cat, role_label, skill_label  # noqa: E402
+from presentation import CSS_PATH, brand, copy_for, flow_header, learning_path, score_panel, skill_chips  # noqa: E402
 
 DATA = ROOT / "data"
 TREND_FILE = DATA / "trends" / "latest.json"
@@ -660,7 +661,7 @@ def lang_selector(compact: bool = False) -> None:
     labels = {"en": "English", "ms": "Bahasa Malaysia", "zh": "中文"}
     current = st.session_state.get("lang", "en")
     choice = st.selectbox(
-        "" if compact else "Language / 语言",
+        "Language / Bahasa / 语言",
         options=options,
         index=options.index(current),
         format_func=lambda k: labels[k],
@@ -677,27 +678,24 @@ STEP_ORDER = {"js_intake": 1, "js_results": 2, "hr_intake": 1, "hr_results": 2,
 
 
 def step_banner(t: dict) -> None:
-    """Small pill so the user knows they moved into a flow."""
+    """Accessible, presentation-only journey progress after role selection."""
     stage = st.session_state.get("stage", "landing")
     human = {"js_intake": ("jobseeker", 2), "js_results": ("jobseeker", 2),
              "hr_intake": ("hr", 2), "hr_results": ("hr", 2),
              "cc_intake": ("cc", 2), "cc_results": ("cc", 2)}
-    kind, total = human.get(stage, ("jobseeker", 2))
+    kind, _ = human.get(stage, ("jobseeker", 2))
     flow_key = {"jobseeker": "flow_jobseeker", "hr": "flow_hr", "cc": "flow_cc"}.get(kind)
     flow = t.get(flow_key, "") if flow_key else ""
-    step = STEP_ORDER.get(stage, 1)
-    label = t.get("step_x_of_y", "step {} of {}").format(step, total)
-    pill = f"🧭 {flow} · {label}" if flow else f"🧭 {label}"
     st.markdown(
-        f'<div class="sr-pill" style="font-size:12.5px">{pill}</div>',
+        flow_header(stage, flow, st.session_state.get("lang", "en")),
         unsafe_allow_html=True,
     )
 
 
 def top_bar(t: dict) -> None:
-    left, mid, right, far = st.columns([2, 2, 1, 1])
+    left, right, far = st.columns([3, 1.5, 1.5])
     with left:
-        st.markdown("### 📡 SkillRadar MY")
+        st.markdown(brand(), unsafe_allow_html=True)
     with right:
         if st.button(t["reeval"], use_container_width=True, help=t["reeval_help"]):
             reset()
@@ -952,14 +950,17 @@ def role_card(t: dict, result: dict, expanded: bool = False, lang: str = "en") -
     c = result["components"]
     head = f"{result['score']:.1f} · {role_label(lang, result['role'])} · SDG {', '.join(result['sdg'])}"
     with st.expander(head, expanded=expanded):
-        st.progress(min(1.0, result["score"] / 100))
-        a, b, c1, d, e = st.columns(5)
-        a.metric(t["coverage"], f"{c['coverage'] * 100:.0f}%")
-        b.metric(t["focus"], f"{c.get('focus', 0) * 100:.0f}%")
-        c1.metric(t["transfer"], f"{c['transfer'] * 100:.0f}%")
-        d.metric(t["trend"], f"{c['trend'] * 100:.0f}%")
-        e.metric(t["gapcost"], f"{c['gap_cost'] * 100:.0f}%")
-        have = ", ".join(skill_label(lang, x) for x in result["covered"]) or "—"
+        ui = copy_for(lang)
+        st.markdown(
+            score_panel(result["score"], [
+                (ui["weighted"], c["coverage"]),
+                (t["focus"], c.get("focus", 0)),
+                (t["transfer"], c["transfer"]),
+                (t["trend"], c["trend"]),
+                (f'{t["gapcost"]} · {ui["lower"]}', c["gap_cost"]),
+            ], lang),
+            unsafe_allow_html=True,
+        )
         close_items = []
         for x in result["missing"]:
             tier = result.get("tiers", {}).get(x)
@@ -969,7 +970,8 @@ def role_card(t: dict, result: dict, expanded: bool = False, lang: str = "en") -
         total = len(result["covered"]) + len(result["missing"])
         pct = round(100 * len(result["covered"]) / total) if total else 0
         st.caption(t["why_score"].format(total, len(result["covered"]), pct))
-        st.write(f"**{t['have']} ({len(result['covered'])}):** {have}")
+        st.markdown(f"**{t['have']} ({len(result['covered'])})**")
+        st.markdown(skill_chips([skill_label(lang, x) for x in result["covered"]]), unsafe_allow_html=True)
         st.write(f"**{t['close']} ({len(result['missing'])}):** {close}")
 
         my = ROLE_META.get(result["role"], {}).get("malaysia") or {}
@@ -1127,22 +1129,30 @@ def screen_js_intake() -> None:
     st.markdown(f'<div class="sr-pill">{t["opt_b"]}</div>', unsafe_allow_html=True)
     picked: list[str] = []
     lang = st.session_state.get("lang", "en")
-    for group, items in TAXONOMY.items():
-        st.markdown(f"**{cat(lang, group)}**")
-        labels = st.multiselect(
-            group, options=list(items), key=f"ms_{group}",
-            label_visibility="collapsed", placeholder=t["ms_placeholder"],
-            max_selections=6,
-        )
-        for label in labels:
-            picked += LABEL_TO_KEYS[label]
-        st.markdown("")
+    st.caption(copy_for(lang)["skills_note"])
+    groups = list(TAXONOMY.items())
+    for offset in range(0, len(groups), 2):
+        columns = st.columns(2, gap="medium")
+        for column, (group, items) in zip(columns, groups[offset:offset + 2]):
+            with column:
+                st.markdown(f"**{cat(lang, group)}**")
+                labels = st.multiselect(
+                    group, options=list(items), key=f"ms_{group}",
+                    label_visibility="collapsed", placeholder=t["ms_placeholder"],
+                    max_selections=6,
+                )
+                for label in labels:
+                    picked += LABEL_TO_KEYS[label]
     if st.button(t["use_skills"], use_container_width=True):
         st.session_state["skills"] = picked
 
     current = st.session_state.get("skills") or []
     if current:
-        st.info(f"**{t['current']}:** {', '.join(sorted(set(current)))}  ({len(set(current))})")
+        st.markdown(f"**{t['current']} · {len(set(current))}**")
+        st.markdown(
+            skill_chips([skill_label(lang, x) for x in sorted(set(current))]),
+            unsafe_allow_html=True,
+        )
         if len(set(current)) > 10:
             st.caption(t["too_many"])
 
@@ -1190,7 +1200,10 @@ def screen_js_results() -> None:
     roles = pool
 
     st.subheader(t["p1"])
-    st.write(", ".join(sorted(set(skills))))
+    st.markdown(
+        skill_chips([skill_label(st.session_state.get("lang", "en"), x) for x in sorted(set(skills))]),
+        unsafe_allow_html=True,
+    )
     if persona == "worker":
         st.caption(t["ctx_worker"].format(
             st.session_state.get("years", 0), t["urg_" + st.session_state.get("urgency", "now")]
@@ -1202,8 +1215,9 @@ def screen_js_results() -> None:
             st.session_state.get("intern", 0),
         ))
 
-    st.subheader(t["p2"])
-    trend_cards(t, trend, st.session_state.get('lang', 'en'))
+    st.caption(copy_for(st.session_state.get("lang", "en"))["market_note"])
+    with st.expander(t["p2"], expanded=False):
+        trend_cards(t, trend, st.session_state.get('lang', 'en'))
 
     st.subheader(t["p3"])
     scenario = st.radio(
@@ -1237,7 +1251,7 @@ def screen_js_results() -> None:
         st.caption(t["domain_same"].format(field, len(same)))
     else:
         st.caption(t["domain_adjacent"].format(field))
-    st.caption(t["ranked_note"])
+    st.caption(copy_for(lang_now)["rank_note"])
     st.caption(t["role_source"])
     roles_by_name = {x.name: x for x in roles}
     for i, r in enumerate(results[:4]):
@@ -1272,7 +1286,12 @@ def screen_js_results() -> None:
                     t["col_cost"]: c["cost"],
                     t["col_link"]: c["url"],
                 })
-        st.table(step_rows)
+        st.markdown(
+            learning_path([
+                (row[t["step"]], row[t["skill"]], row[t["weeks"]]) for row in step_rows
+            ], lang_now),
+            unsafe_allow_html=True,
+        )
         st.caption(t["path_note"].format(hours))
 
         if course_rows:
@@ -1620,6 +1639,7 @@ _T = T(st.session_state.get("lang", "en"))
 
 if STAGE != "landing":
     st.markdown(APP_CSS, unsafe_allow_html=True)
+    st.markdown(f"<style>{CSS_PATH.read_text(encoding='utf-8')}</style>", unsafe_allow_html=True)
 
 try:
     STAGES.get(STAGE, screen_landing)()
