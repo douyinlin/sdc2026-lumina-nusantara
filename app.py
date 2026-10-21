@@ -1280,13 +1280,13 @@ def screen_js_results() -> None:
     with st.expander(t["disclose_title"]):
         st.markdown(t["disclose_body"])
 
-    # ---- 5. SDG contribution, with an inline (? help) that reveals the wheel ----
-    head, help_col = st.columns([12, 1])
+    # ---- 5. SDG contribution, with an inline (?) right next to the heading ----
+    head, help_col = st.columns([1, 20])
     with head:
-        st.subheader(t["p5"])
-    with help_col:
         if st.button("❓", key="sdg_help_btn", help=t["sdg_help_tip"]):
             st.session_state["show_sdg_wheel"] = not st.session_state.get("show_sdg_wheel", False)
+    with help_col:
+        st.subheader(t["p5"])
 
     summary = sdg_summary(results[:4])
     st.write(", ".join(f"**SDG {k}** ({v})" for k, v in summary.items()) or "—")
@@ -1306,7 +1306,9 @@ def screen_js_results() -> None:
     st.caption(t["sdg_note"])
 
     if st.session_state.get("show_sdg_wheel", False):
-        wheel = ROOT / "docs" / "sdg_wheel.png"
+        wheel = ROOT / "docs" / f"sdg_wheel_{lang_now}.png"
+        if not wheel.exists():
+            wheel = ROOT / "docs" / "sdg_wheel_en.png"
         if wheel.exists():
             left, mid, right = st.columns([1, 6, 1])
             with mid:
