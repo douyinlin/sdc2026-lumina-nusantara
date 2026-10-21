@@ -1026,8 +1026,12 @@ def screen_js_intake() -> None:
     else:
         c1, c2 = st.columns(2)
         with c1:
+            _edu_options = ["certificate", "stpm", "foundation", "bachelor", "master", "phd"]
             st.session_state["edu"] = st.selectbox(
-                t["q_edu"], ["foundation", "diploma", "bachelor", "master", "phd"],
+                t["q_edu"],
+                _edu_options,
+                index=_edu_options.index(st.session_state.get("edu", "bachelor"))
+                if st.session_state.get("edu") in _edu_options else 3,
                 format_func=lambda k: t["edu_" + k],
             )
             _group = st.selectbox(t["q_field"], list(FIELDS))
