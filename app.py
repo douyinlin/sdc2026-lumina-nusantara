@@ -943,6 +943,7 @@ def screen_js_results() -> None:
     else:
         st.caption(t["domain_adjacent"].format(field))
     st.caption(t["ranked_note"])
+    st.caption(t["role_source"])
     for i, r in enumerate(results[:4]):
         dom = ROLE_META.get(r["role"], {}).get("domain", "")
         badge = t["badge_same"] if dom == FIELD_DOMAIN.get(field) else t["badge_adjacent"]
@@ -968,6 +969,9 @@ def screen_js_results() -> None:
         st.caption(t["path_note"].format(hours))
     else:
         st.success(t["covered_all"])
+
+    with st.expander(t["disclose_title"]):
+        st.markdown(t["disclose_body"])
 
     st.subheader(t["p5"])
     summary = sdg_summary(results[:4])

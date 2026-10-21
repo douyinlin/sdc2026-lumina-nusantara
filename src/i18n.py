@@ -170,11 +170,26 @@ STRINGS = {
         "cc_complete": "Your programme already covers every required skill for these roles.",
         "cc_roles": "Target roles",
         "cc_foot": "Synthetic demo data only — no student records are collected or stored.",
+        "role_source": "Role catalogue: team-curated subset modelled on O*NET / ESCO skill lists (not an official extract).",
+        "disclose_title": "Sources, AI disclosure and limits",
+        "disclose_body": (
+            "**No language model runs at inference time.** Every score comes from a published rule "
+            "(coverage, role focus, transferability, trend, gap cost) that you can read in `src/utils.py`.\n\n"
+            "**Data.** Demo profiles and the sample CV are synthetic. Trend weights are hand-set by the team "
+            "and labelled *simulated* — nothing is scraped, and no real person's data is read or stored.\n\n"
+            "**Roles.** The catalogue is a curated subset modelled on O*NET / ESCO occupation skill lists; it is "
+            "not an official extract, and it never invents a role that does not exist in the file.\n\n"
+            "**Courses.** Pathway links are a *search direction* on the HRD Corp directory, not a verified "
+            "course, price or duration.\n\n"
+            "**Human decision.** This tool supports a career decision. It does not score people for hiring and "
+            "makes no recruitment decision.\n\n"
+            "**Estimates.** Scores and weeks are prototype estimates, not predictions of employment."
+        ),
         "domain_same": "Showing only roles in your field ({}) — {} matching roles in the catalogue.",
         "domain_adjacent": "No roles in {} yet, so we show the closest adjacent fields instead.",
         "badge_same": "✅ same field as your studies",
         "badge_adjacent": "↔ adjacent field — transferable, but check the gap",
-        "step": "Step", "weeks": "Weeks", "resource": "Resource",
+        "step": "Step", "skill": "Skill", "weeks": "Weeks", "resource": "Resource",
         "search_hint": "HRD Corp directory search: {}",
     },
     "zh": {
@@ -337,11 +352,24 @@ STRINGS = {
         "cc_complete": "你的课程已经覆盖这些岗位的全部要求技能。",
         "cc_roles": "目标岗位",
         "cc_foot": "仅为合成演示数据 —— 不采集、不存储任何学生记录。",
+        "role_source": "岗位目录：参照 O*NET / ESCO 职业技能清单人工整理的子集（非官方导出）。",
+        "disclose_title": "数据来源、AI 使用披露与局限",
+        "disclose_body": (
+            "**推理阶段没有使用任何大语言模型。** 每个分数都来自公开可读的规则"
+            "（覆盖度、岗位聚焦度、可迁移性、趋势、缺口成本），代码在 `src/utils.py`。\n\n"
+            "**数据**：演示画像与示例简历均为合成数据。趋势权重由团队人工设定并明确标注为"
+            "「模拟数据」—— 没有抓取任何数据，也不读取或存储任何真实个人资料。\n\n"
+            "**岗位**：目录是参照 O*NET / ESCO 职业技能清单整理的子集，不是官方导出；"
+            "系统不会凭空生成目录里不存在的岗位。\n\n"
+            "**课程**：路径里的链接只是 HRD Corp 目录的「搜索方向」，不是已核实的课程、价格或时长。\n\n"
+            "**人的决策**：本工具辅助职业决策，不给人打招聘分，也不做招聘决定。\n\n"
+            "**估计值**：分数与周数都是原型估算，不是就业预测。"
+        ),
         "domain_same": "只显示与你专业相关的岗位（{}）—— 目录中共 {} 个匹配岗位。",
         "domain_adjacent": "目录里暂时没有 {} 的岗位，因此展示最接近的相关领域。",
         "badge_same": "✅ 与你的专业同领域",
         "badge_adjacent": "↔ 相邻领域 —— 可迁移，但要留意缺口",
-        "step": "步骤", "weeks": "周数", "resource": "资源",
+        "step": "步骤", "skill": "技能", "weeks": "周数", "resource": "资源",
         "search_hint": "HRD Corp 目录搜索：{}",
     },
     "ms": {
@@ -431,11 +459,24 @@ STRINGS = {
         "weight": "pemberat {}",
         "error": "Ada masalah pada langkah ini. Tiada apa-apa disimpan.",
         "back_start": "← Kembali ke mula",
+        "role_source": "Katalog peranan: subset yang disusun pasukan berdasarkan senarai kemahiran O*NET / ESCO (bukan ekstrak rasmi).",
+        "disclose_title": "Sumber, pendedahan AI dan had",
+        "disclose_body": (
+            "**Tiada model bahasa dijalankan semasa inferens.** Setiap skor datang daripada peraturan terbuka "
+            "(liputan, fokus peranan, kebolehpindahan, trend, kos jurang) dalam `src/utils.py`.\n\n"
+            "**Data.** Profil demo dan CV contoh adalah sintetik. Pemberat trend ditetapkan oleh pasukan dan "
+            "dilabel *simulasi* — tiada data digores, tiada data peribadi dibaca atau disimpan.\n\n"
+            "**Peranan.** Katalog ialah subset berdasarkan senarai O*NET / ESCO, bukan ekstrak rasmi, dan tidak "
+            "mencipta peranan yang tiada dalam fail.\n\n"
+            "**Kursus.** Pautan laluan ialah arah carian pada direktori HRD Corp, bukan kursus/harga/tempoh disahkan.\n\n"
+            "**Keputusan manusia.** Alat ini menyokong keputusan kerjaya; ia tidak menilai orang untuk pengambilan kerja.\n\n"
+            "**Anggaran.** Skor dan minggu ialah anggaran prototaip, bukan ramalan pekerjaan."
+        ),
         "domain_same": "Hanya peranan dalam bidang anda ({}) — {} peranan sepadan dalam katalog.",
         "domain_adjacent": "Tiada peranan dalam {} lagi, jadi kami tunjukkan bidang bersebelahan yang terdekat.",
         "badge_same": "✅ bidang sama dengan pengajian anda",
         "badge_adjacent": "↔ bidang bersebelahan — boleh pindah, tetapi semak jurang",
-        "step": "Langkah", "weeks": "Minggu", "resource": "Sumber",
+        "step": "Langkah", "skill": "Kemahiran", "weeks": "Minggu", "resource": "Sumber",
         "search_hint": "Carian direktori HRD Corp: {}",
         "brand": "📡 SkillRadar MY",
         "flow_s": "Ceritakan diri anda → lihat isyarat trend bertarikh → dapatkan padanan peranan → ikut laluan latihan semula yang dipetakan kepada SDG",

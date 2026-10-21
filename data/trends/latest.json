@@ -1,9 +1,9 @@
 {
   "is_simulated": true,
-  "source_url": "https://www.weforum.org/publications/the-future-of-jobs-report-2025/",
-  "report_published": "2025-01",
+  "source_url": null,
+  "report_published": null,
   "retrieved_at": null,
-  "note": "SIMULATED weights for demonstration. Directional signals are inspired by the WEF Future of Jobs Report 2025, but the numeric weights are hand-set by the team and were NOT scraped on the date shown. Replace this file with a real ingestion run before claiming fresh data.",
+  "note": "SIMULATED / 模拟数据：权重由团队人工设定，方向灵感来自 WEF Future of Jobs 2025，但并未抓取任何官方数据，也不代表 WEF 的数值。演示前请替换为真实抓取结果。",
   "signals": [
     { "skill": "prompt engineering", "direction": "rising", "weight": 0.4 },
     { "skill": "machine learning", "direction": "rising", "weight": 0.5 },
