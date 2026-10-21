@@ -574,6 +574,28 @@ p, li, label, .stMarkdown { color: #4c5540; }
   background: linear-gradient(90deg, #8A9A5B, #5b7fa6) !important;
 }
 .sr-enter { animation: sr-rise .5s ease-out both; }
+/* section-5 heading row: heading text with a small monochrome (?) right after it */
+.sdg-head-row {
+  display: flex; align-items: center; gap: 8px;
+  border-left: 4px solid #8A9A5B; padding-left: 10px;
+  margin: 6px 0 0; min-height: 30px;
+}
+.sdg-head-text { font-size: 1.5rem; font-weight: 700; color: #3f4a26; line-height: 1.2; }
+.sdg-q {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 1px solid #cfd8c0; background: #ffffff;
+  color: #6b7560; font-size: 12px; font-weight: 700; line-height: 1;
+}
+/* the real button sits directly under the row and is invisible, but only 0 height */
+.st-key-sdg_qmark { height: 0; overflow: visible; }
+.st-key-sdg_qmark button {
+  position: absolute; margin-top: -34px; margin-left: 0;
+  width: 22px !important; height: 22px !important; min-width: 22px !important;
+  padding: 0 !important; border: none !important;
+  background: transparent !important; color: transparent !important;
+  box-shadow: none !important; opacity: 0.01;
+}
 .sr-pill { display:inline-block; padding:4px 12px; border-radius:999px; font-size:12px;
            color:#5d6b36; background:rgba(138,154,91,.14);
            border:1px solid rgba(138,154,91,.32); margin-bottom:8px; }
@@ -1287,12 +1309,20 @@ def screen_js_results() -> None:
         st.markdown(t["disclose_body"])
 
     # ---- 5. SDG contribution; the (?) sits after the heading so the left rule lines up ----
-    head, help_col = st.columns([14, 1], vertical_alignment="center")
-    with head:
-        st.subheader(t["p5"])
-    with help_col:
-        if st.button("❓", key="sdg_help_btn", help=t["sdg_help_tip"]):
-            st.session_state["show_sdg_wheel"] = not st.session_state.get("show_sdg_wheel", False)
+    # Heading with the (?) sitting immediately after the text.
+    # A single flex row rendered as markdown for the visuals, plus the real Streamlit
+    # button placed in flow just below it but shifted up/left with CSS so the click
+    # target lands exactly on the drawn (?) - no columns, no layout gap.
+    q_open = st.session_state.get("show_sdg_wheel", False)
+    st.markdown(
+        '<div class="sdg-head-row">'
+        f'<span class="sdg-head-text">{t["p5"]}</span>'
+        f'<span class="sdg-q" id="sdg-q-visual">{"x" if q_open else "?"}</span>'
+        "</div>",
+        unsafe_allow_html=True,
+    )
+    if st.button("?", key="sdg_qmark", help=t["sdg_help_tip"], type="secondary"):
+        st.session_state["show_sdg_wheel"] = not q_open
 
     summary = sdg_summary(results[:4])
     st.write(", ".join(f"**SDG {k}** ({v})" for k, v in summary.items()) or "—")
