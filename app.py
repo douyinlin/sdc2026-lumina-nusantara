@@ -1235,53 +1235,6 @@ def screen_js_results() -> None:
     st.write(", ".join(f"**SDG {k}** ({v})" for k, v in summary.items()) or "—")
     st.caption(t["sdg_note"])
 
-    st.subheader(t["p6"])
-    moderate_rank = rank(skills, roles, "moderate")
-    fast_rank = rank(skills, roles, "fast")
-    pos_m = {r["role"]: i + 1 for i, r in enumerate(moderate_rank)}
-    pos_f = {r["role"]: i + 1 for i, r in enumerate(fast_rank)}
-    score_m = {r["role"]: r["score"] for r in moderate_rank}
-    score_f = {r["role"]: r["score"] for r in fast_rank}
-
-    lang_s = st.session_state.get("lang", "en")
-    col_a, col_b = st.columns(2, gap="large")
-    with col_a:
-        st.markdown(f"**{t['scen_moderate_label']}**")
-        for i, r in enumerate(moderate_rank[:5], start=1):
-            st.markdown(
-                f"{i}. {role_label(lang_s, r['role'])} — **{r['score']}**",
-                unsafe_allow_html=True,
-            )
-    with col_b:
-        st.markdown(f"**{t['scen_fast_label']}**")
-        for i, r in enumerate(fast_rank[:5], start=1):
-            before = pos_m.get(r["role"], 99)
-            delta = before - i
-            if delta > 0:
-                mark = f"<span style='color:#4a7a2f;font-weight:700'> ▲{delta}</span>"
-            elif delta < 0:
-                mark = f"<span style='color:#b2403d;font-weight:700'> ▼{abs(delta)}</span>"
-            else:
-                mark = "<span style='color:#8a927e'> –</span>"
-            st.markdown(f"{i}. {role_label(lang_s, r['role'])} — **{r['score']}**{mark}",
-                        unsafe_allow_html=True)
-
-    with st.expander(t["scen_detail"]):
-        st.dataframe(
-            [
-                {
-                    t["col_role"]: role_label(lang_s, r["role"]),
-                    t["col_mod"]: score_m.get(r["role"], 0),
-                    t["col_fast"]: score_f.get(r["role"], 0),
-                    t["col_delta"]: round(score_f.get(r["role"], 0) - score_m.get(r["role"], 0), 1),
-                    t["col_pos"]: f"#{pos_m.get(r['role'], '-')} → #{pos_f.get(r['role'], '-')}",
-                }
-                for r in moderate_rank
-            ],
-            use_container_width=True,
-            hide_index=True,
-        )
-    st.caption(t["scen_note"])
 
 
 # --------------------------------------------------------------------------- #
