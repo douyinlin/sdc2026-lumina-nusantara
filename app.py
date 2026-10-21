@@ -23,7 +23,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "src"))
 
 from utils import Role, pathway, rank, sdg_summary  # noqa: E402
-from i18n import STRINGS, T, cat  # noqa: E402
+from i18n import STRINGS, T, cat, role_label, skill_label  # noqa: E402
 
 DATA = ROOT / "data"
 TREND_FILE = DATA / "trends" / "latest.json"
@@ -565,8 +565,8 @@ def current_stage() -> str:
 
 def lang_selector(compact: bool = False) -> None:
     """Language switch — English / 中文."""
-    options = ["en", "zh"]
-    labels = {"en": "English", "zh": "中文"}
+    options = ["en", "ms", "zh"]
+    labels = {"en": "English", "ms": "Bahasa Malaysia", "zh": "中文"}
     current = st.session_state.get("lang", "en")
     choice = st.selectbox(
         "" if compact else "Language / 语言",
@@ -616,7 +616,7 @@ TREND_CSS = """
 """
 
 
-def trend_cards(t: dict, trend: dict) -> None:
+def trend_cards(t: dict, trend: dict, lang: str = "en") -> None:
     source = trend.get("source_url")
     retrieved = trend.get("retrieved_at")
     st.caption(
@@ -635,7 +635,7 @@ def trend_cards(t: dict, trend: dict) -> None:
         weight_txt = t["weight"].format("{:+.1f}".format(s["weight"]))
         cards.append(
             '<div class="tr-card ' + kind + '">'
-            + '<div class="tr-skill">' + str(s["skill"]) + '</div>'
+            + '<div class="tr-skill">' + skill_label(lang, str(s["skill"])) + '</div>'
             + '<div class="tr-dir">' + icon + " " + t.get(s["direction"], s["direction"]) + '</div>'
             + '<span class="tr-badge">' + weight_txt + '</span>'
             + '</div>'
@@ -643,9 +643,9 @@ def trend_cards(t: dict, trend: dict) -> None:
     st.markdown('<div class="tr-grid">' + "".join(cards) + '</div>', unsafe_allow_html=True)
 
 
-def role_card(t: dict, result: dict, expanded: bool = False) -> None:
+def role_card(t: dict, result: dict, expanded: bool = False, lang: str = "en") -> None:
     c = result["components"]
-    head = f"{result['score']:.1f} · {result['role']} · SDG {', '.join(result['sdg'])}"
+    head = f"{result['score']:.1f} · {role_label(lang, result['role'])} · SDG {', '.join(result['sdg'])}"
     with st.expander(head, expanded=expanded):
         st.progress(min(1.0, result["score"] / 100))
         a, b, c1, d, e = st.columns(5)
@@ -654,8 +654,10 @@ def role_card(t: dict, result: dict, expanded: bool = False) -> None:
         c1.metric(t["transfer"], f"{c['transfer'] * 100:.0f}%")
         d.metric(t["trend"], f"{c['trend'] * 100:.0f}%")
         e.metric(t["gapcost"], f"{c['gap_cost'] * 100:.0f}%")
-        st.write(f"**{t['have']} ({len(result['covered'])}):** {', '.join(result['covered']) or '—'}")
-        st.write(f"**{t['close']} ({len(result['missing'])}):** {', '.join(result['missing']) or t['none']}")
+        have = ", ".join(skill_label(lang, x) for x in result["covered"]) or "—"
+        close = ", ".join(skill_label(lang, x) for x in result["missing"]) or t["none"]
+        st.write(f"**{t['have']} ({len(result['covered'])}):** {have}")
+        st.write(f"**{t['close']} ({len(result['missing'])}):** {close}")
         st.caption(t["estimate"])
 
 
@@ -854,7 +856,7 @@ def screen_js_results() -> None:
         ))
 
     st.subheader(t["p2"])
-    trend_cards(t, trend)
+    trend_cards(t, trend, st.session_state.get('lang', 'en'))
 
     st.subheader(t["p3"])
     scenario = st.radio(
@@ -868,9 +870,9 @@ def screen_js_results() -> None:
         top1 = results[0]
         gap_n = len(top1["missing"])
         if gap_n <= 2:
-            st.success(t["adv_worker_fast"].format(top1["role"]))
+            st.success(t["adv_worker_fast"].format(role_label(st.session_state.get("lang", "en"), top1["role"])))
         else:
-            st.info(t["adv_worker_slow"].format(top1["role"], gap_n))
+            st.info(t["adv_worker_slow"].format(role_label(st.session_state.get("lang", "en"), top1["role"]), gap_n))
     else:
         intern = st.session_state.get("intern", 0)
         if intern < 3:
@@ -880,20 +882,22 @@ def screen_js_results() -> None:
 
     st.caption(t["ranked_note"])
     for i, r in enumerate(results[:4]):
-        role_card(t, r, expanded=(i == 0))
+        role_card(t, r, expanded=(i == 0), lang=st.session_state.get('lang', 'en'))
 
     st.subheader(t["p4"])
     top = results[0]
     if top["missing"]:
         total_required = len(top["covered"]) + len(top["missing"])
-        st.write(t["gap"].format(top["role"], len(top["missing"]), total_required))
+        st.write(t["gap"].format(role_label(st.session_state.get("lang", "en"), top["role"]),
+                                  len(top["missing"]), total_required))
         plan = pathway(top)
         rows = []
         for p in plan:
             weeks = max(1, round(p["weeks"] * scale))
             rows.append({
                 t["step"]: p["step"], t["skill"]: p["skill"],
-                t["weeks"]: weeks, t["resource"]: t["search_hint"].format(p["skill"]),
+                t["weeks"]: weeks,
+                t["resource"]: t["search_hint"].format(skill_label(st.session_state.get("lang", "en"), p["skill"])),
             })
         st.table(rows)
         st.caption(t["path_note"].format(hours))
