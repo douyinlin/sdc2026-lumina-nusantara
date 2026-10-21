@@ -1271,6 +1271,29 @@ def screen_js_results() -> None:
     )
     results = rank(skills, roles, scenario=scenario)
 
+    # ---- uncertainty: show both scenarios side by side, ranked side by side ----
+    _fast = rank(skills, roles, scenario="fast")
+    _mod = results if scenario == "moderate" else rank(skills, roles, scenario="moderate")
+    _pos_mod = {r["role"]: i + 1 for i, r in enumerate(_mod)}
+    _pos_fast = {r["role"]: i + 1 for i, r in enumerate(_fast)}
+    _score_fast = {r["role"]: r["score"] for r in _fast}
+    with st.expander(t["scenario"] + " · " + t["moderate"] + " / " + t["fast"], expanded=False):
+        st.dataframe(
+            [
+                {
+                    t["col_role"]: role_label(st.session_state.get("lang", "en"), r["role"]),
+                    t["col_mod"]: r["score"],
+                    t["col_fast"]: _score_fast.get(r["role"], 0),
+                    t["col_delta"]: round(_score_fast.get(r["role"], 0) - r["score"], 1),
+                    t["col_pos"]: f'#{_pos_mod[r["role"]]} -> #{_pos_fast.get(r["role"], 0)}',
+                }
+                for r in _mod[:5]
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+        st.caption(t["scen_note"])
+
     # ---- neutral summary driven by weighted coverage, not by a gap count ----
     lang_now = st.session_state.get("lang", "en")
     top1 = results[0]
