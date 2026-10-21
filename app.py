@@ -574,34 +574,13 @@ p, li, label, .stMarkdown { color: #4c5540; }
   background: linear-gradient(90deg, #8A9A5B, #5b7fa6) !important;
 }
 .sr-enter { animation: sr-rise .5s ease-out both; }
-/* section-5 heading rendered as one clickable button that looks like a heading */
-.st-key-sdg_heading_btn { margin: 6px 0 2px !important; }
-.st-key-sdg_heading_btn button {
-  background: transparent !important;
-  border: none !important;
-  border-left: 4px solid #8A9A5B !important;
-  border-radius: 0 !important;
-  padding: 2px 8px 2px 10px !important;
-  color: #3f4a26 !important;
-  font-size: 1.5rem !important;
-  font-weight: 700 !important;
-  line-height: 1.25 !important;
-  text-align: left !important;
-  justify-content: flex-start !important;
-  box-shadow: none !important;
-  width: auto !important;
+/* section-5 heading row (plain text; the toggle is a normal button below it) */
+.sdg-head-row {
+  display: flex; align-items: center;
+  border-left: 4px solid #8A9A5B; padding-left: 10px;
+  margin: 8px 0 2px; min-height: 34px;
 }
-.st-key-sdg_heading_btn button:hover {
-  background: rgba(138,154,91,.10) !important;
-  color: #33401f !important;
-  transform: none !important;
-}
-.st-key-sdg_heading_btn button p {
-  font-size: 1.5rem !important;
-  font-weight: 700 !important;
-  color: inherit !important;
-  margin: 0 !important;
-}
+.sdg-head-text { font-size: 1.5rem; font-weight: 700; color: #3f4a26; line-height: 1.2; }
 .sr-pill { display:inline-block; padding:4px 12px; border-radius:999px; font-size:12px;
            color:#5d6b36; background:rgba(138,154,91,.14);
            border:1px solid rgba(138,154,91,.32); margin-bottom:8px; }
@@ -1314,19 +1293,23 @@ def screen_js_results() -> None:
     with st.expander(t["disclose_title"]):
         st.markdown(t["disclose_body"])
 
-    # ---- 5. SDG contribution; the (?) sits after the heading so the left rule lines up ----
-    # The heading itself is ONE real button: its label contains the section title and
-    # the small (?) glyph, so the whole heading row is clickable and the icon sits
-    # exactly where the text ends. No overlay, no absolute positioning.
+    # ---- 5. SDG contribution -------------------------------------------------
+    # The heading keeps its left rule. The toggle is a normal Streamlit button with a
+    # plain label: no CSS overrides, no anchors, no overlays, so it always clicks.
     q_open = st.session_state.get("show_sdg_wheel", False)
-    st.markdown('<div class="sdg-head-anchor"></div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="sdg-head-row">'
+        f'<span class="sdg-head-text">{t["p5"]}</span>'
+        "</div>",
+        unsafe_allow_html=True,
+    )
     if st.button(
-        f'{t["p5"]}   {"×" if q_open else "?"}',
-        key="sdg_heading_btn",
+        ("▾ " if q_open else "▸ ") + t["sdg_open_btn"],
+        key="sdg_toggle_btn",
         help=t["sdg_help_tip"],
-        type="secondary",
     ):
         st.session_state["show_sdg_wheel"] = not q_open
+        q_open = not q_open
 
     summary = sdg_summary(results[:4])
     st.write(", ".join(f"**SDG {k}** ({v})" for k, v in summary.items()) or "—")
