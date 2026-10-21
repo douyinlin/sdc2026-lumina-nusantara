@@ -1,660 +1,1391 @@
 {
   "is_simulated": true,
-  "note": "Team-curated role catalogue. Skill requirements are modelled on O*NET / ESCO occupation skill lists but are a hand-curated subset, not an official extract. Trend values are simulated for the demo.",
+  "note": "Team-curated role catalogue. Skill tiers (core/important/nice) are our judgement of how central each skill is to the role. Malaysia context strings are summaries of public reports cited in each role's malaysia.source_url; they are not scraped values.",
   "roles": [
     {
       "name": "AI Operations Specialist",
       "domain": "it",
       "level": "mid",
-      "required_skills": [
-        "prompt engineering",
-        "data visualisation",
-        "sql",
-        "customer support"
-      ],
       "trend": 0.8,
       "sdg": [
         "4.4",
         "8.5"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "prompt engineering",
+          "tier": "core"
+        },
+        {
+          "skill": "data visualisation",
+          "tier": "important"
+        },
+        {
+          "skill": "sql",
+          "tier": "important"
+        },
+        {
+          "skill": "customer support",
+          "tier": "nice"
+        }
+      ],
+      "malaysia": {
+        "shortage": "high",
+        "source": "PIKOM Economic & Digital Job Market Outlook 2025",
+        "source_url": "https://pikom.org.my/Reports-Job_Market/PIKOM_EDJMO_2025.pdf",
+        "published": "2025",
+        "note": "Malaysia's digital economy keeps reporting a shortage of ICT talent across data, cloud and AI roles."
+      }
     },
     {
       "name": "Data Steward",
       "domain": "it",
       "level": "entry",
-      "required_skills": [
-        "sql",
-        "excel",
-        "data visualisation"
-      ],
       "trend": 0.1,
       "sdg": [
         "9.1",
         "8.5"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "sql",
+          "tier": "core"
+        },
+        {
+          "skill": "excel",
+          "tier": "important"
+        },
+        {
+          "skill": "data visualisation",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "high",
+        "source": "PIKOM Economic & Digital Job Market Outlook 2025",
+        "source_url": "https://pikom.org.my/Reports-Job_Market/PIKOM_EDJMO_2025.pdf",
+        "published": "2025",
+        "note": "Malaysia's digital economy keeps reporting a shortage of ICT talent across data, cloud and AI roles."
+      }
     },
     {
       "name": "Machine Learning Engineer",
       "domain": "it",
       "level": "senior",
-      "required_skills": [
-        "python",
-        "machine learning",
-        "sql"
-      ],
       "trend": 0.9,
       "sdg": [
         "9.1",
         "4.4"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "python",
+          "tier": "core"
+        },
+        {
+          "skill": "machine learning",
+          "tier": "core"
+        },
+        {
+          "skill": "sql",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "high",
+        "source": "PIKOM Economic & Digital Job Market Outlook 2025",
+        "source_url": "https://pikom.org.my/Reports-Job_Market/PIKOM_EDJMO_2025.pdf",
+        "published": "2025",
+        "note": "Malaysia's digital economy keeps reporting a shortage of ICT talent across data, cloud and AI roles."
+      }
     },
     {
       "name": "Cloud Support Engineer",
       "domain": "it",
       "level": "mid",
-      "required_skills": [
-        "cloud",
-        "it support",
-        "cybersecurity"
-      ],
       "trend": 0.6,
       "sdg": [
         "9.1"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "cloud",
+          "tier": "core"
+        },
+        {
+          "skill": "it support",
+          "tier": "core"
+        },
+        {
+          "skill": "cybersecurity",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "high",
+        "source": "PIKOM Economic & Digital Job Market Outlook 2025",
+        "source_url": "https://pikom.org.my/Reports-Job_Market/PIKOM_EDJMO_2025.pdf",
+        "published": "2025",
+        "note": "Malaysia's digital economy keeps reporting a shortage of ICT talent across data, cloud and AI roles."
+      }
     },
     {
       "name": "Application Support Analyst",
       "domain": "it",
       "level": "entry",
-      "required_skills": [
-        "it support",
-        "sql",
-        "communication"
-      ],
       "trend": 0.2,
       "sdg": [
         "8.5"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "it support",
+          "tier": "core"
+        },
+        {
+          "skill": "sql",
+          "tier": "important"
+        },
+        {
+          "skill": "communication",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "high",
+        "source": "PIKOM Economic & Digital Job Market Outlook 2025",
+        "source_url": "https://pikom.org.my/Reports-Job_Market/PIKOM_EDJMO_2025.pdf",
+        "published": "2025",
+        "note": "Malaysia's digital economy keeps reporting a shortage of ICT talent across data, cloud and AI roles."
+      }
     },
     {
       "name": "Cybersecurity Analyst",
       "domain": "it",
       "level": "mid",
-      "required_skills": [
-        "cybersecurity",
-        "python",
-        "reporting"
-      ],
       "trend": 0.7,
       "sdg": [
         "9.1",
         "8.5"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "cybersecurity",
+          "tier": "core"
+        },
+        {
+          "skill": "python",
+          "tier": "important"
+        },
+        {
+          "skill": "reporting",
+          "tier": "nice"
+        }
+      ],
+      "malaysia": {
+        "shortage": "high",
+        "source": "PIKOM Economic & Digital Job Market Outlook 2025",
+        "source_url": "https://pikom.org.my/Reports-Job_Market/PIKOM_EDJMO_2025.pdf",
+        "published": "2025",
+        "note": "Malaysia's digital economy keeps reporting a shortage of ICT talent across data, cloud and AI roles."
+      }
     },
     {
       "name": "Web Developer",
       "domain": "it",
       "level": "entry",
-      "required_skills": [
-        "web development",
-        "python",
-        "ui ux"
-      ],
       "trend": 0.4,
       "sdg": [
         "9.1"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "web development",
+          "tier": "core"
+        },
+        {
+          "skill": "python",
+          "tier": "nice"
+        },
+        {
+          "skill": "ui ux",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "high",
+        "source": "PIKOM Economic & Digital Job Market Outlook 2025",
+        "source_url": "https://pikom.org.my/Reports-Job_Market/PIKOM_EDJMO_2025.pdf",
+        "published": "2025",
+        "note": "Malaysia's digital economy keeps reporting a shortage of ICT talent across data, cloud and AI roles."
+      }
     },
     {
       "name": "Clinical Data Coordinator",
       "domain": "health",
       "level": "entry",
-      "required_skills": [
-        "patient care",
-        "clinic admin",
-        "data entry"
-      ],
       "trend": 0.3,
       "sdg": [
         "3.8",
         "4.4"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "patient care",
+          "tier": "important"
+        },
+        {
+          "skill": "clinic admin",
+          "tier": "core"
+        },
+        {
+          "skill": "data entry",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "high",
+        "source": "MEF graduate skills-mismatch commentary 2025",
+        "source_url": "https://hrsea.economictimes.indiatimes.com/news/industry/hitting-the-wall-70-of-malaysian-graduates-stuck-in-low-skilled-jobs-experts-warn/121397820",
+        "published": "2025-05",
+        "note": "Healthcare and health-informatics roles are expanding with digitalisation of public and private hospitals."
+      }
     },
     {
       "name": "AI Clinical Support Specialist",
       "domain": "health",
       "level": "mid",
-      "required_skills": [
-        "patient care",
-        "prompt engineering",
-        "data visualisation"
-      ],
       "trend": 0.8,
       "sdg": [
         "3.8",
         "9.1"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "patient care",
+          "tier": "core"
+        },
+        {
+          "skill": "prompt engineering",
+          "tier": "core"
+        },
+        {
+          "skill": "data visualisation",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "high",
+        "source": "MEF graduate skills-mismatch commentary 2025",
+        "source_url": "https://hrsea.economictimes.indiatimes.com/news/industry/hitting-the-wall-70-of-malaysian-graduates-stuck-in-low-skilled-jobs-experts-warn/121397820",
+        "published": "2025-05",
+        "note": "Healthcare and health-informatics roles are expanding with digitalisation of public and private hospitals."
+      }
     },
     {
       "name": "Health Informatics Officer",
       "domain": "health",
       "level": "mid",
-      "required_skills": [
-        "clinic admin",
-        "sql",
-        "reporting"
-      ],
       "trend": 0.6,
       "sdg": [
         "3.8",
         "9.1"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "clinic admin",
+          "tier": "core"
+        },
+        {
+          "skill": "sql",
+          "tier": "core"
+        },
+        {
+          "skill": "reporting",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "high",
+        "source": "MEF graduate skills-mismatch commentary 2025",
+        "source_url": "https://hrsea.economictimes.indiatimes.com/news/industry/hitting-the-wall-70-of-malaysian-graduates-stuck-in-low-skilled-jobs-experts-warn/121397820",
+        "published": "2025-05",
+        "note": "Healthcare and health-informatics roles are expanding with digitalisation of public and private hospitals."
+      }
     },
     {
       "name": "Medical Records Officer",
       "domain": "health",
       "level": "entry",
-      "required_skills": [
-        "documentation",
-        "clinic admin",
-        "quality assurance"
-      ],
       "trend": 0.0,
       "sdg": [
         "3.8"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "documentation",
+          "tier": "core"
+        },
+        {
+          "skill": "clinic admin",
+          "tier": "important"
+        },
+        {
+          "skill": "quality assurance",
+          "tier": "nice"
+        }
+      ],
+      "malaysia": {
+        "shortage": "high",
+        "source": "MEF graduate skills-mismatch commentary 2025",
+        "source_url": "https://hrsea.economictimes.indiatimes.com/news/industry/hitting-the-wall-70-of-malaysian-graduates-stuck-in-low-skilled-jobs-experts-warn/121397820",
+        "published": "2025-05",
+        "note": "Healthcare and health-informatics roles are expanding with digitalisation of public and private hospitals."
+      }
     },
     {
       "name": "Care Coordinator",
       "domain": "health",
       "level": "entry",
-      "required_skills": [
-        "patient care",
-        "communication",
-        "counselling"
-      ],
       "trend": 0.2,
       "sdg": [
         "3.8",
         "8.5"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "patient care",
+          "tier": "core"
+        },
+        {
+          "skill": "communication",
+          "tier": "core"
+        },
+        {
+          "skill": "counselling",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "high",
+        "source": "MEF graduate skills-mismatch commentary 2025",
+        "source_url": "https://hrsea.economictimes.indiatimes.com/news/industry/hitting-the-wall-70-of-malaysian-graduates-stuck-in-low-skilled-jobs-experts-warn/121397820",
+        "published": "2025-05",
+        "note": "Healthcare and health-informatics roles are expanding with digitalisation of public and private hospitals."
+      }
     },
     {
       "name": "Public Health Programme Officer",
       "domain": "health",
       "level": "mid",
-      "required_skills": [
-        "research",
-        "reporting",
-        "stakeholder management"
-      ],
       "trend": 0.3,
       "sdg": [
         "3.8",
         "4.4"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "research",
+          "tier": "core"
+        },
+        {
+          "skill": "reporting",
+          "tier": "important"
+        },
+        {
+          "skill": "stakeholder management",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "high",
+        "source": "MEF graduate skills-mismatch commentary 2025",
+        "source_url": "https://hrsea.economictimes.indiatimes.com/news/industry/hitting-the-wall-70-of-malaysian-graduates-stuck-in-low-skilled-jobs-experts-warn/121397820",
+        "published": "2025-05",
+        "note": "Healthcare and health-informatics roles are expanding with digitalisation of public and private hospitals."
+      }
     },
     {
       "name": "Business Operations Associate",
       "domain": "business",
       "level": "entry",
-      "required_skills": [
-        "excel",
-        "communication",
-        "basic statistics"
-      ],
       "trend": 0.1,
       "sdg": [
         "8.5"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "excel",
+          "tier": "core"
+        },
+        {
+          "skill": "communication",
+          "tier": "important"
+        },
+        {
+          "skill": "basic statistics",
+          "tier": "nice"
+        }
+      ],
+      "malaysia": {
+        "shortage": "medium",
+        "source": "MEF graduate skills-mismatch commentary 2025",
+        "source_url": "https://hrsea.economictimes.indiatimes.com/news/industry/hitting-the-wall-70-of-malaysian-graduates-stuck-in-low-skilled-jobs-experts-warn/121397820",
+        "published": "2025-05",
+        "note": "Business and finance graduates are the largest group affected by skills mismatch with modern roles."
+      }
     },
     {
       "name": "Customer Success Analyst",
       "domain": "business",
       "level": "entry",
-      "required_skills": [
-        "crm administration",
-        "data visualisation",
-        "sql"
-      ],
       "trend": 0.2,
       "sdg": [
         "8.5",
         "4.4"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "crm administration",
+          "tier": "core"
+        },
+        {
+          "skill": "data visualisation",
+          "tier": "important"
+        },
+        {
+          "skill": "sql",
+          "tier": "nice"
+        }
+      ],
+      "malaysia": {
+        "shortage": "medium",
+        "source": "MEF graduate skills-mismatch commentary 2025",
+        "source_url": "https://hrsea.economictimes.indiatimes.com/news/industry/hitting-the-wall-70-of-malaysian-graduates-stuck-in-low-skilled-jobs-experts-warn/121397820",
+        "published": "2025-05",
+        "note": "Business and finance graduates are the largest group affected by skills mismatch with modern roles."
+      }
     },
     {
       "name": "Process Automation Lead",
       "domain": "business",
       "level": "mid",
-      "required_skills": [
-        "excel",
-        "python",
-        "project management",
-        "prompt engineering"
-      ],
       "trend": 0.5,
       "sdg": [
         "8.2",
         "9.1"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "excel",
+          "tier": "important"
+        },
+        {
+          "skill": "python",
+          "tier": "important"
+        },
+        {
+          "skill": "project management",
+          "tier": "core"
+        },
+        {
+          "skill": "prompt engineering",
+          "tier": "nice"
+        }
+      ],
+      "malaysia": {
+        "shortage": "medium",
+        "source": "MEF graduate skills-mismatch commentary 2025",
+        "source_url": "https://hrsea.economictimes.indiatimes.com/news/industry/hitting-the-wall-70-of-malaysian-graduates-stuck-in-low-skilled-jobs-experts-warn/121397820",
+        "published": "2025-05",
+        "note": "Business and finance graduates are the largest group affected by skills mismatch with modern roles."
+      }
     },
     {
       "name": "Product Manager (AI)",
       "domain": "business",
       "level": "senior",
-      "required_skills": [
-        "product management",
-        "project management",
-        "prompt engineering"
-      ],
       "trend": 0.6,
       "sdg": [
         "8.2",
         "4.4"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "product management",
+          "tier": "core"
+        },
+        {
+          "skill": "project management",
+          "tier": "important"
+        },
+        {
+          "skill": "prompt engineering",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "medium",
+        "source": "MEF graduate skills-mismatch commentary 2025",
+        "source_url": "https://hrsea.economictimes.indiatimes.com/news/industry/hitting-the-wall-70-of-malaysian-graduates-stuck-in-low-skilled-jobs-experts-warn/121397820",
+        "published": "2025-05",
+        "note": "Business and finance graduates are the largest group affected by skills mismatch with modern roles."
+      }
     },
     {
       "name": "Financial Analyst",
       "domain": "business",
       "level": "entry",
-      "required_skills": [
-        "financial modelling",
-        "excel",
-        "financial reporting"
-      ],
       "trend": 0.2,
       "sdg": [
         "8.5"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "financial modelling",
+          "tier": "core"
+        },
+        {
+          "skill": "excel",
+          "tier": "core"
+        },
+        {
+          "skill": "financial reporting",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "medium",
+        "source": "MEF graduate skills-mismatch commentary 2025",
+        "source_url": "https://hrsea.economictimes.indiatimes.com/news/industry/hitting-the-wall-70-of-malaysian-graduates-stuck-in-low-skilled-jobs-experts-warn/121397820",
+        "published": "2025-05",
+        "note": "Business and finance graduates are the largest group affected by skills mismatch with modern roles."
+      }
     },
     {
       "name": "Accounts Executive",
       "domain": "business",
       "level": "entry",
-      "required_skills": [
-        "bookkeeping",
-        "excel",
-        "reporting"
-      ],
       "trend": 0.0,
       "sdg": [
         "8.5"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "bookkeeping",
+          "tier": "core"
+        },
+        {
+          "skill": "excel",
+          "tier": "important"
+        },
+        {
+          "skill": "reporting",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "medium",
+        "source": "MEF graduate skills-mismatch commentary 2025",
+        "source_url": "https://hrsea.economictimes.indiatimes.com/news/industry/hitting-the-wall-70-of-malaysian-graduates-stuck-in-low-skilled-jobs-experts-warn/121397820",
+        "published": "2025-05",
+        "note": "Business and finance graduates are the largest group affected by skills mismatch with modern roles."
+      }
     },
     {
       "name": "HR Operations Officer",
       "domain": "business",
       "level": "entry",
-      "required_skills": [
-        "hr operations",
-        "communication",
-        "excel"
-      ],
       "trend": 0.1,
       "sdg": [
         "8.5",
         "5.1"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "hr operations",
+          "tier": "core"
+        },
+        {
+          "skill": "communication",
+          "tier": "important"
+        },
+        {
+          "skill": "excel",
+          "tier": "nice"
+        }
+      ],
+      "malaysia": {
+        "shortage": "medium",
+        "source": "MEF graduate skills-mismatch commentary 2025",
+        "source_url": "https://hrsea.economictimes.indiatimes.com/news/industry/hitting-the-wall-70-of-malaysian-graduates-stuck-in-low-skilled-jobs-experts-warn/121397820",
+        "published": "2025-05",
+        "note": "Business and finance graduates are the largest group affected by skills mismatch with modern roles."
+      }
     },
     {
       "name": "Talent Acquisition Partner",
       "domain": "business",
       "level": "mid",
-      "required_skills": [
-        "recruitment",
-        "communication",
-        "negotiation"
-      ],
       "trend": 0.2,
       "sdg": [
         "8.5"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "recruitment",
+          "tier": "core"
+        },
+        {
+          "skill": "communication",
+          "tier": "core"
+        },
+        {
+          "skill": "negotiation",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "medium",
+        "source": "MEF graduate skills-mismatch commentary 2025",
+        "source_url": "https://hrsea.economictimes.indiatimes.com/news/industry/hitting-the-wall-70-of-malaysian-graduates-stuck-in-low-skilled-jobs-experts-warn/121397820",
+        "published": "2025-05",
+        "note": "Business and finance graduates are the largest group affected by skills mismatch with modern roles."
+      }
     },
     {
       "name": "Mechanical Design Engineer",
       "domain": "engineering",
       "level": "mid",
-      "required_skills": [
-        "machine operation",
-        "quality assurance",
-        "project management"
-      ],
       "trend": 0.2,
       "sdg": [
         "9.1"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "machine operation",
+          "tier": "core"
+        },
+        {
+          "skill": "quality assurance",
+          "tier": "important"
+        },
+        {
+          "skill": "project management",
+          "tier": "nice"
+        }
+      ],
+      "malaysia": {
+        "shortage": "high",
+        "source": "PIKOM Economic & Digital Job Market Outlook 2025",
+        "source_url": "https://pikom.org.my/Reports-Job_Market/PIKOM_EDJMO_2025.pdf",
+        "published": "2025",
+        "note": "Engineering and technical roles remain on Malaysia's shortage list, especially with Industry 4.0 adoption."
+      }
     },
     {
       "name": "Manufacturing Process Engineer",
       "domain": "engineering",
       "level": "mid",
-      "required_skills": [
-        "lean",
-        "quality assurance",
-        "process improvement"
-      ],
       "trend": 0.3,
       "sdg": [
         "9.1",
         "8.2"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "lean",
+          "tier": "core"
+        },
+        {
+          "skill": "quality assurance",
+          "tier": "important"
+        },
+        {
+          "skill": "process improvement",
+          "tier": "core"
+        }
+      ],
+      "malaysia": {
+        "shortage": "high",
+        "source": "PIKOM Economic & Digital Job Market Outlook 2025",
+        "source_url": "https://pikom.org.my/Reports-Job_Market/PIKOM_EDJMO_2025.pdf",
+        "published": "2025",
+        "note": "Engineering and technical roles remain on Malaysia's shortage list, especially with Industry 4.0 adoption."
+      }
     },
     {
       "name": "Maintenance Technician",
       "domain": "engineering",
       "level": "entry",
-      "required_skills": [
-        "machine operation",
-        "osh",
-        "quality assurance"
-      ],
       "trend": 0.0,
       "sdg": [
         "8.5"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "machine operation",
+          "tier": "core"
+        },
+        {
+          "skill": "osh",
+          "tier": "important"
+        },
+        {
+          "skill": "quality assurance",
+          "tier": "nice"
+        }
+      ],
+      "malaysia": {
+        "shortage": "high",
+        "source": "PIKOM Economic & Digital Job Market Outlook 2025",
+        "source_url": "https://pikom.org.my/Reports-Job_Market/PIKOM_EDJMO_2025.pdf",
+        "published": "2025",
+        "note": "Engineering and technical roles remain on Malaysia's shortage list, especially with Industry 4.0 adoption."
+      }
     },
     {
       "name": "Smart Factory Analyst",
       "domain": "engineering",
       "level": "mid",
-      "required_skills": [
-        "data visualisation",
-        "python",
-        "lean"
-      ],
       "trend": 0.7,
       "sdg": [
         "9.1",
         "8.2"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "data visualisation",
+          "tier": "core"
+        },
+        {
+          "skill": "python",
+          "tier": "important"
+        },
+        {
+          "skill": "lean",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "high",
+        "source": "PIKOM Economic & Digital Job Market Outlook 2025",
+        "source_url": "https://pikom.org.my/Reports-Job_Market/PIKOM_EDJMO_2025.pdf",
+        "published": "2025",
+        "note": "Engineering and technical roles remain on Malaysia's shortage list, especially with Industry 4.0 adoption."
+      }
     },
     {
       "name": "Safety and Compliance Officer",
       "domain": "engineering",
       "level": "mid",
-      "required_skills": [
-        "osh",
-        "compliance",
-        "reporting"
-      ],
       "trend": 0.1,
       "sdg": [
         "8.8"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "osh",
+          "tier": "core"
+        },
+        {
+          "skill": "compliance",
+          "tier": "core"
+        },
+        {
+          "skill": "reporting",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "high",
+        "source": "PIKOM Economic & Digital Job Market Outlook 2025",
+        "source_url": "https://pikom.org.my/Reports-Job_Market/PIKOM_EDJMO_2025.pdf",
+        "published": "2025",
+        "note": "Engineering and technical roles remain on Malaysia's shortage list, especially with Industry 4.0 adoption."
+      }
     },
     {
       "name": "Logistics Coordinator",
       "domain": "engineering",
       "level": "entry",
-      "required_skills": [
-        "logistics",
-        "inventory",
-        "excel"
-      ],
       "trend": 0.1,
       "sdg": [
         "8.5"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "logistics",
+          "tier": "core"
+        },
+        {
+          "skill": "inventory",
+          "tier": "core"
+        },
+        {
+          "skill": "excel",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "high",
+        "source": "PIKOM Economic & Digital Job Market Outlook 2025",
+        "source_url": "https://pikom.org.my/Reports-Job_Market/PIKOM_EDJMO_2025.pdf",
+        "published": "2025",
+        "note": "Engineering and technical roles remain on Malaysia's shortage list, especially with Industry 4.0 adoption."
+      }
     },
     {
       "name": "Digital Marketing Executive",
       "domain": "design",
       "level": "entry",
-      "required_skills": [
-        "digital marketing",
-        "content",
-        "copywriting"
-      ],
       "trend": 0.3,
       "sdg": [
         "8.5"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "digital marketing",
+          "tier": "core"
+        },
+        {
+          "skill": "content",
+          "tier": "important"
+        },
+        {
+          "skill": "copywriting",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "medium",
+        "source": "PIKOM Economic & Digital Job Market Outlook 2025",
+        "source_url": "https://pikom.org.my/Reports-Job_Market/PIKOM_EDJMO_2025.pdf",
+        "published": "2025",
+        "note": "Digital content and design roles grow with the digital economy but compete on portfolio quality."
+      }
     },
     {
       "name": "UX Designer",
       "domain": "design",
       "level": "entry",
-      "required_skills": [
-        "ui ux",
-        "graphic design",
-        "research"
-      ],
       "trend": 0.5,
       "sdg": [
         "9.1",
         "4.4"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "ui ux",
+          "tier": "core"
+        },
+        {
+          "skill": "graphic design",
+          "tier": "nice"
+        },
+        {
+          "skill": "research",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "medium",
+        "source": "PIKOM Economic & Digital Job Market Outlook 2025",
+        "source_url": "https://pikom.org.my/Reports-Job_Market/PIKOM_EDJMO_2025.pdf",
+        "published": "2025",
+        "note": "Digital content and design roles grow with the digital economy but compete on portfolio quality."
+      }
     },
     {
       "name": "Content Producer",
       "domain": "design",
       "level": "entry",
-      "required_skills": [
-        "content",
-        "video editing",
-        "copywriting"
-      ],
       "trend": 0.2,
       "sdg": [
         "8.5"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "content",
+          "tier": "core"
+        },
+        {
+          "skill": "video editing",
+          "tier": "core"
+        },
+        {
+          "skill": "copywriting",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "medium",
+        "source": "PIKOM Economic & Digital Job Market Outlook 2025",
+        "source_url": "https://pikom.org.my/Reports-Job_Market/PIKOM_EDJMO_2025.pdf",
+        "published": "2025",
+        "note": "Digital content and design roles grow with the digital economy but compete on portfolio quality."
+      }
     },
     {
       "name": "Brand Designer",
       "domain": "design",
       "level": "mid",
-      "required_skills": [
-        "graphic design",
-        "copywriting",
-        "presentation"
-      ],
       "trend": 0.1,
       "sdg": [
         "8.5"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "graphic design",
+          "tier": "core"
+        },
+        {
+          "skill": "copywriting",
+          "tier": "important"
+        },
+        {
+          "skill": "presentation",
+          "tier": "nice"
+        }
+      ],
+      "malaysia": {
+        "shortage": "medium",
+        "source": "PIKOM Economic & Digital Job Market Outlook 2025",
+        "source_url": "https://pikom.org.my/Reports-Job_Market/PIKOM_EDJMO_2025.pdf",
+        "published": "2025",
+        "note": "Digital content and design roles grow with the digital economy but compete on portfolio quality."
+      }
     },
     {
       "name": "Corporate Trainer",
       "domain": "education",
       "level": "mid",
-      "required_skills": [
-        "teaching",
-        "presentation",
-        "coaching"
-      ],
       "trend": 0.2,
       "sdg": [
         "4.4",
         "8.5"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "teaching",
+          "tier": "core"
+        },
+        {
+          "skill": "presentation",
+          "tier": "core"
+        },
+        {
+          "skill": "coaching",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "medium",
+        "source": "MEF graduate skills-mismatch commentary 2025",
+        "source_url": "https://hrsea.economictimes.indiatimes.com/news/industry/hitting-the-wall-70-of-malaysian-graduates-stuck-in-low-skilled-jobs-experts-warn/121397820",
+        "published": "2025-05",
+        "note": "Education and training roles shift toward digital delivery and instructional design."
+      }
     },
     {
       "name": "Instructional Designer",
       "domain": "education",
       "level": "mid",
-      "required_skills": [
-        "teaching",
-        "content",
-        "ui ux"
-      ],
       "trend": 0.5,
       "sdg": [
         "4.4"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "teaching",
+          "tier": "core"
+        },
+        {
+          "skill": "content",
+          "tier": "important"
+        },
+        {
+          "skill": "ui ux",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "medium",
+        "source": "MEF graduate skills-mismatch commentary 2025",
+        "source_url": "https://hrsea.economictimes.indiatimes.com/news/industry/hitting-the-wall-70-of-malaysian-graduates-stuck-in-low-skilled-jobs-experts-warn/121397820",
+        "published": "2025-05",
+        "note": "Education and training roles shift toward digital delivery and instructional design."
+      }
     },
     {
       "name": "Student Success Adviser",
       "domain": "education",
       "level": "entry",
-      "required_skills": [
-        "counselling",
-        "communication",
-        "documentation"
-      ],
       "trend": 0.2,
       "sdg": [
         "4.4",
         "4.3"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "counselling",
+          "tier": "core"
+        },
+        {
+          "skill": "communication",
+          "tier": "important"
+        },
+        {
+          "skill": "documentation",
+          "tier": "nice"
+        }
+      ],
+      "malaysia": {
+        "shortage": "medium",
+        "source": "MEF graduate skills-mismatch commentary 2025",
+        "source_url": "https://hrsea.economictimes.indiatimes.com/news/industry/hitting-the-wall-70-of-malaysian-graduates-stuck-in-low-skilled-jobs-experts-warn/121397820",
+        "published": "2025-05",
+        "note": "Education and training roles shift toward digital delivery and instructional design."
+      }
     },
     {
       "name": "Education Technology Officer",
       "domain": "education",
       "level": "entry",
-      "required_skills": [
-        "it support",
-        "teaching",
-        "data visualisation"
-      ],
       "trend": 0.4,
       "sdg": [
         "4.4",
         "9.1"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "it support",
+          "tier": "core"
+        },
+        {
+          "skill": "teaching",
+          "tier": "important"
+        },
+        {
+          "skill": "data visualisation",
+          "tier": "nice"
+        }
+      ],
+      "malaysia": {
+        "shortage": "medium",
+        "source": "MEF graduate skills-mismatch commentary 2025",
+        "source_url": "https://hrsea.economictimes.indiatimes.com/news/industry/hitting-the-wall-70-of-malaysian-graduates-stuck-in-low-skilled-jobs-experts-warn/121397820",
+        "published": "2025-05",
+        "note": "Education and training roles shift toward digital delivery and instructional design."
+      }
     },
     {
       "name": "Legal Executive",
       "domain": "law",
       "level": "entry",
-      "required_skills": [
-        "contract review",
-        "documentation",
-        "compliance"
-      ],
       "trend": 0.1,
       "sdg": [
         "16.3"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "contract review",
+          "tier": "core"
+        },
+        {
+          "skill": "documentation",
+          "tier": "core"
+        },
+        {
+          "skill": "compliance",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "low",
+        "source": "MEF graduate skills-mismatch commentary 2025",
+        "source_url": "https://hrsea.economictimes.indiatimes.com/news/industry/hitting-the-wall-70-of-malaysian-graduates-stuck-in-low-skilled-jobs-experts-warn/121397820",
+        "published": "2025-05",
+        "note": "Legal and compliance roles grow slowly, with demand concentrated in regulated industries."
+      }
     },
     {
       "name": "Compliance Analyst",
       "domain": "law",
       "level": "mid",
-      "required_skills": [
-        "compliance",
-        "reporting",
-        "research"
-      ],
       "trend": 0.4,
       "sdg": [
         "16.3",
         "8.5"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "compliance",
+          "tier": "core"
+        },
+        {
+          "skill": "reporting",
+          "tier": "important"
+        },
+        {
+          "skill": "research",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "low",
+        "source": "MEF graduate skills-mismatch commentary 2025",
+        "source_url": "https://hrsea.economictimes.indiatimes.com/news/industry/hitting-the-wall-70-of-malaysian-graduates-stuck-in-low-skilled-jobs-experts-warn/121397820",
+        "published": "2025-05",
+        "note": "Legal and compliance roles grow slowly, with demand concentrated in regulated industries."
+      }
     },
     {
       "name": "Contracts and Tender Officer",
       "domain": "law",
       "level": "entry",
-      "required_skills": [
-        "contract review",
-        "negotiation",
-        "documentation"
-      ],
       "trend": 0.0,
       "sdg": [
         "16.3"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "contract review",
+          "tier": "core"
+        },
+        {
+          "skill": "negotiation",
+          "tier": "important"
+        },
+        {
+          "skill": "documentation",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "low",
+        "source": "MEF graduate skills-mismatch commentary 2025",
+        "source_url": "https://hrsea.economictimes.indiatimes.com/news/industry/hitting-the-wall-70-of-malaysian-graduates-stuck-in-low-skilled-jobs-experts-warn/121397820",
+        "published": "2025-05",
+        "note": "Legal and compliance roles grow slowly, with demand concentrated in regulated industries."
+      }
     },
     {
       "name": "Hotel Operations Supervisor",
       "domain": "hospitality",
       "level": "mid",
-      "required_skills": [
-        "customer support",
-        "team lead",
-        "inventory"
-      ],
       "trend": 0.0,
       "sdg": [
         "8.5"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "customer support",
+          "tier": "core"
+        },
+        {
+          "skill": "team lead",
+          "tier": "core"
+        },
+        {
+          "skill": "inventory",
+          "tier": "nice"
+        }
+      ],
+      "malaysia": {
+        "shortage": "low",
+        "source": "MEF graduate skills-mismatch commentary 2025",
+        "source_url": "https://hrsea.economictimes.indiatimes.com/news/industry/hitting-the-wall-70-of-malaysian-graduates-stuck-in-low-skilled-jobs-experts-warn/121397820",
+        "published": "2025-05",
+        "note": "Hospitality recovered after the pandemic but remains sensitive to wage and seasonality pressures."
+      }
     },
     {
       "name": "Guest Experience Analyst",
       "domain": "hospitality",
       "level": "entry",
-      "required_skills": [
-        "customer support",
-        "data visualisation",
-        "communication"
-      ],
       "trend": 0.3,
       "sdg": [
         "8.5",
         "4.4"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "customer support",
+          "tier": "important"
+        },
+        {
+          "skill": "data visualisation",
+          "tier": "core"
+        },
+        {
+          "skill": "communication",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "low",
+        "source": "MEF graduate skills-mismatch commentary 2025",
+        "source_url": "https://hrsea.economictimes.indiatimes.com/news/industry/hitting-the-wall-70-of-malaysian-graduates-stuck-in-low-skilled-jobs-experts-warn/121397820",
+        "published": "2025-05",
+        "note": "Hospitality recovered after the pandemic but remains sensitive to wage and seasonality pressures."
+      }
     },
     {
       "name": "F&B Operations Executive",
       "domain": "hospitality",
       "level": "entry",
-      "required_skills": [
-        "customer support",
-        "logistics",
-        "excel"
-      ],
       "trend": -0.1,
       "sdg": [
         "8.5"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "customer support",
+          "tier": "core"
+        },
+        {
+          "skill": "logistics",
+          "tier": "important"
+        },
+        {
+          "skill": "excel",
+          "tier": "nice"
+        }
+      ],
+      "malaysia": {
+        "shortage": "low",
+        "source": "MEF graduate skills-mismatch commentary 2025",
+        "source_url": "https://hrsea.economictimes.indiatimes.com/news/industry/hitting-the-wall-70-of-malaysian-graduates-stuck-in-low-skilled-jobs-experts-warn/121397820",
+        "published": "2025-05",
+        "note": "Hospitality recovered after the pandemic but remains sensitive to wage and seasonality pressures."
+      }
     },
     {
       "name": "Lab Analyst",
       "domain": "science",
       "level": "entry",
-      "required_skills": [
-        "research",
-        "quality assurance",
-        "documentation"
-      ],
       "trend": 0.1,
       "sdg": [
         "9.1"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "research",
+          "tier": "important"
+        },
+        {
+          "skill": "quality assurance",
+          "tier": "core"
+        },
+        {
+          "skill": "documentation",
+          "tier": "core"
+        }
+      ],
+      "malaysia": {
+        "shortage": "medium",
+        "source": "WEF Future of Jobs Report 2025 (Malaysia sample)",
+        "source_url": "https://www.weforum.org/publications/the-future-of-jobs-report-2025/",
+        "published": "2025-01",
+        "note": "Life-science and environmental roles grow with food safety and green-economy regulation."
+      }
     },
     {
       "name": "Environmental Compliance Officer",
       "domain": "science",
       "level": "mid",
-      "required_skills": [
-        "compliance",
-        "research",
-        "reporting"
-      ],
       "trend": 0.3,
       "sdg": [
         "13.2"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "compliance",
+          "tier": "core"
+        },
+        {
+          "skill": "research",
+          "tier": "important"
+        },
+        {
+          "skill": "reporting",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "medium",
+        "source": "WEF Future of Jobs Report 2025 (Malaysia sample)",
+        "source_url": "https://www.weforum.org/publications/the-future-of-jobs-report-2025/",
+        "published": "2025-01",
+        "note": "Life-science and environmental roles grow with food safety and green-economy regulation."
+      }
     },
     {
       "name": "Food Safety Officer",
       "domain": "science",
       "level": "mid",
-      "required_skills": [
-        "quality assurance",
-        "compliance",
-        "documentation"
-      ],
       "trend": 0.1,
       "sdg": [
         "3.9"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "quality assurance",
+          "tier": "core"
+        },
+        {
+          "skill": "compliance",
+          "tier": "important"
+        },
+        {
+          "skill": "documentation",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "medium",
+        "source": "WEF Future of Jobs Report 2025 (Malaysia sample)",
+        "source_url": "https://www.weforum.org/publications/the-future-of-jobs-report-2025/",
+        "published": "2025-01",
+        "note": "Life-science and environmental roles grow with food safety and green-economy regulation."
+      }
     },
     {
       "name": "Data Analyst (Life Sciences)",
       "domain": "science",
       "level": "entry",
-      "required_skills": [
-        "data visualisation",
-        "sql",
-        "basic statistics"
-      ],
       "trend": 0.5,
       "sdg": [
         "9.1",
         "4.4"
-      ]
+      ],
+      "skills": [
+        {
+          "skill": "data visualisation",
+          "tier": "core"
+        },
+        {
+          "skill": "sql",
+          "tier": "core"
+        },
+        {
+          "skill": "basic statistics",
+          "tier": "important"
+        }
+      ],
+      "malaysia": {
+        "shortage": "medium",
+        "source": "WEF Future of Jobs Report 2025 (Malaysia sample)",
+        "source_url": "https://www.weforum.org/publications/the-future-of-jobs-report-2025/",
+        "published": "2025-01",
+        "note": "Life-science and environmental roles grow with food safety and green-economy regulation."
+      }
     }
-  ]
+  ],
+  "skill_tiers": {
+    "core": 1.0,
+    "important": 0.6,
+    "nice": 0.3
+  }
 }

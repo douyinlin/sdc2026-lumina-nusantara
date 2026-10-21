@@ -181,9 +181,16 @@ def load_roles() -> list[Role]:
         roles = []
         ROLE_META.clear()
         for r in raw["roles"]:
-            role = Role(r["name"], r["required_skills"], r["trend"], r["sdg"])
+            skills = [s if isinstance(s, str) else s["skill"] for s in r.get("skills", r.get("required_skills", []))]
+            tiers = {s if isinstance(s, str) else s["skill"]: (None if isinstance(s, str) else s.get("tier", "important"))
+                     for s in r.get("skills", [])}
+            role = Role(r["name"], skills, r["trend"], r["sdg"], {k: v for k, v in tiers.items() if v})
             roles.append(role)
-            ROLE_META[r["name"]] = {"domain": r.get("domain", "business"), "level": r.get("level", "mid")}
+            ROLE_META[r["name"]] = {
+                "domain": r.get("domain", "business"),
+                "level": r.get("level", "mid"),
+                "malaysia": r.get("malaysia", {}),
+            }
         return roles
     except Exception:
         for r in DEFAULT_ROLES:
@@ -696,9 +703,27 @@ def role_card(t: dict, result: dict, expanded: bool = False, lang: str = "en") -
         d.metric(t["trend"], f"{c['trend'] * 100:.0f}%")
         e.metric(t["gapcost"], f"{c['gap_cost'] * 100:.0f}%")
         have = ", ".join(skill_label(lang, x) for x in result["covered"]) or "—"
-        close = ", ".join(skill_label(lang, x) for x in result["missing"]) or t["none"]
+        close_items = []
+        for x in result["missing"]:
+            tier = result.get("tiers", {}).get(x)
+            tag = f" ({t['tier_' + tier]})" if tier else ""
+            close_items.append(skill_label(lang, x) + tag)
+        close = ", ".join(close_items) or t["none"]
         st.write(f"**{t['have']} ({len(result['covered'])}):** {have}")
         st.write(f"**{t['close']} ({len(result['missing'])}):** {close}")
+
+        my = ROLE_META.get(result["role"], {}).get("malaysia") or {}
+        if my:
+            lvl = my.get("shortage", "")
+            badge = {"high": "🔴", "medium": "🟠", "low": "🟢"}.get(lvl, "•")
+            st.markdown(
+                f"{badge} **{t['my_demand']}: {t.get('short_' + lvl, lvl)}** · "
+                f"{my.get('note', '')}  \n"
+                f"<span style='font-size:12px;color:#7a836a'>📄 {my.get('source', '')} "
+                f"({my.get('published', '')}) · <a href='{my.get('source_url', '')}' target='_blank'>"
+                f"{t['view_source']}</a></span>",
+                unsafe_allow_html=True,
+            )
         st.caption(t["estimate"])
 
 
@@ -939,11 +964,13 @@ def screen_js_results() -> None:
         st.caption(t["domain_adjacent"].format(field))
     st.caption(t["ranked_note"])
     st.caption(t["role_source"])
+    roles_by_name = {x.name: x for x in roles}
     for i, r in enumerate(results[:4]):
         dom = ROLE_META.get(r["role"], {}).get("domain", "")
         badge = t["badge_same"] if dom == FIELD_DOMAIN.get(field) else t["badge_adjacent"]
         if i == 0:
             st.caption(badge)
+        r["tiers"] = {sk: roles_by_name.get(r["role"], Role(r["role"], [], 0)).tier_of(sk) for sk in r["missing"]}
         role_card(t, r, expanded=(i == 0), lang=lang_now)
 
     st.subheader(t["p4"])

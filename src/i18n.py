@@ -173,6 +173,10 @@ STRINGS = {
         "cc_complete": "Your programme already covers every required skill for these roles.",
         "cc_roles": "Target roles",
         "cc_foot": "Synthetic demo data only — no student records are collected or stored.",
+        "tier_core": "core", "tier_important": "important", "tier_nice": "nice to have",
+        "my_demand": "Malaysia demand",
+        "short_high": "high shortage", "short_medium": "moderate", "short_low": "stable",
+        "view_source": "view source",
         "role_source": "Role catalogue: team-curated subset modelled on O*NET / ESCO skill lists (not an official extract).",
         "disclose_title": "Sources, AI disclosure and limits",
         "disclose_body": (
@@ -358,6 +362,10 @@ STRINGS = {
         "cc_complete": "你的课程已经覆盖这些岗位的全部要求技能。",
         "cc_roles": "目标岗位",
         "cc_foot": "仅为合成演示数据 —— 不采集、不存储任何学生记录。",
+        "tier_core": "核心", "tier_important": "重要", "tier_nice": "加分",
+        "my_demand": "马来西亚需求",
+        "short_high": "紧缺", "short_medium": "中等", "short_low": "稳定",
+        "view_source": "查看来源",
         "role_source": "岗位目录：参照 O*NET / ESCO 职业技能清单人工整理的子集（非官方导出）。",
         "disclose_title": "数据来源、AI 使用披露与局限",
         "disclose_body": (
@@ -465,6 +473,10 @@ STRINGS = {
         "weight": "pemberat {}",
         "error": "Ada masalah pada langkah ini. Tiada apa-apa disimpan.",
         "back_start": "← Kembali ke mula",
+        "tier_core": "teras", "tier_important": "penting", "tier_nice": "nilai tambah",
+        "my_demand": "Permintaan Malaysia",
+        "short_high": "kekurangan tinggi", "short_medium": "sederhana", "short_low": "stabil",
+        "view_source": "lihat sumber",
         "role_source": "Katalog peranan: subset yang disusun pasukan berdasarkan senarai kemahiran O*NET / ESCO (bukan ekstrak rasmi).",
         "disclose_title": "Sumber, pendedahan AI dan had",
         "disclose_body": (

@@ -10,6 +10,30 @@ from dataclasses import dataclass, field
 import math
 
 
+SKILL_TIER_WEIGHT = {"core": 1.0, "important": 0.6, "nice": 0.3}
+
+# Per-skill cost of closing the gap (higher = harder / longer).
+SKILL_GAP_COST = {
+    "prompt engineering": 0.30, "data visualisation": 0.35, "excel": 0.25,
+    "sql": 0.45, "crm administration": 0.30, "reporting": 0.25,
+    "customer support": 0.20, "communication": 0.20, "basic statistics": 0.45,
+    "python": 0.55, "machine learning": 0.85, "cloud": 0.70, "cybersecurity": 0.75,
+    "web development": 0.60, "ui ux": 0.55, "graphic design": 0.45,
+    "research": 0.40, "project management": 0.50, "product management": 0.60,
+    "team lead": 0.50, "hr operations": 0.35, "recruitment": 0.40,
+    "negotiation": 0.40, "presentation": 0.25, "coaching": 0.40,
+    "financial modelling": 0.65, "financial reporting": 0.60, "bookkeeping": 0.40,
+    "contract review": 0.65, "compliance": 0.55, "documentation": 0.25,
+    "quality assurance": 0.40, "lean": 0.60, "osh": 0.50,
+    "machine operation": 0.55, "logistics": 0.35, "inventory": 0.30,
+    "data entry": 0.20, "clinic admin": 0.35, "patient care": 0.55,
+    "counselling": 0.60, "teaching": 0.60, "content": 0.30, "copywriting": 0.35,
+    "digital marketing": 0.45, "video editing": 0.40, "automation": 0.55,
+    "process improvement": 0.45, "stakeholder management": 0.45,
+    "supply chain": 0.50, "research": 0.40,
+}
+
+
 @dataclass
 class Role:
     """A candidate future role."""
@@ -18,17 +42,102 @@ class Role:
     required_skills: list[str]
     trend: float  # -1.0 (declining) .. +1.0 (rising)
     sdg: list[str] = field(default_factory=list)
+    # optional: {"skill": "core" | "important" | "nice"}; empty = all "important"
+    tiers: dict[str, str] = field(default_factory=dict)
+
+    def tier_of(self, skill: str) -> str:
+        return self.tiers.get(skill.strip().lower(), "important")
 
 
 #: How easily one skill transfers into another (0..1).
 TRANSFERABILITY = {
+    # office / data
     ("excel", "sql"): 0.6,
     ("excel", "data visualisation"): 0.7,
-    ("customer support", "crm administration"): 0.8,
-    ("customer support", "prompt engineering"): 0.3,
-    ("python", "sql"): 0.5,
+    ("excel", "reporting"): 0.8,
+    ("excel", "basic statistics"): 0.5,
+    ("excel", "financial modelling"): 0.5,
+    ("excel", "bookkeeping"): 0.4,
+    ("sql", "python"): 0.5,
+    ("sql", "data visualisation"): 0.6,
+    ("data visualisation", "sql"): 0.5,
+    ("data visualisation", "reporting"): 0.8,
+    ("data visualisation", "basic statistics"): 0.6,
+    ("reporting", "data visualisation"): 0.7,
+    ("reporting", "documentation"): 0.6,
+    ("basic statistics", "data visualisation"): 0.6,
+    ("basic statistics", "research"): 0.7,
+    # tech
     ("python", "machine learning"): 0.4,
+    ("python", "sql"): 0.5,
+    ("python", "automation"): 0.7,
+    ("python", "web development"): 0.6,
+    ("web development", "ui ux"): 0.5,
+    ("machine learning", "python"): 0.6,
+    ("machine learning", "basic statistics"): 0.6,
+    ("cloud", "it support"): 0.6,
+    ("it support", "cloud"): 0.5,
+    ("it support", "cybersecurity"): 0.4,
+    ("cybersecurity", "compliance"): 0.5,
+    ("prompt engineering", "automation"): 0.5,
+    ("automation", "process improvement"): 0.7,
+    # customer / operations
+    ("customer support", "crm administration"): 0.8,
+    ("customer support", "communication"): 0.8,
+    ("crm administration", "customer support"): 0.7,
+    ("crm administration", "data visualisation"): 0.4,
+    ("process improvement", "lean"): 0.7,
+    ("lean", "process improvement"): 0.7,
+    ("lean", "quality assurance"): 0.6,
+    ("quality assurance", "documentation"): 0.7,
+    ("quality assurance", "compliance"): 0.5,
+    ("logistics", "inventory"): 0.8,
+    ("inventory", "logistics"): 0.8,
+    ("inventory", "excel"): 0.6,
+    # people / management
+    ("team lead", "project management"): 0.7,
+    ("team lead", "coaching"): 0.8,
+    ("team lead", "communication"): 0.7,
     ("project management", "product management"): 0.6,
+    ("project management", "stakeholder management"): 0.7,
+    ("product management", "project management"): 0.6,
+    ("coaching", "teaching"): 0.7,
+    ("coaching", "counselling"): 0.5,
+    ("recruitment", "hr operations"): 0.6,
+    ("hr operations", "recruitment"): 0.5,
+    # communication & design
+    ("communication", "presentation"): 0.8,
+    ("communication", "negotiation"): 0.7,
+    ("communication", "customer support"): 0.7,
+    ("presentation", "teaching"): 0.7,
+    ("presentation", "content"): 0.5,
+    ("graphic design", "ui ux"): 0.6,
+    ("graphic design", "content"): 0.6,
+    ("ui ux", "graphic design"): 0.6,
+    ("ui ux", "research"): 0.5,
+    ("video editing", "content"): 0.7,
+    ("content", "copywriting"): 0.7,
+    ("content", "digital marketing"): 0.6,
+    ("copywriting", "content"): 0.7,
+    ("digital marketing", "content"): 0.6,
+    # health
+    ("patient care", "counselling"): 0.6,
+    ("patient care", "clinic admin"): 0.6,
+    ("clinic admin", "documentation"): 0.8,
+    ("clinic admin", "data entry"): 0.7,
+    ("counselling", "communication"): 0.7,
+    # legal / finance
+    ("contract review", "compliance"): 0.6,
+    ("compliance", "documentation"): 0.6,
+    ("financial reporting", "bookkeeping"): 0.7,
+    ("financial modelling", "financial reporting"): 0.6,
+    ("bookkeeping", "financial reporting"): 0.7,
+    # science
+    ("research", "reporting"): 0.7,
+    ("research", "quality assurance"): 0.5,
+    # hospitality
+    ("customer support", "team lead"): 0.5,
+    ("logistics", "excel"): 0.5,
 }
 
 #: Relative cost of closing a gap, by skill family (lower is cheaper).
@@ -81,33 +190,50 @@ def evaluate(profile: list[str], role: Role, scenario: str = "moderate") -> dict
     score = 0.30*coverage + 0.25*focus + 0.15*transfer + 0.15*trend
             + 0.15*(1 - gap_cost)
 
-    ``focus`` is the share of the user's own skills that this role actually
-    needs. Without it a profile with 15 skills covers every role at 100% and
-    the ranking stops discriminating.
-
-    ``scenario`` is "moderate" or "fast"; fast disruption doubles the weight
-    of the trend signal, which is how the two-scenario view is produced.
+    ``coverage`` is now weighted by skill importance: a core skill counts 1.0,
+    an important one 0.6 and a nice-to-have 0.3, so two roles that each miss two
+    skills no longer score identically. ``transfer`` is also weighted and counts
+    *how much of the missing requirement* existing skills can carry, instead of
+    taking the single best skill pair.
     """
     if scenario not in {"moderate", "fast"}:
         raise ValueError("Unknown scenario.")
     if isinstance(role.trend, bool) or not isinstance(role.trend, (int, float)) or not math.isfinite(role.trend) or not -1 <= role.trend <= 1:
         raise ValueError("Simulated trend must be finite and within [-1, 1].")
+
     profile = normalize_skills(profile)
     matched = match_coverage(profile, role.name, role.required_skills)
     covered, missing = matched["covered"], matched["missing"]
-    coverage = matched["coverage"]
-    relevant = [s for s in profile if s in {r.strip().lower() for r in role.required_skills}]
-    focus = len(relevant) / len(profile) if profile else 0.0
-    transfer = (
-        max((_transfer_score(p, r) for p in profile for r in missing), default=0.0)
-        if missing
-        else 1.0
-    )
-    trend = (role.trend + 1.0) / 2.0  # map -1..1 -> 0..1
 
-    gap_cost = (
-        sum(GAP_COST.get(s, 0.7) for s in missing) / len(missing) if missing else 0.0
-    )
+    required = [s.strip().lower() for s in role.required_skills]
+    total_weight = sum(SKILL_TIER_WEIGHT[role.tier_of(s)] for s in required) or 1.0
+    covered_weight = sum(SKILL_TIER_WEIGHT[role.tier_of(s)] for s in covered)
+    coverage = covered_weight / total_weight
+
+    # focus: share of the user's own skills this role actually needs
+    relevant = [s for s in profile if s in set(required)]
+    focus = len(relevant) / len(profile) if profile else 0.0
+
+    # weighted transferability: how much of the missing requirement existing skills can carry
+    if missing:
+        missing_weight = sum(SKILL_TIER_WEIGHT[role.tier_of(s)] for s in missing) or 1.0
+        carried = 0.0
+        for gap in missing:
+            best = max((_transfer_score(p, gap) for p in profile), default=0.0)
+            carried += SKILL_TIER_WEIGHT[role.tier_of(gap)] * best
+        transfer = carried / missing_weight
+    else:
+        transfer = 1.0
+
+    trend = (role.trend + 1.0) / 2.0
+
+    # per-skill gap cost, weighted by importance
+    if missing:
+        gap_cost = sum(
+            SKILL_TIER_WEIGHT[role.tier_of(s)] * SKILL_GAP_COST.get(s, 0.5) for s in missing
+        ) / (sum(SKILL_TIER_WEIGHT[role.tier_of(s)] for s in missing) or 1.0)
+    else:
+        gap_cost = 0.0
 
     w = dict(WEIGHTS)
     if scenario == "fast":
@@ -129,9 +255,9 @@ def evaluate(profile: list[str], role: Role, scenario: str = "moderate") -> dict
         "components": {
             "coverage": coverage,
             "focus": focus,
-            "transfer": round(transfer, 2),
-            "trend": round(trend, 2),
-            "gap_cost": round(gap_cost, 2),
+            "transfer": transfer,
+            "trend": trend,
+            "gap_cost": gap_cost,
         },
         "covered": covered,
         "missing": missing,
