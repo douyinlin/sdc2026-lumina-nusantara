@@ -157,16 +157,7 @@ DEFAULT_ROLES = [
 
 ROLE_META: dict[str, dict] = {}
 
-FIELD_DOMAIN = {
-    "Business": "business",
-    "Computing / IT": "it",
-    "Engineering": "engineering",
-    "Health Sciences": "health",
-    "Education": "education",
-    "Design / Media": "design",
-    "Hospitality": "hospitality",
-    "Law": "law",
-}
+FIELD_DOMAIN: dict[str, str] = {}   # filled from FIELD_TO_DOMAIN at start-up
 
 # Which neighbouring domains are still a credible move from each field.
 ADJACENT = {
@@ -178,6 +169,7 @@ ADJACENT = {
     "design": ["business", "education"],
     "hospitality": ["business", "education"],
     "law": ["business"],
+    "science": ["health", "education"],
 }
 
 
@@ -817,10 +809,13 @@ def screen_js_intake() -> None:
         c1, c2 = st.columns(2)
         with c1:
             st.session_state["edu"] = st.selectbox(
-                t["q_edu"], ["diploma", "bachelor", "master"],
+                t["q_edu"], ["foundation", "diploma", "bachelor", "master", "phd"],
                 format_func=lambda k: t["edu_" + k],
             )
-            st.session_state["field"] = st.selectbox(t["q_field"], FIELDS)
+            _group = st.selectbox(t["q_field"], list(FIELDS))
+            st.session_state["field"] = st.selectbox(
+                t["q_field_detail"], FIELDS[_group], label_visibility="visible"
+            )
         with c2:
             st.session_state["intern"] = st.slider(t["q_intern"], 0, 12, 0)
             st.session_state["grad_year"] = st.selectbox(t["q_grad_year"], [2026, 2027, 2028])
@@ -1179,8 +1174,72 @@ st.set_page_config(page_title="SkillRadar MY", page_icon="📡", layout="wide")
 st.session_state.setdefault("lang", "en")
 play_intro()
 
-FIELDS = ["Business", "Computing / IT", "Engineering", "Health Sciences", "Education",
-          "Design / Media", "Hospitality", "Other"]
+# Grouped so the list is scannable; the label shown is "GROUP — Field".
+FIELDS: dict[str, list[str]] = {
+    "Business & Finance": [
+        "Accounting / Finance", "Business Administration", "Marketing",
+        "Human Resource Management", "Economics", "Entrepreneurship",
+    ],
+    "Computing & Data": [
+        "Computer Science", "Software Engineering", "Information Systems",
+        "Data Science / Analytics", "Cybersecurity", "Artificial Intelligence",
+    ],
+    "Engineering": [
+        "Mechanical Engineering", "Electrical / Electronic Engineering",
+        "Civil Engineering", "Chemical Engineering", "Industrial Engineering",
+        "Mechatronics / Robotics",
+    ],
+    "Health & Life Sciences": [
+        "Medicine / MBBS", "Nursing", "Pharmacy", "Dentistry",
+        "Biomedical Science", "Public Health", "Physiotherapy",
+    ],
+    "Education & Social": [
+        "Education / Teaching", "Psychology", "Social Work",
+        "Communication / Media", "Law",
+    ],
+    "Design & Media": [
+        "Graphic Design", "UI / UX Design", "Multimedia / Animation",
+        "Film & Broadcasting",
+    ],
+    "Hospitality & Tourism": [
+        "Hotel Management", "Culinary Arts", "Tourism Management",
+    ],
+    "Sciences & Environment": [
+        "Biology", "Chemistry", "Physics", "Environmental Science",
+        "Agriculture / Food Science",
+    ],
+    "Built Environment & Other": [
+        "Architecture", "Quantity Surveying", "Logistics / Supply Chain",
+        "Other",
+    ],
+}
+
+# field -> catalogue domain used for filtering
+FIELD_TO_DOMAIN: dict[str, str] = {
+    "Accounting / Finance": "business", "Business Administration": "business",
+    "Marketing": "business", "Human Resource Management": "business",
+    "Economics": "business", "Entrepreneurship": "business",
+    "Computer Science": "it", "Software Engineering": "it", "Information Systems": "it",
+    "Data Science / Analytics": "it", "Cybersecurity": "it", "Artificial Intelligence": "it",
+    "Mechanical Engineering": "engineering", "Electrical / Electronic Engineering": "engineering",
+    "Civil Engineering": "engineering", "Chemical Engineering": "engineering",
+    "Industrial Engineering": "engineering", "Mechatronics / Robotics": "engineering",
+    "Medicine / MBBS": "health", "Nursing": "health", "Pharmacy": "health",
+    "Dentistry": "health", "Biomedical Science": "health", "Public Health": "health",
+    "Physiotherapy": "health",
+    "Education / Teaching": "education", "Psychology": "education", "Social Work": "education",
+    "Communication / Media": "design", "Law": "law",
+    "Graphic Design": "design", "UI / UX Design": "design",
+    "Multimedia / Animation": "design", "Film & Broadcasting": "design",
+    "Hotel Management": "hospitality", "Culinary Arts": "hospitality",
+    "Tourism Management": "hospitality",
+    "Biology": "science", "Chemistry": "science", "Physics": "science",
+    "Environmental Science": "science", "Agriculture / Food Science": "science",
+    "Architecture": "engineering", "Quantity Surveying": "engineering",
+    "Logistics / Supply Chain": "engineering", "Other": "business",
+}
+
+FIELD_DOMAIN.update(FIELD_TO_DOMAIN)
 
 STAGES = {
     "landing": screen_landing,
