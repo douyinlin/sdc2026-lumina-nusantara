@@ -592,24 +592,57 @@ def top_bar(t: dict) -> None:
         lang_selector(compact=True)
 
 
+TREND_CSS = """
+<style>
+.tr-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; margin:6px 0 4px; }
+.tr-card { background:rgba(255,255,255,.82); border:1px solid rgba(255,255,255,.95);
+           border-radius:16px; padding:14px 16px 12px; box-shadow:0 10px 26px rgba(76,86,52,.10);
+           border-left:5px solid #9aa88b; }
+.tr-card.up { border-left-color:#5f8f3f; }
+.tr-card.down { border-left-color:#c0504d; }
+.tr-card.flat { border-left-color:#9aa0a6; }
+.tr-skill { font-size:19px; font-weight:750; color:#33401f; line-height:1.25;
+            letter-spacing:-.2px; margin-bottom:2px; }
+.tr-dir { font-size:14px; font-weight:600; margin-bottom:8px; }
+.tr-card.up .tr-dir { color:#4a7a2f; }
+.tr-card.down .tr-dir { color:#b2403d; }
+.tr-card.flat .tr-dir { color:#6b7075; }
+.tr-badge { display:inline-block; padding:3px 10px; border-radius:999px;
+            font-size:12.5px; font-weight:650; }
+.tr-card.up .tr-badge { background:rgba(95,143,63,.14); color:#3f6b26; }
+.tr-card.down .tr-badge { background:rgba(192,80,77,.14); color:#9d3532; }
+.tr-card.flat .tr-badge { background:rgba(120,126,131,.14); color:#5c6165; }
+</style>
+"""
+
+
 def trend_cards(t: dict, trend: dict) -> None:
     source = trend.get("source_url")
     retrieved = trend.get("retrieved_at")
-    label = t["simulated"]
-    st.caption(f"**{label}** · {t['source']}: {source or '—'} · {t['retrieved']}: {retrieved or '—'}")
+    st.caption(
+        "**" + t["simulated"] + "** · " + t["source"] + ": " + str(source or "—")
+        + " · " + t["retrieved"] + ": " + str(retrieved or "—")
+    )
+
     signals = trend.get("signals") or []
     if not signals:
         st.info("—")
         return
-    cols = st.columns(min(3, len(signals)))
-    icon = {"rising": "📈", "declining": "📉", "stable": "➖"}
-    for i, s in enumerate(signals[:6]):
-        with cols[i % len(cols)]:
-            st.metric(
-                f"{icon.get(s['direction'], '•')} {s['skill']}",
-                t.get(s["direction"], s["direction"]),
-                t["weight"].format(f"{s['weight']:+.1f}"),
-            )
+
+    st.markdown(TREND_CSS, unsafe_allow_html=True)
+    cls = {"rising": ("up", "📈"), "declining": ("down", "📉"), "stable": ("flat", "➖")}
+    cards = []
+    for s in signals[:6]:
+        kind, icon = cls.get(s["direction"], ("flat", "•"))
+        weight_txt = t["weight"].format("{:+.1f}".format(s["weight"]))
+        cards.append(
+            '<div class="tr-card ' + kind + '">'
+            + '<div class="tr-skill">' + str(s["skill"]) + '</div>'
+            + '<div class="tr-dir">' + icon + " " + t.get(s["direction"], s["direction"]) + '</div>'
+            + '<span class="tr-badge">' + weight_txt + '</span>'
+            + '</div>'
+        )
+    st.markdown('<div class="tr-grid">' + "".join(cards) + '</div>', unsafe_allow_html=True)
 
 
 def role_card(t: dict, result: dict, expanded: bool = False) -> None:
