@@ -913,17 +913,23 @@ def skill_evidence_panel(t: dict, lang: str) -> None:
             st.markdown(f"- {f['fact']}")
         st.markdown("")
 
-    rows = []
-    for sig in d.get("skill_signals") or []:
-        rows.append(
-            {
-                t["col_skill"]: skill_label(lang, sig["skill"]),
-                t["col_direction"]: t.get(sig["direction"], sig["direction"]),
-                t["col_evidence"]: sig["evidence"],
-            }
-        )
-    if rows:
-        st.dataframe(rows, use_container_width=True, hide_index=True)
+    signals = d.get("skill_signals") or []
+    if signals:
+        st.markdown(TREND_CSS, unsafe_allow_html=True)
+        cls = {"rising": ("up", "📈"), "declining": ("down", "📉"), "stable": ("flat", "➖")}
+        cards = []
+        for sig in signals[:9]:
+            kind, icon = cls.get(sig["direction"], ("flat", "•"))
+            evidence = sig["evidence"]
+            cards.append(
+                '<div class="tr-card ' + kind + '" title="' + evidence.replace('"', "'") + '">'
+                + '<div class="tr-skill">' + skill_label(lang, sig["skill"]) + '</div>'
+                + '<div class="tr-dir">' + icon + " " + t.get(sig["direction"], sig["direction"]) + '</div>'
+                + '<span class="tr-badge" style="max-width:100%;white-space:normal;line-height:1.35;'
+                  'font-size:10.5px;font-weight:500">' + evidence + '</span>'
+                + '</div>'
+            )
+        st.markdown('<div class="tr-grid">' + "".join(cards) + '</div>', unsafe_allow_html=True)
 
     st.caption(t["proxy_caveat"])
 
@@ -1280,13 +1286,13 @@ def screen_js_results() -> None:
     with st.expander(t["disclose_title"]):
         st.markdown(t["disclose_body"])
 
-    # ---- 5. SDG contribution, with an inline (?) right next to the heading ----
-    head, help_col = st.columns([1, 20])
+    # ---- 5. SDG contribution; the (?) sits after the heading so the left rule lines up ----
+    head, help_col = st.columns([14, 1], vertical_alignment="center")
     with head:
+        st.subheader(t["p5"])
+    with help_col:
         if st.button("❓", key="sdg_help_btn", help=t["sdg_help_tip"]):
             st.session_state["show_sdg_wheel"] = not st.session_state.get("show_sdg_wheel", False)
-    with help_col:
-        st.subheader(t["p5"])
 
     summary = sdg_summary(results[:4])
     st.write(", ".join(f"**SDG {k}** ({v})" for k, v in summary.items()) or "—")
