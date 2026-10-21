@@ -718,6 +718,19 @@ CATEGORY_LABELS = {
         "⚖️ Legal, Compliance & Admin": "⚖️ 法务、合规与行政",
     },
     "en": {},
+    "ms": {
+        "📊 Office & Data": "📊 Pejabat & Data",
+        "💻 Tech & AI": "💻 Teknologi & AI",
+        "🎧 Customer & Operations": "🎧 Pelanggan & Operasi",
+        "👥 People & Management": "👥 Manusia & Pengurusan",
+        "🗣 Communication & Language": "🗣 Komunikasi & Bahasa",
+        "💰 Finance & Accounting": "💰 Kewangan & Perakaunan",
+        "📣 Sales & Marketing": "📣 Jualan & Pemasaran",
+        "🎨 Design & Creative": "🎨 Reka Bentuk & Kreatif",
+        "🏭 Manufacturing & Logistics": "🏭 Pembuatan & Logistik",
+        "🏥 Health, Care & Education": "🏥 Kesihatan, Penjagaan & Pendidikan",
+        "⚖️ Legal, Compliance & Admin": "⚖️ Undang-undang, Pematuhan & Pentadbiran",
+    },
 }
 
 

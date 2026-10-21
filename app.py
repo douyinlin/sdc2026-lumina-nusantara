@@ -24,6 +24,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from utils import Role, pathway, rank, sdg_summary  # noqa: E402
 from i18n import STRINGS, T, cat, role_label, skill_label  # noqa: E402
+from labels import field_label, group_label, skill_option_label  # noqa: E402
 from presentation import CSS_PATH, brand, copy_for, flow_header, learning_path, score_panel, skill_chips  # noqa: E402
 
 DATA = ROOT / "data"
@@ -644,8 +645,10 @@ def go(stage: str) -> None:
 
 
 def reset() -> None:
+    """Clear the answers but keep the language the user picked."""
+    keep = {"intro_done", "lang"}
     for k in list(st.session_state):
-        if k != "intro_done":
+        if k not in keep:
             del st.session_state[k]
     st.session_state["stage"] = "landing"
     st.rerun()
@@ -1104,9 +1107,14 @@ def screen_js_intake() -> None:
                 if st.session_state.get("edu") in _edu_options else 1,
                 format_func=lambda k: t["edu_" + k],
             )
-            _group = st.selectbox(t["q_field"], list(FIELDS))
+            _lang = st.session_state.get("lang", "en")
+            _group = st.selectbox(
+                t["q_field"], list(FIELDS),
+                format_func=lambda g: group_label(_lang, g),
+            )
             st.session_state["field"] = st.selectbox(
-                t["q_field_detail"], FIELDS[_group], label_visibility="visible"
+                t["q_field_detail"], FIELDS[_group], label_visibility="visible",
+                format_func=lambda f: field_label(_lang, f),
             )
         with c2:
             st.session_state["intern"] = st.slider(t["q_intern"], 0, 12, 0)
@@ -1140,6 +1148,7 @@ def screen_js_intake() -> None:
                     group, options=list(items), key=f"ms_{group}",
                     label_visibility="collapsed", placeholder=t["ms_placeholder"],
                     max_selections=6,
+                    format_func=lambda x, _l=lang: skill_option_label(_l, x),
                 )
                 for label in labels:
                     picked += LABEL_TO_KEYS[label]
@@ -1469,15 +1478,20 @@ def screen_cc_intake() -> None:
         st.session_state["cyear"] = st.selectbox(t["cc_year"], [2026, 2027, 2028])
 
     roles = load_roles()
+    _lang_cc = st.session_state.get("lang", "en")
     targets = st.multiselect(
         t["cc_targets"], options=[r.name for r in roles],
         default=[r.name for r in roles[:2]],
+        format_func=lambda n: role_label(_lang_cc, n),
     )
     st.session_state["targets"] = targets
 
     if targets:
         needed = sorted({s for r in roles if r.name in targets for s in r.required_skills})
-        taught = st.multiselect(t["cc_taught"], options=needed, default=needed[:2])
+        taught = st.multiselect(
+            t["cc_taught"], options=needed, default=needed[:2],
+            format_func=lambda x: skill_label(_lang_cc, x),
+        )
         st.session_state["taught"] = taught
 
         if st.button(t["cc_run"], type="primary", use_container_width=True):
