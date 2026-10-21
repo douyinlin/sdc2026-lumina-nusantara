@@ -19,6 +19,7 @@ GROUP_LABELS = {
         "Hospitality & Tourism": "酒店与旅游",
         "Sciences & Environment": "理学与环境",
         "Built Environment & Other": "建筑环境与其他",
+        "🏗 Engineering & Built Environment": "🏗 工程与建筑环境",
     },
     "ms": {
         "Business & Finance": "Perniagaan & Kewangan",
@@ -30,6 +31,7 @@ GROUP_LABELS = {
         "Hospitality & Tourism": "Hospitaliti & Pelancongan",
         "Sciences & Environment": "Sains & Alam Sekitar",
         "Built Environment & Other": "Alam Bina & Lain-lain",
+        "🏗 Engineering & Built Environment": "🏗 Kejuruteraan & Alam Bina",
     },
 }
 
@@ -140,6 +142,12 @@ FIELD_LABELS = {
 # --------------------------------------------------------------------------- #
 SKILL_OPTION_LABELS = {
     "zh": {
+        "CAD / technical drawing (AutoCAD, SolidWorks)": "CAD / 制图（AutoCAD、SolidWorks）",
+        "Structural analysis & design": "结构分析与设计",
+        "Site supervision & construction management": "现场监理与施工管理",
+        "Quantity surveying & cost estimation": "工程造价与成本估算",
+        "BIM (Revit) & building services": "BIM（Revit）与建筑设备",
+        "Electrical systems & wiring": "电气系统与布线",
         "Excel / spreadsheets": "Excel / 电子表格",
         "SQL & databases": "SQL 与数据库",
         "Data visualisation (Power BI, Tableau)": "数据可视化（Power BI、Tableau）",
@@ -207,6 +215,12 @@ SKILL_OPTION_LABELS = {
         "Documentation & records": "文档与档案管理",
     },
     "ms": {
+        "CAD / technical drawing (AutoCAD, SolidWorks)": "CAD / lukisan teknikal (AutoCAD, SolidWorks)",
+        "Structural analysis & design": "Analisis & reka bentuk struktur",
+        "Site supervision & construction management": "Penyeliaan tapak & pengurusan pembinaan",
+        "Quantity surveying & cost estimation": "Ukur bahan & anggaran kos",
+        "BIM (Revit) & building services": "BIM (Revit) & perkhidmatan bangunan",
+        "Electrical systems & wiring": "Sistem elektrik & pendawaian",
         "Excel / spreadsheets": "Excel / hamparan",
         "SQL & databases": "SQL & pangkalan data",
         "Data visualisation (Power BI, Tableau)": "Visualisasi data (Power BI, Tableau)",

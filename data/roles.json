@@ -673,6 +673,14 @@
         {
           "skill": "project management",
           "tier": "nice"
+        },
+        {
+          "skill": "cad",
+          "tier": "core"
+        },
+        {
+          "skill": "structural analysis",
+          "tier": "important"
         }
       ],
       "malaysia": {
@@ -704,6 +712,10 @@
         {
           "skill": "process improvement",
           "tier": "core"
+        },
+        {
+          "skill": "cad",
+          "tier": "important"
         }
       ],
       "malaysia": {
@@ -734,6 +746,10 @@
         {
           "skill": "quality assurance",
           "tier": "nice"
+        },
+        {
+          "skill": "electrical systems",
+          "tier": "important"
         }
       ],
       "malaysia": {
@@ -765,6 +781,10 @@
         {
           "skill": "lean",
           "tier": "important"
+        },
+        {
+          "skill": "cad",
+          "tier": "nice"
         }
       ],
       "malaysia": {
@@ -794,6 +814,10 @@
         },
         {
           "skill": "reporting",
+          "tier": "important"
+        },
+        {
+          "skill": "site supervision",
           "tier": "important"
         }
       ],
@@ -825,6 +849,10 @@
         {
           "skill": "excel",
           "tier": "important"
+        },
+        {
+          "skill": "quantity surveying",
+          "tier": "nice"
         }
       ],
       "malaysia": {

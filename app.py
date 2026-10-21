@@ -101,6 +101,14 @@ TAXONOMY: dict[str, dict[str, list[str]]] = {
         "Video editing": ["video editing"],
         "Photography": ["photography"],
     },
+    "🏗 Engineering & Built Environment": {
+        "CAD / technical drawing (AutoCAD, SolidWorks)": ["cad"],
+        "Structural analysis & design": ["structural analysis"],
+        "Site supervision & construction management": ["site supervision"],
+        "Quantity surveying & cost estimation": ["quantity surveying"],
+        "BIM (Revit) & building services": ["bim"],
+        "Electrical systems & wiring": ["electrical systems"],
+    },
     "🏭 Manufacturing & Logistics": {
         "Lean / Six Sigma": ["lean"],
         "Machine operation & maintenance": ["machine operation"],
@@ -1084,13 +1092,19 @@ def screen_js_intake() -> None:
     if persona == "worker":
         c1, c2 = st.columns(2)
         with c1:
-            st.session_state["years"] = st.slider(t["q_years"], 0, 30, 6)
+            st.session_state["years"] = st.number_input(
+                t["q_years"], min_value=0, max_value=45, value=6, step=1,
+                help=t["num_help"],
+            )
             st.session_state["urgency"] = st.selectbox(
                 t["q_urgency"], ["now", "6m", "12m"],
                 format_func=lambda k: t["urg_" + k],
             )
         with c2:
-            st.session_state["hours"] = st.slider(t["q_hours"], 1, 20, 8)
+            st.session_state["hours"] = st.number_input(
+                t["q_hours"], min_value=1, max_value=40, value=8, step=1,
+                help=t["num_help"],
+            )
             st.session_state["budget"] = st.selectbox(
                 t["q_budget"], ["low", "mid", "high"],
                 format_func=lambda k: t["bud_" + k],
@@ -1117,7 +1131,10 @@ def screen_js_intake() -> None:
                 format_func=lambda f: field_label(_lang, f),
             )
         with c2:
-            st.session_state["intern"] = st.slider(t["q_intern"], 0, 12, 0)
+            st.session_state["intern"] = st.number_input(
+                t["q_intern"], min_value=0, max_value=24, value=0, step=1,
+                help=t["num_help"],
+            )
             st.session_state["grad_year"] = st.selectbox(t["q_grad_year"], [2026, 2027, 2028])
         st.session_state["hours"] = st.slider(t["q_hours"], 1, 20, 10)
         st.caption(t["grad_note"])
@@ -1138,6 +1155,23 @@ def screen_js_intake() -> None:
     picked: list[str] = []
     lang = st.session_state.get("lang", "en")
     st.caption(copy_for(lang)["skills_note"])
+
+    # A single searchable list across every category: type a word, pick the skill.
+    _all_labels = [label for group_items in TAXONOMY.values() for label in group_items]
+    _query = st.text_input(t["skill_search"], placeholder=t["skill_search_ph"], key="skill_query")
+    if _query.strip():
+        _hits = [x for x in _all_labels if _query.strip().casefold() in
+                 (x + " " + skill_option_label(lang, x)).casefold()]
+        if _hits:
+            _picked_search = st.multiselect(
+                t["skill_search_results"], options=_hits, key="skill_search_pick",
+                format_func=lambda x: skill_option_label(lang, x),
+                placeholder=t["ms_placeholder"],
+            )
+            for label in _picked_search:
+                picked += LABEL_TO_KEYS[label]
+        else:
+            st.caption(t["skill_search_none"].format(_query))
     groups = list(TAXONOMY.items())
     for offset in range(0, len(groups), 2):
         columns = st.columns(2, gap="medium")
