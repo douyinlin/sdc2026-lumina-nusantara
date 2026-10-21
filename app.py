@@ -650,11 +650,12 @@ def role_card(t: dict, result: dict, expanded: bool = False) -> None:
     head = f"{result['score']:.1f} · {result['role']} · SDG {', '.join(result['sdg'])}"
     with st.expander(head, expanded=expanded):
         st.progress(min(1.0, result["score"] / 100))
-        a, b, c1, d = st.columns(4)
+        a, b, c1, d, e = st.columns(5)
         a.metric(t["coverage"], f"{c['coverage'] * 100:.0f}%")
-        b.metric(t["transfer"], f"{c['transfer'] * 100:.0f}%")
-        c1.metric(t["trend"], f"{c['trend'] * 100:.0f}%")
-        d.metric(t["gapcost"], f"{c['gap_cost'] * 100:.0f}%")
+        b.metric(t["focus"], f"{c.get('focus', 0) * 100:.0f}%")
+        c1.metric(t["transfer"], f"{c['transfer'] * 100:.0f}%")
+        d.metric(t["trend"], f"{c['trend'] * 100:.0f}%")
+        e.metric(t["gapcost"], f"{c['gap_cost'] * 100:.0f}%")
         st.write(f"**{t['have']} ({len(result['covered'])}):** {', '.join(result['covered']) or '—'}")
         st.write(f"**{t['close']} ({len(result['missing'])}):** {', '.join(result['missing']) or t['none']}")
         st.caption(t["estimate"])
@@ -771,6 +772,7 @@ def screen_js_intake() -> None:
         labels = st.multiselect(
             group, options=list(items), key=f"ms_{group}",
             label_visibility="collapsed", placeholder=t["ms_placeholder"],
+            max_selections=6,
         )
         for label in labels:
             picked += LABEL_TO_KEYS[label]
@@ -781,6 +783,8 @@ def screen_js_intake() -> None:
     current = st.session_state.get("skills") or []
     if current:
         st.info(f"**{t['current']}:** {', '.join(sorted(set(current)))}  ({len(set(current))})")
+        if len(set(current)) > 10:
+            st.caption(t["too_many"])
 
     c1, c2 = st.columns([1, 3])
     with c1:

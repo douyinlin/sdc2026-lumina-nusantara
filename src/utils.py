@@ -41,7 +41,7 @@ GAP_COST = {
     "product management": 0.8,
 }
 
-WEIGHTS = {"coverage": 0.40, "transfer": 0.25, "trend": 0.20, "gap": 0.15}
+WEIGHTS = {"coverage": 0.30, "focus": 0.25, "transfer": 0.15, "trend": 0.15, "gap": 0.15}
 
 
 # Modified 2026-10-20: normalize distinct skills and reject malformed records.
@@ -78,7 +78,12 @@ def _transfer_score(skill: str, required: str) -> float:
 def evaluate(profile: list[str], role: Role, scenario: str = "moderate") -> dict:
     """Return an explainable match record for one role.
 
-    score = 0.40*coverage + 0.25*transfer + 0.20*trend + 0.15*(1 - gap_cost)
+    score = 0.30*coverage + 0.25*focus + 0.15*transfer + 0.15*trend
+            + 0.15*(1 - gap_cost)
+
+    ``focus`` is the share of the user's own skills that this role actually
+    needs. Without it a profile with 15 skills covers every role at 100% and
+    the ranking stops discriminating.
 
     ``scenario`` is "moderate" or "fast"; fast disruption doubles the weight
     of the trend signal, which is how the two-scenario view is produced.
@@ -91,6 +96,8 @@ def evaluate(profile: list[str], role: Role, scenario: str = "moderate") -> dict
     matched = match_coverage(profile, role.name, role.required_skills)
     covered, missing = matched["covered"], matched["missing"]
     coverage = matched["coverage"]
+    relevant = [s for s in profile if s in {r.strip().lower() for r in role.required_skills}]
+    focus = len(relevant) / len(profile) if profile else 0.0
     transfer = (
         max((_transfer_score(p, r) for p in profile for r in missing), default=0.0)
         if missing
@@ -110,6 +117,7 @@ def evaluate(profile: list[str], role: Role, scenario: str = "moderate") -> dict
 
     score = (
         w["coverage"] * coverage
+        + w["focus"] * focus
         + w["transfer"] * transfer
         + w["trend"] * trend
         + w["gap"] * (1.0 - gap_cost)
@@ -120,6 +128,7 @@ def evaluate(profile: list[str], role: Role, scenario: str = "moderate") -> dict
         "score": round(score * 100, 1),
         "components": {
             "coverage": coverage,
+            "focus": focus,
             "transfer": round(transfer, 2),
             "trend": round(trend, 2),
             "gap_cost": round(gap_cost, 2),
