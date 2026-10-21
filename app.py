@@ -942,7 +942,8 @@ def screen_js_results() -> None:
     for i, r in enumerate(results[:4]):
         dom = ROLE_META.get(r["role"], {}).get("domain", "")
         badge = t["badge_same"] if dom == FIELD_DOMAIN.get(field) else t["badge_adjacent"]
-        st.caption(badge) if i == 0 else None
+        if i == 0:
+            st.caption(badge)
         role_card(t, r, expanded=(i == 0), lang=lang_now)
 
     st.subheader(t["p4"])
