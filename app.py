@@ -698,6 +698,15 @@ def top_bar(t: dict) -> None:
         lang_selector(compact=True)
 
 
+#: Official UN SDG colours for goals 1-17.
+SDG_COLOURS = {
+    1: "#E5243B", 2: "#DDA63A", 3: "#4C9F38", 4: "#C5192D", 5: "#FF3A21",
+    6: "#26BDE2", 7: "#FCC30B", 8: "#A21942", 9: "#FD6925", 10: "#DD1367",
+    11: "#FD9D24", 12: "#BF8B2E", 13: "#3F7E44", 14: "#0A97D9", 15: "#56C02B",
+    16: "#00689D", 17: "#19486A",
+}
+
+
 TREND_CSS = """
 <style>
 .tr-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; margin:6px 0 4px; }
@@ -1271,10 +1280,39 @@ def screen_js_results() -> None:
     with st.expander(t["disclose_title"]):
         st.markdown(t["disclose_body"])
 
-    st.subheader(t["p5"])
+    # ---- 5. SDG contribution, with an inline (? help) that reveals the wheel ----
+    head, help_col = st.columns([12, 1])
+    with head:
+        st.subheader(t["p5"])
+    with help_col:
+        if st.button("❓", key="sdg_help_btn", help=t["sdg_help_tip"]):
+            st.session_state["show_sdg_wheel"] = not st.session_state.get("show_sdg_wheel", False)
+
     summary = sdg_summary(results[:4])
     st.write(", ".join(f"**SDG {k}** ({v})" for k, v in summary.items()) or "—")
+
+    # quick colour chips for the goals in play
+    chips = []
+    for goal, count in summary.items():
+        colour = SDG_COLOURS.get(int(goal.split(".")[0]), "#888888")
+        chips.append(
+            f'<span style="display:inline-block;background:{colour};color:#fff;'
+            f'padding:3px 10px;border-radius:999px;font-size:12px;margin:0 6px 6px 0">'
+            f'SDG {goal} · {count}</span>'
+        )
+    if chips:
+        st.markdown("".join(chips), unsafe_allow_html=True)
+
     st.caption(t["sdg_note"])
+
+    if st.session_state.get("show_sdg_wheel", False):
+        wheel = ROOT / "docs" / "sdg_wheel.png"
+        if wheel.exists():
+            left, mid, right = st.columns([1, 6, 1])
+            with mid:
+                st.image(str(wheel), caption=t["sdg_wheel_caption"], use_container_width=True)
+        else:
+            st.info(t["sdg_wheel_caption"])
 
 
 

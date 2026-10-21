@@ -60,6 +60,8 @@ STRINGS = {
         "path_note": ("⚠️ Week estimates are indicative only, and resource links are a suggested search "
                       "direction on the HRD Corp directory — not a verified course price or duration."),
         "p5": "5 · SDG contribution of this path",
+        "sdg_help_tip": "What are the SDGs? Open the 17-goal chart",
+        "sdg_wheel_caption": "The 17 UN Sustainable Development Goals. This pathway mainly supports goals 4, 5, 8, 9 and 10.",
         "sdg_note": ("SDG 4.4 relevant skills for employment · 8.5 full and productive employment · "
                      "9.1 infrastructure and innovation · 8.2 productivity through innovation"),
         "p6": "6 · Scenario comparison",
@@ -297,6 +299,8 @@ STRINGS = {
         "covered_all": "你已经覆盖该岗位的全部技能 —— 可以看看排名里的下一个岗位。",
         "path_note": "⚠️ 周数仅为示意估算；资源链接是 HRD Corp 目录的搜索方向，不是已核实的课程价格或时长。",
         "p5": "5 · 这条路径的 SDG 贡献",
+        "sdg_help_tip": "SDG 是什么？展开 17 个目标的图",
+        "sdg_wheel_caption": "联合国 17 个可持续发展目标。这条路径主要贡献第 4、5、8、9、10 个目标。",
         "sdg_note": "SDG 4.4 就业相关技能 · 8.5 充分的生产性就业 · 9.1 基础设施与创新 · 8.2 创新提升生产力",
         "p6": "6 · 两种情景对比",
         "scen_moderate_label": "温和冲击",
@@ -613,6 +617,8 @@ STRINGS = {
         "p2_b3": "Tentukan apa yang perlu dilatih dahulu",
         "p2_btn": "Mula sebagai HR →",
         "p2_desc": "Lihat kedudukan kemahiran pasukan anda berbanding peranan masa depan.",
+        "sdg_help_tip": "Apa itu SDG? Buka carta 17 matlamat",
+        "sdg_wheel_caption": "17 Matlamat Pembangunan Mampan PBB. Laluan ini menyokong terutamanya matlamat 4, 5, 8, 9 dan 10.",
         "sdg_note": "SDG 4.4 kemahiran relevan untuk pekerjaan · 8.5 pekerjaan penuh dan produktif · 9.1 infrastruktur dan inovasi · 8.2 produktiviti melalui inovasi",
         "trend_card": "{} {}",
         "p1_title": "Saya pencari kerja",
