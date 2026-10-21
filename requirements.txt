@@ -6,5 +6,8 @@ pandas>=2.0,<4
 numpy>=1.24
 pyarrow>=14.0
 
+# Radar chart of the official DOSM counts
+matplotlib>=3.7
+
 # Optional, only needed inside the RunPod container image (see runpod/requirements.txt).
 # runpod

@@ -715,6 +715,67 @@ def _fmt(n: int) -> str:
     return f"{n:,}"
 
 
+RADAR_CSS = """
+<style>
+.rd-legend { font-size: 11.5px; color:#6b7560; margin-top:2px; }
+.rd-legend b { color:#4a5a2a; }
+</style>
+"""
+
+
+def dosm_radar(t: dict, d: dict) -> None:
+    """Radar of the official DOSM occupational counts (current vs previous quarter)."""
+    occ = d.get("occupations_q2_2025") or []
+    if len(occ) < 3:
+        return
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+        import numpy as np
+    except Exception:
+        return
+
+    labels = [o["group"] for o in occ]
+    cur = [o["offers"] for o in occ]
+    prev = [o.get("offers_prev") or 0 for o in occ]
+
+    n = len(labels)
+    angles = np.linspace(0, 2 * np.pi, n, endpoint=False).tolist()
+    angles += angles[:1]
+    cur_c = cur + cur[:1]
+    prev_c = prev + prev[:1]
+
+    fig, ax = plt.subplots(figsize=(6.4, 5.2), subplot_kw=dict(polar=True), dpi=150)
+    ax.set_facecolor("none")
+    ax.set_theta_offset(np.pi / 2)
+    ax.set_theta_direction(-1)
+
+    ax.plot(angles, prev_c, color="#b7c1a5", linewidth=1.6, label=f"2025 Q1")
+    ax.fill(angles, prev_c, color="#b7c1a5", alpha=0.18)
+    ax.plot(angles, cur_c, color="#5b7fa6", linewidth=2.2, label=f"2025 Q2")
+    ax.fill(angles, cur_c, color="#5b7fa6", alpha=0.25)
+    ax.scatter(angles[:-1], cur, color="#5b7fa6", s=26, zorder=5)
+
+    short = [l.replace(" and Associate Professionals", " & Assc. Prof.")
+              .replace(" and Chief Executives", " & CEOs")
+              .replace(" and Marketing Professionals", " & Marketing")
+              .replace(" and Auditors", " & Auditors")
+              .replace("Administrative Professionals", "Admin Professionals")
+             for l in labels]
+    ax.set_xticks(angles[:-1])
+    ax.set_xticklabels([f"{s}\n{v:,}" for s, v in zip(short, cur)], fontsize=7.6, color="#3f4a26")
+    ax.set_yticklabels([])
+    ax.tick_params(axis="x", pad=12)
+    ax.grid(color="#d8dfca", linewidth=0.7)
+    ax.spines["polar"].set_color("#e2e8d8")
+    ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.14), ncol=2, frameon=False, fontsize=8.4)
+    fig.patch.set_alpha(0)
+
+    st.pyplot(fig, use_container_width=True)
+    plt.close(fig)
+
+
 def dosm_panel(t: dict, lang: str) -> None:
     """Layer 1 — the official DOSM online-vacancy counts, untouched."""
     path = DATA / "trends" / "dosm_q2_2025.json"
@@ -765,12 +826,16 @@ def dosm_panel(t: dict, lang: str) -> None:
         "</div>"
         f'<div class="ds-total">{t["dosm_total"]}: <b>{_fmt(total.get("q2_2025", 0))}</b> '
         f'({t["dosm_qoq"]} {total.get("qoq_pct", 0):+.1f}%)</div>'
-        + "".join(rows)
         + f'<div class="ds-note">📄 <a href="{d.get("latest_url", "")}" target="_blank">{t["view_source"]}</a>'
-          f' · {t["dosm_q1_link"]}: <a href="{d.get("previous_url", "")}" target="_blank">2025 Q1</a></div>'
+          f' · {t["prev_quarter"]}</div>'
         "</div>",
         unsafe_allow_html=True,
     )
+    # radar of the same official numbers
+    st.markdown(RADAR_CSS, unsafe_allow_html=True)
+    st.markdown(f"**{t['radar_title']}**")
+    st.caption(t["radar_note"].format(d.get("latest_period"), d.get("previous_period")))
+    dosm_radar(t, d)
 
 
 def trend_cards(t: dict, trend: dict, lang: str = "en") -> None:
@@ -834,6 +899,9 @@ def role_card(t: dict, result: dict, expanded: bool = False, lang: str = "en") -
             tag = f" ({t['tier_' + tier]})" if tier else ""
             close_items.append(skill_label(lang, x) + tag)
         close = ", ".join(close_items) or t["none"]
+        total = len(result["covered"]) + len(result["missing"])
+        pct = round(100 * len(result["covered"]) / total) if total else 0
+        st.caption(t["why_score"].format(total, len(result["covered"]), pct))
         st.write(f"**{t['have']} ({len(result['covered'])}):** {have}")
         st.write(f"**{t['close']} ({len(result['missing'])}):** {close}")
 
@@ -1038,6 +1106,10 @@ def screen_js_results() -> None:
 
     # Domain-aware filtering: never recommend a role from an unrelated field.
     field = st.session_state.get("field", "Business")
+    raw_profile = st.session_state.get("skills") or skills
+    # keep only skills the catalogue knows about (drop anything typed via an old key)
+    known = {sk for r in all_roles for sk in r.required_skills}
+    skills = [sk for sk in raw_profile if sk in known] or raw_profile
     same, adjacent = roles_for_field(all_roles, field)
     pool = same if same else adjacent
     if not pool:
