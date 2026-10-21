@@ -623,12 +623,10 @@ def trend_cards(t: dict, trend: dict) -> None:
         "**" + t["simulated"] + "** · " + t["source"] + ": " + str(source or "—")
         + " · " + t["retrieved"] + ": " + str(retrieved or "—")
     )
-
     signals = trend.get("signals") or []
     if not signals:
         st.info("—")
         return
-
     st.markdown(TREND_CSS, unsafe_allow_html=True)
     cls = {"rising": ("up", "📈"), "declining": ("down", "📉"), "stable": ("flat", "➖")}
     cards = []
@@ -662,7 +660,7 @@ def role_card(t: dict, result: dict, expanded: bool = False) -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Screen: landing
+# Screen: landing (three entry points)
 # --------------------------------------------------------------------------- #
 
 def screen_landing() -> None:
@@ -680,70 +678,59 @@ def screen_landing() -> None:
         <div class="sr-hero">
           <div class="sr-badge">{t['eyebrow']}</div>
           <div class="sr-h1">{t['h1']}</div>
-          <div class="sr-sub">
-            {t['hero_sub']}<br>
-            <span style="font-size:13px;color:#7a836a">{t['hero_note']}</span>
-          </div>
+          <div class="sr-sub">{t['hero_sub']}<br>
+            <span style="font-size:13px;color:#7a836a">{t['hero_note']}</span></div>
         </div>
         """,
         unsafe_allow_html=True,
     )
-    st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:14px'></div>", unsafe_allow_html=True)
 
-    left, right = st.columns(2, gap="large")
-    with left:
+    c1, c2, c3 = st.columns(3, gap="medium")
+    with c1:
         with st.container(border=True):
             st.markdown(
-                f"""
-                <div class="sr-icon">👤</div>
-                <div class="sr-title">{t['js_title']}</div>
-                <div class="sr-desc">{t['js_desc']}</div>
-                <ul class="sr-list">
-                  <li>📄 {t['js_b1']}</li>
-                  <li>📈 {t['js_b2']}</li>
-                  <li>🎯 {t['js_b3']}</li>
-                  <li>🛣️ {t['js_b4']}</li>
-                </ul>
-                """,
+                f"""<div class="sr-icon">👤</div><div class="sr-title">{t['p1_title']}</div>
+                <div class="sr-desc">{t['p1_desc']}</div>
+                <ul class="sr-list"><li>📄 {t['p1_b1']}</li><li>📈 {t['p1_b2']}</li>
+                <li>🎯 {t['p1_b3']}</li></ul>""",
                 unsafe_allow_html=True,
             )
-            if st.button(t["js_btn"], type="primary", use_container_width=True):
+            if st.button(t["p1_btn"], type="primary", use_container_width=True):
                 go("js_intake")
-    with right:
+    with c2:
         with st.container(border=True):
             st.markdown(
-                f"""
-                <div class="sr-icon">🏢</div>
-                <div class="sr-title">{t['hr_title']}</div>
-                <div class="sr-desc">{t['hr_desc']}</div>
-                <ul class="sr-list">
-                  <li>👥 {t['hr_b1']}</li>
-                  <li>🔥 {t['hr_b2']}</li>
-                  <li>💸 {t['hr_b3']}</li>
-                  <li>🌱 {t['hr_b4']}</li>
-                </ul>
-                """,
+                f"""<div class="sr-icon">🏢</div><div class="sr-title">{t['p2_title']}</div>
+                <div class="sr-desc">{t['p2_desc']}</div>
+                <ul class="sr-list"><li>👥 {t['p2_b1']}</li><li>🔥 {t['p2_b2']}</li>
+                <li>💸 {t['p2_b3']}</li></ul>""",
                 unsafe_allow_html=True,
             )
-            if st.button(t["hr_btn"], type="primary", use_container_width=True):
+            if st.button(t["p2_btn"], type="primary", use_container_width=True):
                 go("hr_intake")
+    with c3:
+        with st.container(border=True):
+            st.markdown(
+                f"""<div class="sr-icon">🎓</div><div class="sr-title">{t['p3_title']}</div>
+                <div class="sr-desc">{t['p3_desc']}</div>
+                <ul class="sr-list"><li>🏫 {t['p3_b1']}</li><li>📚 {t['p3_b2']}</li>
+                <li>🌱 {t['p3_b3']}</li></ul>""",
+                unsafe_allow_html=True,
+            )
+            if st.button(t["p3_btn"], type="primary", use_container_width=True):
+                go("cc_intake")
 
     st.markdown(
-        f"""
-        <div class="sr-steps">
-          <div class="sr-step"><em>📄</em><b>{t['step1']}</b><span>{t['step1s']}</span></div>
-          <div class="sr-step"><em>📈</em><b>{t['step2']}</b><span>{t['step2s']}</span></div>
-          <div class="sr-step"><em>🎯</em><b>{t['step3']}</b><span>{t['step3s']}</span></div>
-          <div class="sr-step"><em>🛣️</em><b>{t['step4']}</b><span>{t['step4s']}</span></div>
-        </div>
-        <div class="sr-foot"><span class="sr-pulse"></span>{t['foot']}</div>
-        """,
+        f"""<div class="sr-step" style="max-width:900px;margin:18px auto 0">
+        <b>{t['flow']}</b><span>{t['flow_s']}</span></div>
+        <div class="sr-foot"><span class="sr-pulse"></span>{t['foot']}</div>""",
         unsafe_allow_html=True,
     )
 
 
 # --------------------------------------------------------------------------- #
-# Screen: jobseeker intake
+# Screen: jobseeker intake — two personas
 # --------------------------------------------------------------------------- #
 
 def screen_js_intake() -> None:
@@ -751,8 +738,45 @@ def screen_js_intake() -> None:
     screen_wrap()
     top_bar(t)
     st.subheader(t["intake_h"])
-    st.caption(t["intake_sub"])
 
+    persona = st.radio(
+        t["persona_q"], ["worker", "grad"], horizontal=True,
+        format_func=lambda k: t["persona_worker"] if k == "worker" else t["persona_grad"],
+    )
+    st.session_state["persona"] = persona
+
+    st.markdown(f'<div class="sr-pill">{t["persona_ctx"]}</div>', unsafe_allow_html=True)
+
+    if persona == "worker":
+        c1, c2 = st.columns(2)
+        with c1:
+            st.session_state["years"] = st.slider(t["q_years"], 0, 30, 6)
+            st.session_state["urgency"] = st.selectbox(
+                t["q_urgency"], ["now", "6m", "12m"],
+                format_func=lambda k: t["urg_" + k],
+            )
+        with c2:
+            st.session_state["hours"] = st.slider(t["q_hours"], 1, 20, 8)
+            st.session_state["budget"] = st.selectbox(
+                t["q_budget"], ["low", "mid", "high"],
+                format_func=lambda k: t["bud_" + k],
+            )
+        st.caption(t["worker_note"])
+    else:
+        c1, c2 = st.columns(2)
+        with c1:
+            st.session_state["edu"] = st.selectbox(
+                t["q_edu"], ["diploma", "bachelor", "master"],
+                format_func=lambda k: t["edu_" + k],
+            )
+            st.session_state["field"] = st.selectbox(t["q_field"], FIELDS)
+        with c2:
+            st.session_state["intern"] = st.slider(t["q_intern"], 0, 12, 0)
+            st.session_state["grad_year"] = st.selectbox(t["q_grad_year"], [2026, 2027, 2028])
+        st.session_state["hours"] = st.slider(t["q_hours"], 1, 20, 10)
+        st.caption(t["grad_note"])
+
+    st.divider()
     st.markdown(f'<div class="sr-pill">{t["opt_a"]}</div>', unsafe_allow_html=True)
     up = st.file_uploader(t["uploader"], type=["txt", "md", "pdf"])
     if up is not None:
@@ -796,7 +820,7 @@ def screen_js_intake() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Screen: jobseeker results
+# Screen: jobseeker results — persona aware
 # --------------------------------------------------------------------------- #
 
 def screen_js_results() -> None:
@@ -804,6 +828,7 @@ def screen_js_results() -> None:
     screen_wrap()
     top_bar(t)
     skills = st.session_state.get("skills") or []
+    persona = st.session_state.get("persona", "worker")
     if not skills:
         st.warning(t["not_detected"])
         if st.button(t["back"]):
@@ -812,9 +837,21 @@ def screen_js_results() -> None:
 
     trend = load_trend()
     roles = apply_trend(load_roles(), trend)
+    hours = st.session_state.get("hours", 8)
+    scale = 8.0 / max(hours, 1)
 
     st.subheader(t["p1"])
     st.write(", ".join(sorted(set(skills))))
+    if persona == "worker":
+        st.caption(t["ctx_worker"].format(
+            st.session_state.get("years", 0), t["urg_" + st.session_state.get("urgency", "now")]
+        ))
+    else:
+        st.caption(t["ctx_grad"].format(
+            t["edu_" + st.session_state.get("edu", "bachelor")],
+            st.session_state.get("field", "—"),
+            st.session_state.get("intern", 0),
+        ))
 
     st.subheader(t["p2"])
     trend_cards(t, trend)
@@ -825,6 +862,22 @@ def screen_js_results() -> None:
         format_func=lambda x: t["moderate"] if x == "moderate" else t["fast"],
     )
     results = rank(skills, roles, scenario=scenario)
+
+    # persona-specific advice banner
+    if persona == "worker":
+        top1 = results[0]
+        gap_n = len(top1["missing"])
+        if gap_n <= 2:
+            st.success(t["adv_worker_fast"].format(top1["role"]))
+        else:
+            st.info(t["adv_worker_slow"].format(top1["role"], gap_n))
+    else:
+        intern = st.session_state.get("intern", 0)
+        if intern < 3:
+            st.warning(t["adv_grad_intern"])
+        else:
+            st.success(t["adv_grad_ok"].format(intern))
+
     st.caption(t["ranked_note"])
     for i, r in enumerate(results[:4]):
         role_card(t, r, expanded=(i == 0))
@@ -835,12 +888,15 @@ def screen_js_results() -> None:
         total_required = len(top["covered"]) + len(top["missing"])
         st.write(t["gap"].format(top["role"], len(top["missing"]), total_required))
         plan = pathway(top)
-        st.table([
-            {"step": p["step"], "skill": p["skill"], "weeks": p["weeks"],
-             "resource": t["search_hint"].format(p["skill"])}
-            for p in plan
-        ])
-        st.caption(t["path_note"])
+        rows = []
+        for p in plan:
+            weeks = max(1, round(p["weeks"] * scale))
+            rows.append({
+                t["step"]: p["step"], t["skill"]: p["skill"],
+                t["weeks"]: weeks, t["resource"]: t["search_hint"].format(p["skill"]),
+            })
+        st.table(rows)
+        st.caption(t["path_note"].format(hours))
     else:
         st.success(t["covered_all"])
 
@@ -860,7 +916,7 @@ def screen_js_results() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Screen: HR intake
+# Screen: HR intake / results
 # --------------------------------------------------------------------------- #
 
 def screen_hr_intake() -> None:
@@ -884,10 +940,6 @@ def screen_hr_intake() -> None:
         reset()
 
 
-# --------------------------------------------------------------------------- #
-# Screen: HR results
-# --------------------------------------------------------------------------- #
-
 def screen_hr_results() -> None:
     t = T(st.session_state.get("lang", "en"))
     screen_wrap()
@@ -899,18 +951,17 @@ def screen_hr_results() -> None:
             go("hr_intake")
         return
 
-    trend = load_trend()
-    roles = {r.name: r for r in apply_trend(load_roles(), trend)}
+    roles = {r.name: r for r in apply_trend(load_roles(), load_trend())}
     total_people = sum(roster.values())
+    demand: dict[str, int] = {}
+    for name, n in roster.items():
+        for s in roles[name].required_skills:
+            demand[s] = demand.get(s, 0) + n
 
     st.subheader(t["hr_h"])
     a, b, c = st.columns(3)
     a.metric(t["people"], total_people)
     b.metric(t["roles"], len(roster))
-    demand: dict[str, int] = {}
-    for name, n in roster.items():
-        for s in roles[name].required_skills:
-            demand[s] = demand.get(s, 0) + n
     c.metric(t["skills"], len(demand))
 
     st.subheader(t["priority"])
@@ -945,8 +996,105 @@ def screen_hr_results() -> None:
         for tag in roles[name].sdg:
             sdg[tag] = sdg.get(tag, 0) + 1
     st.write(", ".join(f"**SDG {k}** ({v})" for k, v in sorted(sdg.items(), key=lambda kv: -kv[1])))
-
     st.caption(t["hr_foot"])
+
+
+# --------------------------------------------------------------------------- #
+# Screen: career centre (TVET / university) intake / results
+# --------------------------------------------------------------------------- #
+
+def screen_cc_intake() -> None:
+    t = T(st.session_state.get("lang", "en"))
+    screen_wrap()
+    top_bar(t)
+    st.subheader(t["cc_h"])
+    st.caption(t["cc_sub"])
+
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.session_state["prog"] = st.text_input(t["cc_prog"], "Diploma in Business Administration")
+    with c2:
+        st.session_state["cohort"] = st.slider(t["cc_cohort"], 5, 500, 60)
+    with c3:
+        st.session_state["cyear"] = st.selectbox(t["cc_year"], [2026, 2027, 2028])
+
+    roles = load_roles()
+    targets = st.multiselect(
+        t["cc_targets"], options=[r.name for r in roles],
+        default=[r.name for r in roles[:2]],
+    )
+    st.session_state["targets"] = targets
+
+    if targets:
+        needed = sorted({s for r in roles if r.name in targets for s in r.required_skills})
+        taught = st.multiselect(t["cc_taught"], options=needed, default=needed[:2])
+        st.session_state["taught"] = taught
+
+        if st.button(t["cc_run"], type="primary", use_container_width=True):
+            go("cc_results")
+
+    if st.button(t["back"]):
+        reset()
+
+
+def screen_cc_results() -> None:
+    t = T(st.session_state.get("lang", "en"))
+    screen_wrap()
+    top_bar(t)
+    targets = st.session_state.get("targets") or []
+    taught = st.session_state.get("taught") or []
+    if not targets:
+        st.warning(t["cc_h"])
+        if st.button(t["back"]):
+            go("cc_intake")
+        return
+
+    roles = {r.name: r for r in apply_trend(load_roles(), load_trend())}
+    needed = sorted({s for r in roles.values() if r.name in targets for s in r.required_skills})
+    covered = [s for s in needed if s in taught]
+    missing = [s for s in needed if s not in taught]
+    coverage = len(covered) / len(needed) if needed else 0
+
+    st.subheader(t["cc_overview"])
+    a, b, c = st.columns(3)
+    a.metric(t["cc_prog_lbl"], st.session_state.get("prog", "—"))
+    b.metric(t["cc_cohort_lbl"], st.session_state.get("cohort", 0))
+    c.metric(t["coverage"], f"{coverage * 100:.0f}%")
+
+    st.subheader(t["cc_curriculum"])
+    st.caption(t["cc_curriculum_note"].format(len(covered), len(needed)))
+    st.dataframe(
+        [{t["col_skill"]: s, t["cc_status"]: t["cc_have"] if s in covered else t["cc_miss"]}
+         for s in needed],
+        use_container_width=True, hide_index=True,
+    )
+
+    st.subheader(t["cc_add"])
+    if missing:
+        st.table([
+            {t["col_pri"]: i, t["col_skill"]: s, t["col_route"]: t["search_hint"].format(s)}
+            for i, s in enumerate(missing[:6], start=1)
+        ])
+    else:
+        st.success(t["cc_complete"])
+
+    st.subheader(t["cc_roles"])
+    st.dataframe(
+        [{"Role": r.name, "SDG": ", ".join(r.sdg),
+          "Trend": t.get("rising" if r.trend > 0.3 else "declining" if r.trend < -0.2 else "stable"),
+          "Required skills": len(r.required_skills)}
+         for r in roles.values() if r.name in targets],
+        use_container_width=True, hide_index=True,
+    )
+
+    st.subheader(t["team_sdg"])
+    sdg: dict[str, int] = {}
+    for r in roles.values():
+        if r.name in targets:
+            for tag in r.sdg:
+                sdg[tag] = sdg.get(tag, 0) + 1
+    st.write(", ".join(f"**SDG {k}** ({v})" for k, v in sorted(sdg.items(), key=lambda kv: -kv[1])))
+    st.caption(t["cc_foot"])
 
 
 # --------------------------------------------------------------------------- #
@@ -958,12 +1106,17 @@ st.set_page_config(page_title="SkillRadar MY", page_icon="📡", layout="wide")
 st.session_state.setdefault("lang", "en")
 play_intro()
 
+FIELDS = ["Business", "Computing / IT", "Engineering", "Health Sciences", "Education",
+          "Design / Media", "Hospitality", "Other"]
+
 STAGES = {
     "landing": screen_landing,
     "js_intake": screen_js_intake,
     "js_results": screen_js_results,
     "hr_intake": screen_hr_intake,
     "hr_results": screen_hr_results,
+    "cc_intake": screen_cc_intake,
+    "cc_results": screen_cc_results,
 }
 
 st.session_state.setdefault("stage", "landing")
@@ -976,7 +1129,7 @@ if STAGE != "landing":
 
 try:
     STAGES.get(STAGE, screen_landing)()
-except Exception as exc:  # keep the user on the screen with a readable message
+except Exception as exc:
     st.error(_T["error"])
     st.caption(f"{type(exc).__name__}: {exc}")
     if st.button(_T["back_start"]):
