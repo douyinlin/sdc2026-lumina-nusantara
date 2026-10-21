@@ -202,7 +202,7 @@ PRELIM_SECTIONS = [
                       "4.4 and 8.5, with 8.2 and 9.1 where relevant).", BODY),
             Paragraph("<b>From the Phase 1 workshops</b> we apply GenAI APIs for CV parsing and "
                       "plain-language explanations, a relational schema for profiles, trends and courses, "
-                      "and cloud deployment on Replit and RunPod serverless GPUs, so the prototype is "
+                      "and cloud deployment on Replit and Streamlit Community Cloud, so the prototype is "
                       "genuinely online rather than a slide.", BODY),
         ],
     ),
@@ -217,7 +217,7 @@ PRELIM_SECTIONS = [
                     ["Service layer", "Python modules (src/utils.py)", "Testable matching / pathway / SDG logic"],
                     ["Data", "SQLite locally, Postgres on hosted deployment",
                      "Versioned trend snapshots, profiles, courses"],
-                    ["AI", "RunPod Serverless + sentence-transformers; optional hosted LLM",
+                    ["AI", "No language model at inference time; deterministic rule engine",
                      "GPU embeddings for CV parsing; LLM only phrases explanations"],
                     ["Ingestion", "Python scheduled job, JSON snapshots",
                      "Each snapshot carries source_url + retrieved_at"],
@@ -232,12 +232,13 @@ PRELIM_SECTIONS = [
             Paragraph(
                 "User → Streamlit UI → Matching &amp; pathway engine → SQLite/Postgres; "
                 "Ingestion job → trend_snapshots(source_url, retrieved_at); "
-                "Streamlit UI ↔ RunPod Serverless (CV parsing, embeddings).", NOTE),
+                "Streamlit UI reads the trend snapshot; all parsing and scoring run locally.", NOTE),
             Spacer(1, 4),
-            Paragraph("<b>Sponsor-provided GenAI API or Cloud Platform:</b> Yes. "
-                      "The team used the official SDC sponsor-provided resources for development and "
-                      "hosting (see the Technical Tools Declaration, Section 5). The public live demo is "
-                      "deployed on Streamlit Community Cloud with the same code base.", BODY),
+            Paragraph("<b>Sponsor-provided GenAI API or Cloud Platform:</b> Replit only. "
+                      "The prototype was developed in a Replit workspace. <b>No RunPod GPU endpoint is "
+                      "called by the application</b> \u2014 CV parsing runs on a local rule-based parser, "
+                      "and every score comes from a deterministic rule set. The public live demo is "
+                      "hosted on Streamlit Community Cloud from the same repository.", BODY),
             Spacer(1, 4),
             Paragraph("3.2 Design-Thinking &amp; Deployment Strategy", H3),
             Paragraph("<b>Empathise and define.</b> Five semi-structured interviews — one HR executive, one "
@@ -250,9 +251,9 @@ PRELIM_SECTIONS = [
                       "with the same five people; we cut features that needed data we could not source "
                       "honestly.", BODY),
             Paragraph("<b>Test and de-risk.</b> The score is transparent by construction, every claim links "
-                      "to a dated source, and the RunPod dependency has a local rule-based fallback so a "
+                      "to a dated source, and parsing runs locally with no external AI service so a "
                       "live demo cannot fail on stage.", BODY),
-            Paragraph("<b>Deploy.</b> Replit runs the app and holds secrets; RunPod serves embeddings; a "
+            Paragraph("<b>Deploy.</b> Replit is the shared workspace and Streamlit Community Cloud hosts the live demo; a "
                       "weekly snapshot job keeps trends current. Phase 2 adds the HR view and automatic "
                       "re-planning.", BODY),
         ],
@@ -336,8 +337,8 @@ PRELIM_SECTIONS = [
                     ["O*NET database (U.S. Dept. of Labor)", "dataset", "CC BY 4.0 (attributed in-app)"],
                     ["WEF Future of Jobs indicators", "dataset", "Public report, cited"],
                     ["HRD Corp course directory", "dataset", "Public directory, cited"],
-                    ["all-MiniLM-L6-v2 (sentence-transformers)", "model", "Apache 2.0"],
-                    ["RunPod Python SDK", "code", "Apache 2.0"],
+                    ["O*NET occupation skill lists", "dataset", "CC BY 4.0"],
+                    ["Streamlit", "code", "Apache 2.0"],
                 ],
                 (62 * mm, 43 * mm, 60 * mm),
             ),
@@ -407,7 +408,7 @@ TECH_SECTIONS = [
                 "consumes the profile plus the snapshot and returns ranked roles with a four-component "
                 "explainable score, the exact skill gap (feature #3), an ordered reskilling plan (feature "
                 "#4), SDG tags on every role (feature #5) and a moderate-versus-fast scenario comparison "
-                "(feature #6). RunPod Serverless serves GPU inference for CV parsing and embeddings, with a "
+                "(feature #6). CV parsing and scoring run locally in the app with no external AI service, with a "
                 "local rule-based fallback so the demo degrades gracefully. A scheduled ingestion job "
                 "refreshes trend snapshots from public sources. See the appended block diagram.", BODY),
             Spacer(1, 4),
@@ -419,7 +420,7 @@ TECH_SECTIONS = [
                     ["Streamlit 1.66", "Web UI, file upload, tables", "Apache 2.0"],
                     ["pandas 2.x", "Tabular handling", "BSD 3-Clause"],
                     ["reportlab", "Build these submission PDFs (offline tool)", "BSD"],
-                    ["sentence-transformers / all-MiniLM-L6-v2", "Skill embeddings on the RunPod endpoint", "Apache 2.0"],
+                    ["None (no ML library loaded at runtime)", "All scoring is a deterministic rule set", "Apache 2.0"],
                     ["unittest (stdlib)", "Unit tests for the scoring engine", "PSF"],
                 ],
                 (52 * mm, 68 * mm, 45 * mm),
@@ -433,10 +434,10 @@ TECH_SECTIONS = [
             grid_table(
                 ["API and Provider", "Purpose in Project", "Access Tier"],
                 [
-                    ["RunPod Serverless API — RunPod", "GPU inference for CV parsing and embeddings", "paid"],
+                    ["None — no external AI API is called", "CV parsing and scoring run locally in the app", "—"],
                     ["WEF / O*NET / HRD Corp public data feeds", "Trend snapshot ingestion (public data)", "free"],
                     ["Streamlit Community Cloud", "Hosting the public live demo", "free"],
-                    ["—", "No other external API is called", "—"],
+                    ["—", "—", "—"],
                 ],
                 (62 * mm, 68 * mm, 35 * mm),
             ),
@@ -449,7 +450,7 @@ TECH_SECTIONS = [
                 [
                     ["Streamlit Community Cloud", "Public live demo (auto-deploy from GitHub main)", "Community / global"],
                     ["Replit", "Development workspace and alternative hosting", "Free tier"],
-                    ["RunPod Serverless", "GPU endpoint for CV parsing and embeddings", "Community cloud"],
+                    ["Streamlit Community Cloud", "Auto-deploy from GitHub main on every push", "Community / global"],
                     ["GitHub (douyinlin)", "Source control and deployment trigger", "Free"],
                 ],
                 (52 * mm, 68 * mm, 45 * mm),
@@ -463,9 +464,9 @@ TECH_SECTIONS = [
             grid_table(
                 ["Model &amp; Version", "Source / Provider", "Usage", "License / Terms"],
                 [
-                    ["all-MiniLM-L6-v2", "sentence-transformers (Hugging Face)", "pre-trained", "Apache 2.0"],
-                    ["Optional hosted LLM for explanation text", "Provider TBD", "pre-trained", "Provider terms"],
-                    ["Rule-based skill extractor (in-house)", "Team-built", "self-trained (rules only)", "Apache 2.0"],
+                    ["No pre-trained model is loaded at runtime", "—", "—", "—"],
+                    ["Rule-based skill extractor (in-house)", "Team-built", "rules only", "Apache 2.0"],
+                    ["Dictionary-matched taxonomy (O*NET / ESCO inspired)", "Team-curated", "catalogue", "CC BY 4.0 (O*NET)"],
                 ],
                 (48 * mm, 42 * mm, 32 * mm, 43 * mm),
             ),
@@ -508,19 +509,15 @@ TECH_SECTIONS = [
             grid_table(
                 ["Sponsor", "Resource", "How It Was Used in the Project"],
                 [
-                    ["SDC 2026 programme", "Replit workspace / cloud credits",
-                     "Development environment and hosting of the prototype during the build phase"],
-                    ["SDC 2026 programme", "RunPod GPU credits",
-                     "Serverless GPU inference for CV parsing and skill embeddings"],
+                    ["SDC 2026 programme", "Replit workspace",
+                     "Development environment for the prototype during the build phase"],
+                    ["None", "No RunPod endpoint is used",
+                     "CV parsing runs locally; the app makes no GPU or external AI call"],
                 ],
                 (45 * mm, 45 * mm, 75 * mm),
             ),
             Spacer(1, 6),
-            Paragraph(
-                "Essentiality: The sponsor resources made GPU inference and zero-setup hosting possible "
-                "within the hackathon window and let all five members work on the same running prototype. "
-                "They are not permanently essential — the architecture keeps a local rule-based fallback "
-                "for CV parsing and runs on any Streamlit host — so the solution survives if credits end.", BODY),
+            Paragraph("Essentiality: The Replit workspace removed local setup so all five members could work on the same running prototype, and the public demo is hosted on Streamlit Community Cloud. Neither is essential to the logic: the app runs on any Python host with no external AI service, so the solution survives if workspace access ends.", BODY),
         ],
     ),
     (
@@ -539,14 +536,14 @@ TECH_SECTIONS = [
             Spacer(1, 4),
             Paragraph("6.2 Known Limitations &amp; Risks", H3),
             Paragraph(
-                "Main risks: (1) trend data lag and source bias — mitigated by storing source and retrieval "
-                "date for every signal and showing them in the UI; (2) embedding mis-mapping of niche skills "
-                "— mitigated by a curated alias vocabulary and a rule-based fallback; (3) hallucinated roles "
-                "or courses — mitigated by keeping all roles and courses in curated tables with URLs and "
-                "using any LLM only to phrase explanations; (4) dependency on a single GPU provider — "
-                "mitigated by the local fallback; (5) small pilot size — statements are labelled as "
-                "estimates. The tool supports human career decisions and never makes hiring decisions.",
-                BODY),
+                "Main risks: (1) trend data lag and source bias \u2014 the weights are currently simulated and the "
+                "UI labels them as such; (2) rule-based matching can mis-map niche skills \u2014 mitigated by a "
+                "curated alias vocabulary and a visible skill-gap breakdown; (3) hallucinated roles or courses "
+                "\u2014 impossible by construction, because roles and course links come from a fixed catalogue and "
+                "no language model runs at inference time; (4) no GPU acceleration today, so CV parsing is limited "
+                "to text-based PDFs and plain text; (5) small pilot size \u2014 statements are labelled as estimates. "
+                "The tool supports human career decisions and never makes hiring decisions.", BODY),
+
         ],
     ),
     (
