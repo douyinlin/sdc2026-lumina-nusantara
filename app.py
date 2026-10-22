@@ -980,6 +980,7 @@ def dosm_panel(t: dict, lang: str) -> None:
         f'<div class="ds-total">{t["dosm_total"]}: <b>{_fmt(total.get("offers", 0))}</b> '
         f'({t["dosm_qoq"]} {total.get("qoq_pct", 0):+.1f}%)</div>'
         f'<div class="ds-note">{t["occ_layer_note"]}</div>'
+        f'<div class="ds-note">{t["occ_scope_note"]}</div>'
         f'<div class="ds-note">📄 <a href="{d.get("source_url", "")}" target="_blank">{t["view_source"]}</a>'
         f' · {t["prev_quarter"]}</div>'
         "</div>",
@@ -1022,7 +1023,15 @@ def dosm_panel(t: dict, lang: str) -> None:
             "</tr></thead><tbody>" + "".join(body_rows) + "</tbody></table>",
             unsafe_allow_html=True,
         )
-        st.caption(t["radar_footnote"].format(previous=d.get("previous_period", "")))
+        moves = [((o["offers"] - (o.get("offers_prev") or 0)) / (o.get("offers_prev") or 1) * 100)
+                 for o in occ if o.get("offers_prev")]
+        # A quarter where every group fell looks like a broken table unless the page
+        # says so; the release itself reported a broad decline.
+        if moves and all(m < 0 for m in moves):
+            st.caption(t["radar_footnote"].format(previous=d.get("previous_period", ""))
+                       + " " + t["all_down_note"].format(n=len(moves)))
+        else:
+            st.caption(t["radar_footnote"].format(previous=d.get("previous_period", "")))
         st.caption(t["radar_index_note"])
 
 
