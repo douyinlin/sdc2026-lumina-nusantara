@@ -721,16 +721,6 @@ STRINGS = {
 }
 
 
-try:  # pragma: no cover - trivial import guard
-    from decision_copy import EXTRA as _EXTRA
-except ImportError:  # package-relative import when `src` is a package
-    from .decision_copy import EXTRA as _EXTRA
-
-for _lang, _extra in _EXTRA.items():
-    STRINGS.setdefault(_lang, {}).update(_extra)
-del _EXTRA
-
-
 def T(lang: str) -> dict:
     """Return the UI strings for a language, falling back to English."""
     if lang == "en":
@@ -856,14 +846,25 @@ def skill_label(lang: str, key: str) -> str:
     return f"{key}（{gloss}）" if gloss and lang == "zh" else (f"{key} ({gloss})" if gloss else key)
 
 
-try:  # pragma: no cover - trivial import guard
-    from role_names import ROLES as _ROLE_NAMES
-except ImportError:  # package-relative import when `src` is a package
-    from .role_names import ROLES as _ROLE_NAMES
+import json as _json
+from pathlib import Path as _Path
 
-for _lang, _names in _ROLE_NAMES.items():
+_I18N_DATA = _Path(__file__).resolve().parents[1] / "data" / "i18n"
+
+
+def _load_copy(name: str) -> dict:
+    """Copy lives in JSON, not Python: Streamlit caches imported modules across
+    redeploys, so a module-level table would go stale in the running container."""
+    try:
+        return _json.loads((_I18N_DATA / name).read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+for _lang, _extra in _load_copy("decision_copy.json").items():
+    STRINGS.setdefault(_lang, {}).update(_extra)
+for _lang, _names in _load_copy("role_names.json").items():
     ROLE_PARENTHETICAL.setdefault(_lang, {}).update(_names)
-del _ROLE_NAMES
 
 
 def role_label(lang: str, name: str) -> str:

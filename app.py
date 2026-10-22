@@ -26,16 +26,24 @@ from utils import GAP_COST, TRANSFERABILITY, Role, pathway, rank, sdg_summary  #
 from i18n import ROLE_PARENTHETICAL, STRINGS, T, cat, role_label, skill_label  # noqa: E402
 from labels import field_label, group_label, skill_option_label  # noqa: E402
 from presentation import CSS_PATH, brand, copy_for, flow_header, learning_path, score_panel, skill_chips  # noqa: E402
-from decision_copy import EXTRA as _DECISION_COPY  # noqa: E402
-from role_names import ROLES as _ROLE_NAMES  # noqa: E402
 
-# `i18n` merges this copy at import time, but Streamlit keeps imported modules
-# alive across reruns and redeploys: a redeploy can leave a stale STRINGS dict
-# behind and the page dies on a missing key. app.py is re-executed on every run,
-# so the merge is repeated here — the one place guaranteed to run fresh code.
-for _lang, _extra in _DECISION_COPY.items():
+# Copy lives in data/i18n/*.json, not in Python modules, because Streamlit keeps
+# imported modules alive across reruns and redeploys: a redeploy would otherwise
+# keep serving the old tables (this shipped a KeyError to the live demo twice).
+# app.py is re-executed on every run, so the merge happens here, every time.
+I18N_DATA = ROOT / "data" / "i18n"
+
+
+def _load_copy(name: str) -> dict:
+    try:
+        return json.loads((I18N_DATA / name).read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+for _lang, _extra in _load_copy("decision_copy.json").items():
     STRINGS.setdefault(_lang, {}).update(_extra)
-for _lang, _names in _ROLE_NAMES.items():
+for _lang, _names in _load_copy("role_names.json").items():
     ROLE_PARENTHETICAL.setdefault(_lang, {}).update(_names)
 
 DATA = ROOT / "data"
