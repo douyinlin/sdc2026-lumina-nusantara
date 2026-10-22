@@ -23,7 +23,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "src"))
 
 from utils import GAP_COST, TRANSFERABILITY, Role, pathway, rank, sdg_summary  # noqa: E402
-from i18n import CATEGORY_LABELS, ROLE_PARENTHETICAL, STRINGS, T, cat, role_label, skill_label  # noqa: E402
+from i18n import CATEGORY_LABELS, ROLE_PARENTHETICAL, SKILL_PARENTHETICAL, STRINGS, T, cat, role_label, skill_label  # noqa: E402
 from labels import field_label, group_label, skill_option_label  # noqa: E402
 from presentation import CSS_PATH, brand, copy_for, flow_header, learning_path, score_panel, skill_chips  # noqa: E402
 
@@ -261,6 +261,40 @@ def _loc(row: dict, field: str, lang: str = "en") -> str:
     return row.get(field) or ""
 
 
+#: English display names for acronym skills; the raw keys are lowercase.
+SKILL_DISPLAY = {
+    "sql": "SQL", "python": "Python", "excel": "Excel", "cad": "CAD", "bim": "BIM",
+    "ui ux": "UI/UX", "osh": "OSH", "it support": "IT support", "hr operations": "HR operations",
+    "crm administration": "CRM administration", "ai": "AI", "llm": "LLM",
+}
+
+#: In Chinese and Malay prose, these are better known by their English name than
+#: by a literal gloss ("结构化查询" means nothing to the person we are writing for).
+SKILL_PLAIN_OVERRIDE = {
+    "zh": {"sql": "SQL", "python": "Python", "excel": "Excel", "cad": "CAD", "bim": "BIM",
+           "ui ux": "UI/UX", "osh": "OSH", "it support": "IT 支持", "ai": "AI"},
+    "ms": {"sql": "SQL", "python": "Python", "excel": "Excel", "cad": "CAD", "bim": "BIM",
+           "ui ux": "UI/UX", "osh": "OSH", "ai": "AI"},
+}
+
+
+def skill_plain(lang: str, key: str) -> str:
+    """One name only — for sentences. Tables keep the English so people can match
+    it against a job ad; a sentence with four brackets is unreadable."""
+    if lang == "en":
+        return SKILL_DISPLAY.get(key, key)
+    override = SKILL_PLAIN_OVERRIDE.get(lang, {}).get(key)
+    if override:
+        return override
+    return SKILL_PARENTHETICAL.get(lang, {}).get(key) or key
+
+
+def role_plain(lang: str, name: str) -> str:
+    if lang == "en":
+        return name
+    return ROLE_PARENTHETICAL.get(lang, {}).get(name) or name
+
+
 def _signal_strength(sig: dict) -> float:
     """Turn a fixed qualitative weight or a published percentage into a -1..1 signal."""
     if "weight" in sig:
@@ -293,6 +327,9 @@ def _named_skill_snapshot() -> dict:
             "weight": weight,
             "basis": s.get("evidence", ""),
             "evidence_kind": s.get("evidence_kind", "named_skill"),
+            "quote_area": s.get("quote_area"),
+            "area_zh": s.get("area_zh"),
+            "area_ms": s.get("area_ms"),
         })
     return {
         "kind": "jobstreet",
@@ -1410,16 +1447,18 @@ def screen_js_intake() -> None:
 # --------------------------------------------------------------------------- #
 
 def _evidence_lines(t: dict, lang: str, role: Role | None, trend: dict) -> list[str]:
-    """Translate a signal into one sentence a person can read, in their language."""
+    """One plain sentence per signal: what the source says, and what it cannot say."""
     wanted = set(role.required_skills) if role else set()
     hits = [s for s in (trend.get("signals") or []) if s.get("skill") in wanted]
     hits.sort(key=lambda s: -abs(_signal_strength(s)))
     period = trend.get("latest_period") or ""
     prev_period = trend.get("previous_period") or ""
+    forecast = bool(trend.get("forecast"))
     out = []
     for s in hits[:2]:
         occ = _loc(s, "occupation", lang)
         if occ and s.get("offers") is not None:
+            # observed Malaysian counts: give the two numbers and the change
             out.append(t["ev_line"].format(
                 occ=occ,
                 cur=f'{s["offers"]:,}',
@@ -1429,11 +1468,11 @@ def _evidence_lines(t: dict, lang: str, role: Role | None, trend: dict) -> list[
                 chg=f'{s.get("change_pct") or 0:+.1f}%',
             ))
         else:
-            area = _loc(s, "area", lang)
-            evidence = _loc(s, "evidence", lang)
-            line = t["named_area"].format(area=area) if area else evidence
-            mapping = _loc(s, "mapping_note", lang)
-            out.append(f"{line} {mapping}" if mapping else line)
+            # named-skill or forecast signal: name the area in plain words
+            area = (_loc(s, "area", lang) or s.get("quote_area")
+                    or skill_plain(lang, s["skill"]))
+            out.append(t["evidence_forecast"].format(area=area) if forecast
+                       else t["evidence_named"].format(area=area))
     return out
 
 
@@ -1469,9 +1508,9 @@ def why_block(t: dict, lang: str, result: dict, role: Role | None, trend: dict,
         if pairs:
             for score, have, gap in pairs[:3]:
                 st.caption(t["why_transfer_item"].format(
-                    a=skill_label(lang, have), b=skill_label(lang, gap), pct=round(score * 100)))
+                    a=skill_plain(lang, have), b=skill_plain(lang, gap), pct=round(score * 100)))
         else:
-            st.caption(t["none"])
+            st.caption(t["why_transfer_none"])
 
     with mid:
         st.markdown(f"**{t['why_gap']}**")
@@ -1479,7 +1518,8 @@ def why_block(t: dict, lang: str, result: dict, role: Role | None, trend: dict,
         weeks = max(1, round(sum(max(1, round(GAP_COST.get(s, 0.7) * 6)) for s in missing) * scale))
         st.caption(t["why_gap_body"].format(
             n=len(missing), total=len(missing) + len(result["covered"]),
-            core=core, weeks=weeks, hours=hours))
+            core=t["core_phrase"].format(k=core) if core else "",
+            weeks=weeks, hours=hours))
 
     with right:
         st.markdown(f"**{t['why_trend']}**")
@@ -1638,8 +1678,8 @@ def screen_js_results() -> None:
     cover = top1["components"]["coverage"]
     missing_n = len(top1["missing"])
     total_n = len(top1["covered"]) + missing_n
-    top_role = role_label(lang_now, top1["role"])
-    missing_labels = ", ".join(skill_label(lang_now, x) for x in top1["missing"]) or t["none"]
+    top_role = role_plain(lang_now, top1["role"])
+    missing_labels = ", ".join(skill_plain(lang_now, x) for x in top1["missing"]) or t["none"]
 
     if missing_n == 0:
         st.success(t["summary_full"].format(top_role, round(cover * 100)))
@@ -1650,9 +1690,8 @@ def screen_js_results() -> None:
     else:
         st.warning(t["summary_weak"].format(top_role, round(cover * 100), missing_n, total_n))
 
-    # one grey line instead of four: context, scope and the honesty note together
-    _ctx = (t["adv_worker"].format(st.session_state.get("years", 0)) if persona == "worker"
-            else t["adv_grad"].format(st.session_state.get("intern", 0)))
+    # the persona advice and the field note are already visible above; one short
+    # line here says how wide the shortlist is, and nothing else
     if persona == "worker":
         # the worker flow never picked a field, so the domain filter is a default,
         # not the user's own choice — say so instead of naming a field
@@ -1661,7 +1700,7 @@ def screen_js_results() -> None:
         _scope = t["domain_same"].format(field_label(lang_now, field), len(same))
     else:
         _scope = t["domain_adjacent"].format(field_label(lang_now, field))
-    st.caption(f"{_ctx} · {_scope} · {copy_for(lang_now)['rank_note']}")
+    st.caption(_scope)
     roles_by_name = {x.name: x for x in roles}
     why_block(t, lang_now, top1, roles_by_name.get(top1["role"]), trend, skills, hours, scale)
     for i, r in enumerate(results[:4]):
@@ -1690,7 +1729,7 @@ def screen_js_results() -> None:
         m3.metric(t["impact_roles"], after_score,
                   delta=round(after_score - top["score"], 1), delta_color="normal")
         st.caption(t["impact_note"])
-        st.write(t["gap"].format(role_label(lang_now, top["role"]), len(top["missing"]), total_required))
+        st.write(t["gap"].format(role_plain(lang_now, top["role"]), len(top["missing"]), total_required))
         step_rows, course_rows = [], []
         for p_ in plan:
             weeks = max(1, round(p_["weeks"] * scale))
@@ -1749,6 +1788,7 @@ def screen_js_results() -> None:
 
     with st.expander(t["disclose_title"]):
         st.markdown(t["disclose_body"])
+        st.markdown(t["disclose_extra"])
 
     # ---- 5. SDG contribution -------------------------------------------------
     # The heading keeps its left rule. The toggle is a normal Streamlit button with a
