@@ -1,0 +1,239 @@
+<section class="particle-hero">
+  <div class="hero-sky"></div>
+  <div class="hero-horizon"></div>
+  <canvas class="particle-canvas" aria-hidden="true"></canvas>
+
+  <div class="hero-copy">
+    <p>EMOTION · DIGITAL EXPERIENCES</p>
+    <h1>Ideas made<br />impossible to ignore.</h1>
+  </div>
+</section>
+
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+
+  .particle-hero {
+    position: relative;
+    width: 100%;
+    height: 100svh;
+    min-height: 600px;
+    overflow: hidden;
+    isolation: isolate;
+    color: white;
+    background:
+      radial-gradient(ellipse at 50% 47%, #8b63bd 0%, transparent 34%),
+      linear-gradient(180deg, #b6a2d1 0%, #80679f 46%, #292338 100%);
+  }
+
+  .hero-sky {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(ellipse at 50% 72%, #d9b5ef55 0%, transparent 38%),
+      linear-gradient(180deg, transparent 55%, #1c1a29aa 100%);
+  }
+
+  .hero-horizon {
+    position: absolute;
+    z-index: -1;
+    left: -10%;
+    right: -10%;
+    bottom: -17%;
+    height: 42%;
+    border-radius: 50% 50% 0 0;
+    background:
+      radial-gradient(ellipse at 50% 0%, #9d7db5 0%, #493b59 34%, #171722 75%);
+    filter: blur(8px);
+  }
+
+  .particle-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero-copy {
+    position: absolute;
+    z-index: 1;
+    left: clamp(24px, 7vw, 110px);
+    bottom: clamp(40px, 9vh, 100px);
+    pointer-events: none;
+    text-shadow: 0 2px 20px #21172f66;
+  }
+
+  .hero-copy p {
+    margin: 0 0 16px;
+    font: 600 11px/1.4 system-ui, sans-serif;
+    letter-spacing: .18em;
+  }
+
+  .hero-copy h1 {
+    margin: 0;
+    font: 400 clamp(38px, 6vw, 78px)/.98 system-ui, sans-serif;
+    letter-spacing: -.045em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .particle-canvas { opacity: .85; }
+  }
+</style>
+
+<script type="module">
+  import * as THREE from
+    "https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js";
+
+  const canvas = document.querySelector(".particle-canvas");
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const renderer = new THREE.WebGLRenderer({
+    canvas,
+    alpha: true,
+    antialias: true
+  });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+  camera.position.set(0, 0, 10);
+
+  // 用两层不同粗细的环形粒子构成中央的空心“粒子雕塑”。
+  const group = new THREE.Group();
+  scene.add(group);
+
+  const colors = [
+    new THREE.Color("#f5c7ff"),
+    new THREE.Color("#d28aff"),
+    new THREE.Color("#a855f7"),
+    new THREE.Color("#7355ff")
+  ];
+
+  function makeCloud(count, majorRadius, tubeRadius, size, opacity) {
+    const positions = new Float32Array(count * 3);
+    const particleColors = new Float32Array(count * 3);
+    const phases = new Float32Array(count);
+
+    for (let i = 0; i < count; i++) {
+      // 环绕主环分布，并给截面增加随机扰动，形成蓬松的云团感。
+      const u = Math.random() * Math.PI * 2;
+      const v = Math.random() * Math.PI * 2;
+      const jitter = (Math.random() - 0.5) * 0.13;
+      const r = majorRadius + Math.cos(v) * tubeRadius + jitter;
+
+      positions[i * 3] = Math.cos(u) * r;
+      positions[i * 3 + 1] = Math.sin(u) * r * 0.82
+        + Math.sin(v * 2 + u) * 0.10;
+      positions[i * 3 + 2] = Math.sin(v) * tubeRadius
+        + Math.sin(u * 3) * 0.13;
+
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      particleColors.set([color.r, color.g, color.b], i * 3);
+      phases[i] = Math.random() * Math.PI * 2;
+    }
+
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute("color", new THREE.BufferAttribute(particleColors, 3));
+    geometry.userData.phases = phases;
+
+    const material = new THREE.PointsMaterial({
+      size,
+      vertexColors: true,
+      transparent: true,
+      opacity,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      sizeAttenuation: true
+    });
+
+    return new THREE.Points(geometry, material);
+  }
+
+  group.add(makeCloud(18000, 1.18, 0.43, 0.045, 0.88));
+  group.add(makeCloud(8000, 1.16, 0.60, 0.025, 0.55));
+  group.scale.set(1.15, 1.15, 1.15);
+
+  // 周围稀疏的小光点，增加空间深度。
+  const ambientCount = 700;
+  const ambientPositions = new Float32Array(ambientCount * 3);
+  const ambientColors = new Float32Array(ambientCount * 3);
+
+  for (let i = 0; i < ambientCount; i++) {
+    ambientPositions[i * 3] = (Math.random() - 0.5) * 10;
+    ambientPositions[i * 3 + 1] = (Math.random() - 0.5) * 6;
+    ambientPositions[i * 3 + 2] = (Math.random() - 0.5) * 4 - 1;
+    const c = colors[Math.floor(Math.random() * colors.length)];
+    ambientColors.set([c.r, c.g, c.b], i * 3);
+  }
+
+  const ambientGeometry = new THREE.BufferGeometry();
+  ambientGeometry.setAttribute(
+    "position",
+    new THREE.BufferAttribute(ambientPositions, 3)
+  );
+  ambientGeometry.setAttribute(
+    "color",
+    new THREE.BufferAttribute(ambientColors, 3)
+  );
+
+  const ambient = new THREE.Points(
+    ambientGeometry,
+    new THREE.PointsMaterial({
+      size: 0.018,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.55,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    })
+  );
+  scene.add(ambient);
+
+  // 指针视差：鼠标移动时雕塑朝鼠标方向倾斜。原稿没有这段，按要求补上。
+  let pointerX = 0, pointerY = 0;
+  let easedX = 0, easedY = 0;
+  window.addEventListener("pointermove", (event) => {
+    const rect = canvas.getBoundingClientRect();
+    pointerX = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
+    pointerY = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
+  });
+  window.addEventListener("pointerleave", () => { pointerX = 0; pointerY = 0; });
+
+  function resize() {
+    const { width, height } = canvas.getBoundingClientRect();
+    renderer.setSize(width, height, false);
+    camera.aspect = width / height;
+    camera.position.z = width < 700 ? 12 : 10;
+    camera.updateProjectionMatrix();
+  }
+
+  new ResizeObserver(resize).observe(canvas);
+  resize();
+
+  const clock = new THREE.Clock();
+
+  function animate() {
+    requestAnimationFrame(animate);
+    const t = clock.getElapsedTime();
+
+    // 缓慢跟随指针，避免抖动。
+    easedX += (pointerX - easedX) * 0.06;
+    easedY += (pointerY - easedY) * 0.06;
+
+    if (!reducedMotion) {
+      group.rotation.y = t * 0.12 + easedX * 0.55;
+      group.rotation.x = Math.sin(t * 0.35) * 0.12 + easedY * 0.30;
+      group.position.y = Math.sin(t * 0.65) * 0.10;
+      ambient.rotation.y = -t * 0.015;
+    } else {
+      group.rotation.y = easedX * 0.55;
+      group.rotation.x = easedY * 0.30;
+    }
+
+    renderer.render(scene, camera);
+  }
+
+  animate();
+</script>
