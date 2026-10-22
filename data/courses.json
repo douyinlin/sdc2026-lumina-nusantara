@@ -2,7 +2,7 @@
   "is_simulated": false,
   "scope": "Malaysia-friendly free or low-cost providers",
   "retrieved_at": "2026-10-21",
-  "extraction_note": "Course titles, providers, links and cost model were verified by opening each provider page on 2026-10-21. Estimated hours are the provider's published estimate where available, otherwise the provider's stated weekly commitment multiplied by its stated length. Fees change; the link is the source of truth.",
+  "extraction_note": "Existing catalogue records retained from the previous version. The prior extraction note is historical team metadata, not independently corroborated in this repair. Access, prices and durations have not been reverified; check each provider before relying on them. Positive catalogue hours are unverified estimates unless a record explicitly supplies duration_verified and duration_source_url.",
   "courses": [
     {
       "skill": "data visualisation",
@@ -84,5 +84,7 @@
       "cost": "Free to audit; paid for certificate",
       "url": "https://www.coursera.org/professional-certificates/google-digital-marketing-ecommerce"
     }
-  ]
+  ],
+  "legacy_extraction_note": "Course titles, providers, links and cost model were verified by opening each provider page on 2026-10-21. Estimated hours are the provider's published estimate where available, otherwise the provider's stated weekly commitment multiplied by its stated length. Fees change; the link is the source of truth.",
+  "verification_status": "pending_team_review"
 }

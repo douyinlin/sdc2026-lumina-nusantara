@@ -35,7 +35,7 @@ every role mapped to the UN SDGs.
 | Resource | Link |
 | --- | --- |
 | GitHub Repository | https://github.com/douyinlin/sdc2026-lumina-nusantara |
-| Replit Project | https://replit.com/@duyulin18 |
+| Replit Project (access pending) | https://replit.com/@duyulin18/SkillRadar-MY-Streamlit-app |
 | **Live Demo** | https://sdc2026-lumina-nusantara-65cnugvuxdle5dgp9ky3fs.streamlit.app |
 | RunPod Endpoint | Not used — the app runs no GPU endpoint (see Technical Declaration §5) |
 | Slide Deck | `<TODO>` |
@@ -141,10 +141,12 @@ python -m unittest discover tests
 ## How We Use Replit *(Required)*
 
 Existing Replit usage evidence is preserved in `submission/`. This repaired local
-version has **not** been run or deployed on Replit during this change. The link above
-is an account profile, not verified proof of the current project deployment.
+version has **not** been run or deployed on Replit during this change. The concrete project link above was found in the existing slide brief. A read-only
+access check on 2026-10-22 returned "Page not found" with an owner-invitation message.
+This does not establish whether the app is private, renamed or removed, and does
+not prove which commit it runs. The owner must provide access and a runnable Preview.
 
-- **Development:** the app runs from this repository inside Replit; `.replit` starts
+- **Development configuration (not executed there in this repair):** `.replit` starts
   `python -m streamlit run app.py` on port 5000.
 - **Secrets:** any API keys live in Replit Secrets and are never committed.
 - **Hosting:** the public live demo is served by Streamlit Community Cloud, which
@@ -256,6 +258,15 @@ skill acquisition; the highest-scoring role after the plan may change.
    Include `source`, HTTPS `source_url`, `published`, `retrieved_at`,
    `extraction_note`, and non-empty `skill_signals` with `skill`, `direction`,
    `evidence`. Proxy mappings must have `mapping_note`. Do not invent percentages.
+   Preserve `skill` as the original source name and `model_skill` as the team's
+   original mapping text, with `mapping_note` explaining proxies. The importer
+   derives `match_key` using the scoring normalizer (trim + casefold). It rejects
+   blank/invalid keys and normalized duplicates. Do not hand-maintain `match_key`:
+   it is regenerated on import/read. `mapping_kind: "unmapped"` with no
+   `model_skill` produces `match_key: null` and cannot affect scoring, even if its
+   name happens to match a known skill. Other unknown catalogue keys also remain
+   context only. The UI retains source names, not internal matching keys.
+
 3. Validate, then import (replace the example input path with your reviewed file):
 
 ```powershell
@@ -297,3 +308,43 @@ Validation performed locally: unit/integration tests, dependency consistency,
 mypy and a Chrome worker flow with field selection, edited synthetic skills,
 study hours, evidence/scenario switching and SDG display. See
 `team/DEVELOPMENT_LOG.md` for actual results and remaining limitations.
+
+
+### Follow-up validation — baseline 68559e5
+
+The trend importer, runtime loaders, scoring, explanations and pathway ordering
+now share canonical matching keys without changing source wording. Course titles,
+notes and disclosures agree in all three languages: recorded provider links and
+fees/hours require verification; team-estimated time is separate. Transfer
+percentages are labelled team rule coefficients, not measured ability transfer.
+The historical extraction note in `data/courses.json` is retained as legacy team
+metadata, not treated as fresh verification.
+
+Runtime requirements use **exact direct pins** in `requirements.txt`; development
+checks use the same policy in `team/dev-env/requirements-dev.txt`, which includes
+runtime requirements and only the two direct check tools. This is not a Windows
+`pip freeze` export, a full transitive/hash lock, or proof of Linux compatibility.
+Transitive packages are still resolved by pip. Validated environment: Windows,
+Python 3.12, Streamlit 1.66.0, pandas 3.0.6, NumPy 2.5.4, PyArrow 26.0.0,
+Matplotlib 3.11.2. The previously missing Matplotlib package is now installed and
+the real browser test asserts the DOSM chart is visible.
+
+Deprecated container-width arguments were replaced with `width`, and repository-owned
+static HTML/JavaScript uses `st.iframe`. The API was checked against installed
+Streamlit 1.66.0 and its [official iframe reference](https://docs.streamlit.io/develop/api-reference/text/st.iframe).
+Only repository-authored static scripts are passed to this iframe; evidence and
+uploaded content are not embedded in it. Browser checks include the particle
+canvas, source/scenario controls, study plan, SDG image and mobile capture.
+
+Current local validation: **43 tests passed**, including normalization/import
+failure protection, copy consistency, and intake/results regression across three
+languages. The separate CV check, mypy (11 files), pinned dependency installation,
+`pip check` and the real Chrome workflow passed. Artifacts are ignored under
+`test-results/normalized-trends-browser/`.
+
+Replit status: configuration inspected; concrete project link checked read-only;
+this repair has **not run on Replit** and has not been deployed there.
+No Linux runtime test was performed. Once the owner grants access, sync the reviewed
+commit, install `requirements.txt`, run the configured app, and verify the same
+flows in Preview. Collect a project/Preview link and screenshot that identifies
+the actual tested commit. Do not assume old usage evidence covers this repair.

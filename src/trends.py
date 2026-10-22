@@ -1,6 +1,7 @@
 """Validated manual import of curated evidence snapshots; no web scraping."""
 from __future__ import annotations
 import argparse
+import copy
 from datetime import date, datetime, timezone
 import json
 import os
@@ -8,7 +9,7 @@ from pathlib import Path
 import tempfile
 from urllib.parse import urlparse
 
-from src.utils import Role
+from src.utils import Role, normalize_skills
 
 def _signal_strength(sig: dict) -> float:
     """Turn a fixed qualitative weight or a published percentage into a -1..1 signal."""
@@ -21,32 +22,48 @@ def _signal_strength(sig: dict) -> float:
     return max(-1.0, min(1.0, float(pct) / 50.0))
 
 
-def apply_trend(roles: list[Role], trend: dict) -> list[Role]:
-    """Blend the catalogue trend with the selected source's skill signals.
+def normalize_match_key(value: object) -> str:
+    """Use the scoring taxonomy normalization, while rejecting empty keys."""
+    if not isinstance(value, str):
+        raise ValueError("A match key must be text")
+    keys = normalize_skills([value])
+    if not keys:
+        raise ValueError("A match key must not be blank")
+    return keys[0]
 
-    Taking the source value alone would give every covered role the same trend
-    (+0.7 for any "rising" skill), so the ranking would stop differentiating
-    between roles. Half the catalogue baseline keeps them apart; a role the
-    source says nothing about keeps its baseline unchanged.
-    """
+
+def signal_key(signal: dict) -> str | None:
+    """None explicitly marks context-only evidence; support old internal signals."""
+    if "match_key" in signal:
+        value = signal["match_key"]
+        return None if value is None else normalize_match_key(value)
+    return normalize_match_key(signal.get("skill"))
+
+
+def snapshot_signals(snapshot: dict, weight: float = 0.7) -> list[dict]:
+    """Keep source skill/model_skill text intact and add a separate scoring key."""
+    data = validate_snapshot(snapshot)
+    return [{**row, "weight": {"rising": weight, "declining": -weight, "stable": 0.0}[row["direction"]]}
+            for row in data["skill_signals"]]
+
+
+def apply_trend(roles: list[Role], trend: dict) -> list[Role]:
+    """Blend matched signals with role baselines; context-only rows never score."""
     signals = trend.get("signals") or []
+    indexed: dict[str, float] = {}
+    for signal in signals:
+        key = signal_key(signal)
+        if key is None:
+            continue
+        if key in indexed:
+            raise ValueError("Duplicate normalized trend match key: " + key)
+        indexed[key] = _signal_strength(signal)
     out = []
     for role in roles:
-        relevant = [_signal_strength(s) for s in signals if s["skill"] in (role.required_skills or [])]
-        if not relevant:
-            out.append(Role(role.name, role.required_skills, role.trend, role.sdg, dict(role.tiers)))
-            continue
-        delta = sum(relevant) / len(relevant)
-        blended = 0.5 * role.trend + 0.5 * delta
-        out.append(
-            Role(
-                role.name,
-                role.required_skills,
-                max(-1.0, min(1.0, blended)),
-                role.sdg,
-                dict(role.tiers),
-            )
-        )
+        required = normalize_skills(role.required_skills)
+        relevant = [indexed[key] for key in required if key in indexed]
+        blended = 0.5 * role.trend + 0.5 * sum(relevant) / len(relevant) if relevant else role.trend
+        out.append(Role(role.name, role.required_skills, max(-1.0, min(1.0, blended)), role.sdg, dict(role.tiers)))
     return out
 
 
@@ -55,6 +72,7 @@ FILES = {"wef": "wef_future_jobs_2025.json", "jobstreet": "jobstreet_skills_2025
 def validate_snapshot(data: object) -> dict:
     if not isinstance(data, dict):
         raise ValueError("Snapshot must be an object")
+    data = copy.deepcopy(data)
     for key in ("source", "source_url", "published", "retrieved_at", "extraction_note"):
         if not isinstance(data.get(key), str) or not data[key].strip():
             raise ValueError("Missing metadata: " + key)
@@ -72,18 +90,28 @@ def validate_snapshot(data: object) -> dict:
     for row in rows:
         if not isinstance(row, dict) or not isinstance(row.get("skill"), str) or not row["skill"].strip():
             raise ValueError("Each signal needs a skill")
-        if row.get("direction") not in {"rising", "stable", "declining"}:
+        if not isinstance(row.get("direction"), str) or row["direction"] not in {"rising", "stable", "declining"}:
             raise ValueError("Invalid signal direction")
         if not isinstance(row.get("evidence"), str) or not row["evidence"].strip():
             raise ValueError("Each signal needs source evidence")
-        target = row.get("model_skill") or row["skill"]
-        if not isinstance(target, str):
-            raise ValueError("Invalid mapped skill")
-        target = target.strip().casefold()
-        if target in seen:
-            raise ValueError("Duplicate target skill")
-        seen.add(target)
-        if row.get("mapping_kind") == "proxy" and not row.get("mapping_note"):
+        # Preserve source wording. Only match_key is canonicalized.
+        kind = row.get("mapping_kind")
+        if kind is not None and kind not in ("proxy", "aligned", "unmapped"):
+            raise ValueError("Invalid mapping kind")
+        if "model_skill" in row:
+            target = normalize_match_key(row["model_skill"])
+            if kind == "unmapped":
+                raise ValueError("Context-only evidence cannot have a model_skill")
+        elif kind == "unmapped":
+            target = None
+        else:
+            target = normalize_match_key(row["skill"])
+        if target is not None:
+            if target in seen:
+                raise ValueError("Duplicate normalized target skill")
+            seen.add(target)
+        row["match_key"] = target
+        if kind == "proxy" and (not isinstance(row.get("mapping_note"), str) or not row["mapping_note"].strip()):
             raise ValueError("Proxy mappings require an explanation")
     return data
 

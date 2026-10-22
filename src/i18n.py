@@ -131,9 +131,9 @@ STRINGS = {
         "summary_weak": "Low match so far: **{0}** covers {1}%, missing {2} of {3} required skills. Treat this as a direction to explore, not a near-term target.",
         "adv_worker": "Based on {} years of experience, the pathway below is ordered shortest-first.",
         "adv_grad": "With {} month(s) of internship, prioritise roles that hire fresh graduates explicitly.",
-        "courses_title": "Verified learning resources (selected)",
-        "search_caption": "No verified course is on file for: {}. Use the HRD Corp directory as a search direction.",
-        "courses_note": "These are real, publicly reachable free or low-cost resources. Duration is the provider's estimate; check the link for the current syllabus.",
+        "courses_title": 'Learning resource catalogue (verification pending)',
+        "search_caption": 'No course is mapped for: {}. Find a provider and verify the link, duration and fees before using it.',
+        "courses_note": 'Course links point to the providers recorded in the catalogue. Current access, fees and catalogue hours have not been reverified. Documented durations require a source; other catalogue hours are unverified estimates, and missing hours use labelled team estimates.',
         "col_course": "Course",
         "col_provider": "Provider",
         "col_hours": "Est. hours",
@@ -235,23 +235,7 @@ STRINGS = {
         "view_source": "view source",
         "role_source": "Role catalogue: team-curated subset modelled on O*NET / ESCO skill lists (not an official extract).",
         "disclose_title": "Sources, AI disclosure and limits",
-        "disclose_body": (
-            "**No language model runs at inference time.** Every score comes from a published rule "
-            "(coverage, role focus, transferability, trend, gap cost) that you can read in `src/utils.py`.\n\n"
-            "**Data.** Demo profiles and the sample CV are synthetic — no real person's data is read or stored. "
-            "The app separates three evidence layers: DOSM Malaysia online job offerings (2026 Q2), a "
-            "JobStreet / Randstad article naming skill areas (2025), and WEF global employer expectations "
-            "for 2025–2030. Occupation-to-skill links are our proxies; WEF directions are forecasts, not "
-            "Malaysian observations, and the fixed ±0.7 ranking weight is a prototype heuristic, not a "
-            "source statistic. Snapshots are transcribed manually; nothing is scraped.\n\n"
-            "**Roles.** The catalogue is a curated subset modelled on O*NET / ESCO occupation skill lists; it is "
-            "not an official extract, and it never invents a role that does not exist in the file.\n\n"
-            "**Courses.** Pathway links are a *search direction* on the HRD Corp directory, not a verified "
-            "course, price or duration.\n\n"
-            "**Human decision.** This tool supports a career decision. It does not score people for hiring and "
-            "makes no recruitment decision.\n\n"
-            "**Estimates.** Scores and weeks are prototype estimates, not predictions of employment."
-        ),
+        "disclose_body": "**No language model runs at inference time.** Every score comes from a published rule (coverage, role focus, transferability, trend, gap cost) that you can read in `src/utils.py`.\n\n**Data.** Demo profiles and the sample CV are synthetic — no real person's data is read or stored. The app separates three evidence layers: DOSM Malaysia online job offerings (2026 Q2), a JobStreet / Randstad article naming skill areas (2025), and WEF global employer expectations for 2025–2030. Occupation-to-skill links are our proxies; WEF directions are forecasts, not Malaysian observations, and the fixed ±0.7 ranking weight is a prototype heuristic, not a source statistic. Snapshots are transcribed manually; nothing is scraped.\n\n**Roles.** The catalogue is a curated subset modelled on O*NET / ESCO occupation skill lists; it is not an official extract, and it never invents a role that does not exist in the file.\n\n**Courses.** Course links point to the providers recorded in the catalogue. Current access, fees and catalogue hours have not been reverified. Documented durations require a source; other catalogue hours are unverified estimates, and missing hours use labelled team estimates.\n\n**Human decision.** This tool supports a career decision. It does not score people for hiring and makes no recruitment decision.\n\n**Estimates.** Scores and weeks are prototype estimates, not predictions of employment.",
         "domain_same": "Showing only roles in your field ({}) — {} matching roles in the catalogue.",
         "domain_adjacent": "No roles in {} yet, so we show the closest adjacent fields instead.",
         "badge_same": "✅ same field as your studies",
@@ -383,9 +367,9 @@ STRINGS = {
         "summary_weak": "目前匹配度较低：**{0}** 仅覆盖 {1}%，{2} 项要求中缺 {3} 项。建议把它当作探索方向，而不是近期目标。",
         "adv_worker": "依据你 {} 年的工作经验，下方路径已按由短到长排序。",
         "adv_grad": "你已完成 {} 个月实习，建议优先投递明确招收应届生的岗位。",
-        "courses_title": "已核实的课程资源（节选）",
-        "search_caption": "以下技能暂无已核实课程：{}。可先在 HRD Corp 目录中按此搜索。",
-        "courses_note": "以下为真实可访问的免费或低价资源。时长为提供方给出的估算，请点击链接确认当前课程大纲。",
+        "courses_title": '学习资源目录（待核实）',
+        "search_caption": '以下技能尚未关联课程：{}。请寻找提供方并核实链接、时长和费用。',
+        "courses_note": '课程链接指向目录记录的提供方。本次未重新核实可访问性、费用或目录小时数。有来源的已核实时长须有明确记录；其他目录时长待核实，缺少时长时使用标明的团队估算。',
         "col_course": "课程",
         "col_provider": "提供方",
         "col_hours": "预计时长",
@@ -484,18 +468,7 @@ STRINGS = {
         "view_source": "查看来源",
         "role_source": "岗位目录：参照 O*NET / ESCO 职业技能清单人工整理的子集（非官方导出）。",
         "disclose_title": "数据来源、AI 使用披露与局限",
-        "disclose_body": (
-            "**推理阶段没有使用任何大语言模型。** 每个分数都来自公开可读的规则"
-            "（覆盖度、岗位聚焦度、可迁移性、趋势、缺口成本），代码在 `src/utils.py`。\n\n"
-            "**数据**：演示画像与示例简历均为合成数据，不读取或存储任何真实个人资料。应用分开展示三层证据："
-            "DOSM 马来西亚线上招聘广告岗位数（2026 Q2）、点名技能领域的 JobStreet / Randstad 报道（2025），"
-            "以及 WEF 对 2025–2030 年全球雇主预期的预测。职业到技能的关联是我们设置的代理映射；WEF 方向"
-            "不是马来西亚观测值，固定 ±0.7 权重也是原型启发值，并非来源统计。来源快照由团队人工转录，不进行抓取。\n\n"
-            "**岗位**：目录是参照 O*NET / ESCO 职业技能清单整理的子集，不是官方导出；系统不会凭空生成目录里不存在的岗位。\n\n"
-            "**课程**：路径里的链接只是 HRD Corp 目录的「搜索方向」，不是已核实的课程、价格或时长。\n\n"
-            "**人的决策**：本工具辅助职业决策，不给人打招聘分，也不做招聘决定。\n\n"
-            "**估计值**：分数与周数都是原型估算，不是就业预测。"
-        ),
+        "disclose_body": '**推理阶段没有使用任何大语言模型。** 每个分数都来自公开可读的规则（覆盖度、岗位聚焦度、可迁移性、趋势、缺口成本），代码在 `src/utils.py`。\n\n**数据**：演示画像与示例简历均为合成数据，不读取或存储任何真实个人资料。应用分开展示三层证据：DOSM 马来西亚线上招聘广告岗位数（2026 Q2）、点名技能领域的 JobStreet / Randstad 报道（2025），以及 WEF 对 2025–2030 年全球雇主预期的预测。职业到技能的关联是我们设置的代理映射；WEF 方向不是马来西亚观测值，固定 ±0.7 权重也是原型启发值，并非来源统计。来源快照由团队人工转录，不进行抓取。\n\n**岗位**：目录是参照 O*NET / ESCO 职业技能清单整理的子集，不是官方导出；系统不会凭空生成目录里不存在的岗位。\n\n**课程。** 课程链接指向目录记录的提供方。本次未重新核实可访问性、费用或目录小时数。有来源的已核实时长须有明确记录；其他目录时长待核实，缺少时长时使用标明的团队估算。\n\n**人的决策**：本工具辅助职业决策，不给人打招聘分，也不做招聘决定。\n\n**估计值**：分数与周数都是原型估算，不是就业预测。',
         "domain_same": "只显示与你专业相关的岗位（{}）—— 目录中共 {} 个匹配岗位。",
         "domain_adjacent": "目录里暂时没有 {} 的岗位，因此展示最接近的相关领域。",
         "badge_same": "✅ 与你的专业同领域",
@@ -628,21 +601,7 @@ STRINGS = {
         "view_source": "lihat sumber",
         "role_source": "Katalog peranan: subset yang disusun pasukan berdasarkan senarai kemahiran O*NET / ESCO (bukan ekstrak rasmi).",
         "disclose_title": "Sumber, pendedahan AI dan had",
-        "disclose_body": (
-            "**Tiada model bahasa dijalankan semasa inferens.** Setiap skor datang daripada peraturan terbuka "
-            "(liputan, fokus peranan, kebolehpindahan, trend, kos jurang) dalam `src/utils.py`.\n\n"
-            "**Data.** Profil demo dan CV contoh adalah sintetik — tiada data peribadi dibaca atau disimpan. "
-            "Aplikasi memisahkan tiga lapisan bukti: tawaran kerja dalam talian DOSM Malaysia (2026 Q2), "
-            "artikel JobStreet / Randstad yang menamakan bidang kemahiran (2025), dan jangkaan majikan global "
-            "WEF untuk 2025–2030. Pemetaan pekerjaan kepada kemahiran ialah proksi kami; arah WEF ialah unjuran, "
-            "bukan pemerhatian Malaysia, dan pemberat tetap ±0.7 ialah heuristik prototaip, bukan statistik sumber. "
-            "Snapshot sumber ditranskripsi secara manual; tiada data digores.\n\n"
-            "**Peranan.** Katalog ialah subset berdasarkan senarai O*NET / ESCO, bukan ekstrak rasmi, dan tidak "
-            "mencipta peranan yang tiada dalam fail.\n\n"
-            "**Kursus.** Pautan laluan ialah arah carian pada direktori HRD Corp, bukan kursus/harga/tempoh disahkan.\n\n"
-            "**Keputusan manusia.** Alat ini menyokong keputusan kerjaya; ia tidak menilai orang untuk pengambilan kerja.\n\n"
-            "**Anggaran.** Skor dan minggu ialah anggaran prototaip, bukan ramalan pekerjaan."
-        ),
+        "disclose_body": '**Tiada model bahasa dijalankan semasa inferens.** Setiap skor datang daripada peraturan terbuka (liputan, fokus peranan, kebolehpindahan, trend, kos jurang) dalam `src/utils.py`.\n\n**Data.** Profil demo dan CV contoh adalah sintetik — tiada data peribadi dibaca atau disimpan. Aplikasi memisahkan tiga lapisan bukti: tawaran kerja dalam talian DOSM Malaysia (2026 Q2), artikel JobStreet / Randstad yang menamakan bidang kemahiran (2025), dan jangkaan majikan global WEF untuk 2025–2030. Pemetaan pekerjaan kepada kemahiran ialah proksi kami; arah WEF ialah unjuran, bukan pemerhatian Malaysia, dan pemberat tetap ±0.7 ialah heuristik prototaip, bukan statistik sumber. Snapshot sumber ditranskripsi secara manual; tiada data digores.\n\n**Peranan.** Katalog ialah subset berdasarkan senarai O*NET / ESCO, bukan ekstrak rasmi, dan tidak mencipta peranan yang tiada dalam fail.\n\n**Kursus.** Pautan kursus merujuk penyedia dalam katalog. Akses semasa, yuran dan jam katalog belum disahkan semula. Tempoh disahkan memerlukan sumber; jam katalog lain belum disahkan, dan jam yang tiada menggunakan anggaran pasukan berlabel.\n\n**Keputusan manusia.** Alat ini menyokong keputusan kerjaya; ia tidak menilai orang untuk pengambilan kerja.\n\n**Anggaran.** Skor dan minggu ialah anggaran prototaip, bukan ramalan pekerjaan.',
         "domain_same": "Hanya peranan dalam bidang anda ({}) — {} peranan sepadan dalam katalog.",
         "domain_adjacent": "Tiada peranan dalam {} lagi, jadi kami tunjukkan bidang bersebelahan yang terdekat.",
         "badge_same": "✅ bidang sama dengan pengajian anda",
@@ -683,9 +642,9 @@ STRINGS = {
         "summary_weak": "Padanan rendah setakat ini: **{0}** meliputi {1}%, kurang {2} daripada {3} kemahiran. Anggap ini sebagai arah penerokaan, bukan sasaran jangka pendek.",
         "adv_worker": "Berdasarkan {} tahun pengalaman, laluan di bawah disusun dari yang terpendek.",
         "adv_grad": "Dengan {} bulan latihan industri, utamakan peranan yang mengupah graduan baru.",
-        "courses_title": "Sumber pembelajaran yang disahkan (pilihan)",
-        "search_caption": "Belum ada kursus disahkan untuk: {}. Gunakan direktori HRD Corp sebagai arah carian.",
-        "courses_note": "Ini sumber sebenar yang boleh diakses secara percuma atau murah. Tempoh ialah anggaran penyedia; semak pautan untuk silibus terkini.",
+        "courses_title": 'Katalog sumber pembelajaran (pengesahan tertunda)',
+        "search_caption": 'Tiada kursus dipadankan untuk: {}. Cari penyedia dan sahkan pautan, tempoh dan yuran sebelum digunakan.',
+        "courses_note": 'Pautan kursus merujuk penyedia dalam katalog. Akses semasa, yuran dan jam katalog belum disahkan semula. Tempoh disahkan memerlukan sumber; jam katalog lain belum disahkan, dan jam yang tiada menggunakan anggaran pasukan berlabel.',
         "col_course": "Kursus",
         "col_provider": "Penyedia",
         "col_hours": "Anggaran jam",

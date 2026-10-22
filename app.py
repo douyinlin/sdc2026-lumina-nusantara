@@ -16,18 +16,18 @@ import zlib
 from pathlib import Path
 
 import streamlit as st
-import streamlit.components.v1 as components
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "src"))
 
-from utils import GAP_COST, TRANSFERABILITY, Role, pathway, rank, sdg_summary  # noqa: E402
+from utils import normalize_skills, GAP_COST, TRANSFERABILITY, Role, pathway, rank, sdg_summary  # noqa: E402
 from i18n import CATEGORY_LABELS, ROLE_PARENTHETICAL, SKILL_PARENTHETICAL, STRINGS, T, cat, role_label, skill_label  # noqa: E402
 from src.cv import cv_to_skills
 from src.planning import filter_roles, learning_duration
-from src.trends import read_snapshot, update_status, apply_trend, _signal_strength
+from src.trends import read_snapshot, update_status, apply_trend, _signal_strength, snapshot_signals, signal_key
 from functools import partial
+from typing import cast
 from labels import field_label, group_label, skill_option_label  # noqa: E402
 from presentation import CSS_PATH, brand, copy_for, flow_header, learning_path, score_panel, skill_chips  # noqa: E402
 
@@ -297,19 +297,7 @@ def _named_skill_snapshot() -> dict:
         d = read_snapshot(path)
     except (ValueError, OSError) as exc:
         raise ValueError("Jobstreet snapshot unavailable; repair or import a valid snapshot") from exc
-    signals = []
-    for s in d.get("skill_signals") or []:
-        weight = {"rising": NAMED_SIGNAL_WEIGHT, "declining": -NAMED_SIGNAL_WEIGHT}.get(s.get("direction"), 0.0)
-        signals.append({
-            "skill": s["skill"],
-            "direction": s.get("direction", "stable"),
-            "weight": weight,
-            "basis": s.get("evidence", ""),
-            "evidence_kind": s.get("evidence_kind", "named_skill"),
-            "quote_area": s.get("quote_area"),
-            "area_zh": s.get("area_zh"),
-            "area_ms": s.get("area_ms"),
-        })
+    signals = snapshot_signals(d, NAMED_SIGNAL_WEIGHT)
     return {
         "kind": "jobstreet",
         "scenario": False,
@@ -336,10 +324,7 @@ def _wef_skill_snapshot() -> dict:
         d = read_snapshot(path)
     except (ValueError, OSError) as exc:
         raise ValueError("WEF snapshot unavailable; repair or import a valid snapshot") from exc
-    signals = []
-    for item in d.get("skill_signals") or []:
-        weight = {"rising": WEF_SIGNAL_WEIGHT, "declining": -WEF_SIGNAL_WEIGHT}.get(item.get("direction"), 0.0)
-        signals.append({**item, "skill": item.get("model_skill") or item["skill"], "weight": weight})
+    signals = snapshot_signals(d, WEF_SIGNAL_WEIGHT)
     return {
         "kind": "wef",
         "scenario": False,
@@ -557,7 +542,7 @@ ORBS_HTML = """
 
 def render_landing_particles() -> None:
     """Render cursor-reactive particles above the role-picker cards."""
-    components.html(
+    st.iframe(
         """
         <style>
           html, body { width:100%; height:100%; margin:0; overflow:hidden; background:transparent; }
@@ -676,7 +661,6 @@ def render_landing_particles() -> None:
         </script>
         """,
         height=205,
-        scrolling=False,
     )
 
 # Shared look for every screen after the landing: same palette, calmer motion.
@@ -841,7 +825,7 @@ SCROLL_JS = """
 
 def scroll_top() -> None:
     """Jump back to the top so a new step never opens mid-scroll."""
-    components.html(SCROLL_JS, height=0, width=0)
+    st.iframe(SCROLL_JS, height=1, width=1, tab_index=-1, alt="Scroll position helper")
 
 
 def screen_wrap() -> None:
@@ -920,7 +904,7 @@ def top_bar(t: dict) -> None:
     with left:
         st.markdown(brand(), unsafe_allow_html=True)
     with right:
-        if st.button(t["reeval"], use_container_width=True, help=t["reeval_help"]):
+        if st.button(t["reeval"], width="stretch", help=t["reeval_help"]):
             reset()
     with far:
         lang_selector(compact=True)
@@ -1006,6 +990,7 @@ def dosm_radar(t: dict, d: dict, lang: str = "en") -> None:
         import matplotlib
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
+        from matplotlib.projections.polar import PolarAxes
         import numpy as np
     except Exception:
         return
@@ -1021,6 +1006,7 @@ def dosm_radar(t: dict, d: dict, lang: str = "en") -> None:
     prev_c = prev + prev[:1]
 
     fig, ax = plt.subplots(figsize=(3.4, 3.2), subplot_kw=dict(polar=True), dpi=170)
+    ax = cast(PolarAxes, ax)
     ax.set_facecolor("none")
     ax.set_theta_offset(np.pi / 2)
     ax.set_theta_direction(-1)
@@ -1043,7 +1029,7 @@ def dosm_radar(t: dict, d: dict, lang: str = "en") -> None:
     ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.19), ncol=2, frameon=False,
               fontsize=6.8, handlelength=1.2, columnspacing=1.0)
     fig.patch.set_alpha(0)
-    st.pyplot(fig, use_container_width=False)
+    st.pyplot(fig, width="content")
     plt.close(fig)
 
 
@@ -1132,7 +1118,7 @@ def skill_evidence_panel(t: dict, lang: str) -> None:
     if not path.exists():
         return
     try:
-        d = json.loads(path.read_text(encoding="utf-8"))
+        d = read_snapshot(path)
     except Exception:
         return
 
@@ -1179,7 +1165,7 @@ def future_skill_panel(t: dict, lang: str) -> None:
     """Layer 3 — global employer forecasts, kept separate from local observations."""
     path = DATA / "trends" / "wef_future_jobs_2025.json"
     try:
-        d = json.loads(path.read_text(encoding="utf-8"))
+        d = read_snapshot(path)
     except Exception:
         return
 
@@ -1199,7 +1185,8 @@ def future_skill_panel(t: dict, lang: str) -> None:
             evidence = _loc(sig, "evidence", lang)
             mapping = _loc(sig, "mapping_note", lang)
             body = evidence + (f" {mapping}" if mapping else "")
-            mapping_kind = sig.get("mapping_kind")
+            known = {key for role in load_roles() for key in normalize_skills(role.required_skills)}
+            mapping_kind = sig.get("mapping_kind") if sig.get("match_key") in known else "unmapped"
             mapping_label = (
                 t["mapping_unmapped"] if mapping_kind == "unmapped"
                 else t["mapping_proxy"] if mapping_kind == "proxy"
@@ -1319,7 +1306,7 @@ def screen_landing() -> None:
                 <li>🎯 {t['p1_b3']}</li></ul>""",
                 unsafe_allow_html=True,
             )
-            if st.button(t["p1_btn"], type="primary", use_container_width=True):
+            if st.button(t["p1_btn"], type="primary", width="stretch"):
                 go("js_intake")
     with c2:
         with st.container(border=True):
@@ -1330,7 +1317,7 @@ def screen_landing() -> None:
                 <li>💸 {t['p2_b3']}</li></ul>""",
                 unsafe_allow_html=True,
             )
-            if st.button(t["p2_btn"], type="primary", use_container_width=True):
+            if st.button(t["p2_btn"], type="primary", width="stretch"):
                 go("hr_intake")
     with c3:
         with st.container(border=True):
@@ -1341,7 +1328,7 @@ def screen_landing() -> None:
                 <li>🌱 {t['p3_b3']}</li></ul>""",
                 unsafe_allow_html=True,
             )
-            if st.button(t["p3_btn"], type="primary", use_container_width=True):
+            if st.button(t["p3_btn"], type="primary", width="stretch"):
                 go("cc_intake")
 
     st.markdown(
@@ -1478,7 +1465,7 @@ def screen_js_intake() -> None:
                 )
                 for label in labels:
                     picked += LABEL_TO_KEYS[label]
-    if st.button(t["use_skills"], use_container_width=True):
+    if st.button(t["use_skills"], width="stretch"):
         # Only overwrite when something was actually ticked: a CV upload already
         # filled the profile, and an empty click must not wipe it.
         if picked:
@@ -1498,12 +1485,12 @@ def screen_js_intake() -> None:
 
     c1, c2 = st.columns([1, 3])
     with c1:
-        if st.button(t["back"], use_container_width=True):
+        if st.button(t["back"], width="stretch"):
             reset()
     with c2:
         if not current:
             st.caption(t["pick_first"])
-        if st.button(t["continue"], type="primary", use_container_width=True, disabled=not current):
+        if st.button(t["continue"], type="primary", width="stretch", disabled=not current):
             go("js_results")
 
 
@@ -1513,8 +1500,8 @@ def screen_js_intake() -> None:
 
 def _evidence_lines(t: dict, lang: str, role: Role | None, trend: dict) -> list[str]:
     """One plain sentence per signal: what the source says, and what it cannot say."""
-    wanted = set(role.required_skills) if role else set()
-    hits = [s for s in (trend.get("signals") or []) if s.get("skill") in wanted]
+    wanted = set(normalize_skills(role.required_skills)) if role else set()
+    hits = [s for s in (trend.get("signals") or []) if signal_key(s) in wanted]
     hits.sort(key=lambda s: -abs(_signal_strength(s)))
     period = trend.get("latest_period") or ""
     prev_period = trend.get("previous_period") or ""
@@ -1694,7 +1681,7 @@ def screen_js_results() -> None:
                 t["robust_delta"]: round(sb - sa, 1),
                 t["robust_verdict"]: t["robust_hold"] if pa <= 5 and pb <= 5 else t["robust_sensitive"],
             })
-        st.dataframe(rows, use_container_width=True, hide_index=True)
+        st.dataframe(rows, width="stretch", hide_index=True)
         st.caption(t["robust_note"])
 
     # ---- uncertainty: show both scenarios side by side, ranked side by side ----
@@ -1721,7 +1708,7 @@ def screen_js_results() -> None:
                 }
                 for r in _mod[:5]
             ],
-            use_container_width=True,
+            width="stretch",
             hide_index=True,
         )
         st.caption(t["scen_note"])
@@ -1780,7 +1767,7 @@ def screen_js_results() -> None:
         plan = pathway(top)
         # Cheapest-first is the base order; the chosen evidence source then pulls the
         # skills the market currently rewards towards the front of the queue.
-        _evidence = {s["skill"]: _signal_strength(s) for s in (trend.get("signals") or [])}
+        _evidence = {signal_key(s): _signal_strength(s) for s in (trend.get("signals") or []) if signal_key(s) is not None}
         plan.sort(key=lambda p_: GAP_COST.get(p_["skill"], 0.7) - 0.35 * _evidence.get(p_["skill"], 0.0))
         for _i, _p in enumerate(plan, 1):
             _p["step"] = _i
@@ -1834,10 +1821,10 @@ def screen_js_results() -> None:
                 t["bridge_best"]: role_label(lang_now, best["role"]),
                 t["bridge_score"]: best["score"],
             })
-        st.dataframe(bridge, use_container_width=True, hide_index=True)
+        st.dataframe(bridge, width="stretch", hide_index=True)
         st.caption(t["bridge_note"])
 
-        st.dataframe(step_rows, hide_index=True, use_container_width=True)
+        st.dataframe(step_rows, hide_index=True, width="stretch")
         no_course = [p_["skill"] for p_ in plan if p_["skill"] not in courses]
         if no_course:
             st.caption(t["no_course"] + ": " + ", ".join(skill_label(lang_now, x) for x in no_course))
@@ -1845,7 +1832,7 @@ def screen_js_results() -> None:
             st.markdown(f"**{t['courses_title']}**")
             st.dataframe(
                 course_rows,
-                use_container_width=True,
+                width="stretch",
                 hide_index=True,
                 column_config={t["col_link"]: st.column_config.LinkColumn(t["col_link"])},
             )
@@ -1902,7 +1889,7 @@ def screen_js_results() -> None:
         if wheel.exists():
             left, mid, right = st.columns([1, 6, 1])
             with mid:
-                st.image(str(wheel), caption=t["sdg_wheel_caption"], use_container_width=True)
+                st.image(str(wheel), caption=t["sdg_wheel_caption"], width="stretch")
         else:
             st.info(t["sdg_wheel_caption"])
 
@@ -1928,7 +1915,7 @@ def screen_hr_intake() -> None:
             roster[r.name] = n
 
     st.caption(t["hr_tip"])
-    if st.button(t["analyse"], type="primary", use_container_width=True, disabled=not roster):
+    if st.button(t["analyse"], type="primary", width="stretch", disabled=not roster):
         st.session_state["roster"] = roster
         go("hr_results")
     if st.button(t["back"]):
@@ -1966,7 +1953,7 @@ def screen_hr_results() -> None:
         [{t["col_skill"]: s, t["col_people"]: n,
           t["col_share"]: f"{n / max(total_people, 1) * 100:.0f}%"}
          for s, n in sorted(demand.items(), key=lambda kv: -kv[1])],
-        use_container_width=True, hide_index=True,
+        width="stretch", hide_index=True,
     )
 
     st.subheader(t["role_view"])
@@ -2032,7 +2019,7 @@ def screen_cc_intake() -> None:
         )
         st.session_state["taught"] = taught
 
-        if st.button(t["cc_run"], type="primary", use_container_width=True):
+        if st.button(t["cc_run"], type="primary", width="stretch"):
             go("cc_results")
 
     if st.button(t["back"]):
@@ -2070,7 +2057,7 @@ def screen_cc_results() -> None:
     st.dataframe(
         [{t["col_skill"]: s, t["cc_status"]: t["cc_have"] if s in covered else t["cc_miss"]}
          for s in needed],
-        use_container_width=True, hide_index=True,
+        width="stretch", hide_index=True,
     )
 
     st.subheader(t["cc_add"])
@@ -2088,7 +2075,7 @@ def screen_cc_results() -> None:
           "Trend": t.get("rising" if r.trend > 0.3 else "declining" if r.trend < -0.2 else "stable"),
           "Required skills": len(r.required_skills)}
          for r in roles.values() if r.name in targets],
-        use_container_width=True, hide_index=True,
+        width="stretch", hide_index=True,
     )
 
     st.subheader(t["team_sdg"])

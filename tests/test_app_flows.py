@@ -1,6 +1,8 @@
 """Streamlit integration tests; synthetic profiles only, no external requests."""
 from pathlib import Path
 import unittest
+from unittest.mock import patch
+from src.i18n import T
 from streamlit.testing.v1 import AppTest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -52,3 +54,19 @@ class TestAppFlows(unittest.TestCase):
         app.session_state["skills"] = ["sql", "python", "machine learning"]
         app.run()
         self.healthy(app)
+
+    def test_import_failure_warning_is_visible(self):
+        with patch("src.trends.update_status", return_value={"ok": False}):
+            app = run_page("js_results", skills=["sql"], persona="worker", worker_field="all", hours=8)
+        self.healthy(app)
+        self.assertIn(T("en")["update_failed"], [warning.value for warning in app.warning])
+
+    def test_intake_locales(self):
+        for lang in ["en", "zh", "ms"]:
+            for stage in ["js_intake", "hr_intake", "cc_intake"]:
+                with self.subTest(lang=lang, stage=stage):
+                    app = run_page(stage, lang)
+                    self.healthy(app)
+                    if stage == "js_intake":
+                        app.radio[0].set_value("grad").run()
+                        self.healthy(app)

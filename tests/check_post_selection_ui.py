@@ -52,6 +52,8 @@ with sync_playwright() as playwright:
     else:
         app = page
     t = T("en")
+    # The migrated iframe still executes the repository's static particle script.
+    expect(app.frame_locator('iframe[title="st.iframe"]').locator("canvas")).to_have_count(1)
     app.get_by_role("button", name=t["p1_btn"], exact=True).click(timeout=30000)
     settle(app)
     healthy(app, t)
@@ -73,6 +75,8 @@ with sync_playwright() as playwright:
     expect(app.get_by_role("heading", name=t["p3"], exact=True)).to_be_visible(timeout=45000)
     settle(app)
     healthy(app, t)
+    # A missing matplotlib dependency previously hid this chart silently.
+    expect(app.locator('[data-testid="stImage"] img').first).to_be_visible()
     page.screenshot(path=str(args.output / "results.png"), full_page=True)
     app.get_by_text(t["src_jobstreet"], exact=True).first.click()
     settle(app)
@@ -90,5 +94,5 @@ with sync_playwright() as playwright:
     assert not errors, errors
     print(json.dumps({"tested_url": args.url, "flow": "worker",
                       "checks": ["empty profile", "synthetic CV", "results",
-                                 "target field", "weekly hours", "edited synthetic skills", "source switch", "scenario switch", "SDG toggle", "mobile capture"],
+                                 "target field", "weekly hours", "edited synthetic skills", "source switch", "scenario switch", "SDG toggle", "particle iframe", "DOSM chart", "mobile capture"],
                       "page_errors": errors, "output": str(args.output)}))

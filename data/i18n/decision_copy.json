@@ -18,7 +18,7 @@
     "robust_note": "The two ranking views use different evidence: a 2025 article naming skill areas and a global employer forecast through 2030. WEF signals that do not map to catalogue skills do not affect the score.",
     "why_title": "Why this role",
     "why_transfer": "What carries over",
-    "why_transfer_item": "{a} → {b}: {pct}% carries over",
+    "why_transfer_item": "{a} → {b}: {pct}% (team rule coefficient, not measured ability transfer)",
     "why_gap": "What is missing",
     "why_gap_body": "Missing {n} of {total} requirements{core}. About {weeks} weeks at {hours} h/week.",
     "why_gap_none": "Nothing missing — this role is already fully covered.",
@@ -63,7 +63,7 @@
     "prev_quarter": "previous quarter: 2026 Q1",
     "dosm_title": "Malaysia advertised online job offerings",
     "hover_basis": "The full occupation-to-skill mapping is kept with each dated source snapshot in data/trends/.",
-    "disclose_body": "**No language model runs at inference time.** Every score comes from a published rule (coverage, role focus, transferability, trend, gap cost) that you can read in `src/utils.py`.\n\n**Data.** Demo profiles and the sample CV are synthetic — no real person's data is read or stored. The app separates three evidence layers: DOSM Malaysia online job offerings (2026 Q2), a JobStreet / Randstad article naming skill areas (2025), and WEF global employer expectations for 2025–2030. Occupation-to-skill links are our proxies; WEF directions are forecasts, not Malaysian observations, and the fixed ±0.7 ranking weight is a prototype heuristic, not a source statistic. Snapshots are transcribed manually; nothing is scraped.\n\n**Roles.** The catalogue is a curated subset modelled on O*NET / ESCO occupation skill lists; it is not an official extract, and it never invents a role that does not exist in the file.\n\n**Courses.** Pathway links are a *search direction* on the HRD Corp directory, not a verified course, price or duration.\n\n**Human decision.** This tool supports a career decision. It does not score people for hiring and makes no recruitment decision.\n\n**Estimates.** Scores and weeks are prototype estimates, not predictions of employment.",
+    "disclose_body": "**No language model runs at inference time.** Every score comes from a published rule (coverage, role focus, transferability, trend, gap cost) that you can read in `src/utils.py`.\n\n**Data.** Demo profiles and the sample CV are synthetic — no real person's data is read or stored. The app separates three evidence layers: DOSM Malaysia online job offerings (2026 Q2), a JobStreet / Randstad article naming skill areas (2025), and WEF global employer expectations for 2025–2030. Occupation-to-skill links are our proxies; WEF directions are forecasts, not Malaysian observations, and the fixed ±0.7 ranking weight is a prototype heuristic, not a source statistic. Snapshots are transcribed manually; nothing is scraped.\n\n**Roles.** The catalogue is a curated subset modelled on O*NET / ESCO occupation skill lists; it is not an official extract, and it never invents a role that does not exist in the file.\n\n**Courses.** Course links point to the providers recorded in the catalogue. Current access, fees and catalogue hours have not been reverified. Documented durations require a source; other catalogue hours are unverified estimates, and missing hours use labelled team estimates.\n\n**Human decision.** This tool supports a career decision. It does not score people for hiring and makes no recruitment decision.\n\n**Estimates.** Scores and weeks are prototype estimates, not predictions of employment.",
     "radar_index_note": "Chart numbers match the row numbers in the table. Groups follow the DOSM occupation classification; “Professionals” means roles requiring a professional qualification (engineers, accountants, doctors, teachers).",
     "all_down_note": "All {n} groups fell in this quarter, matching the total in the DOSM release: one quarter compares with the previous quarter only, and is not a long-term trend.",
     "occ_scope_note": "This panel reports Malaysian advertising volume only; it does not score roles. The skill layers below drive the ranking.",
@@ -89,7 +89,10 @@
     "worker_note": "Skills and target field affect matching; weekly study hours affect duration. Experience, urgency and budget are recorded only, not used in scores or course filtering.",
     "grad_note": "Skills and study field affect matching; weekly hours affect duration. Education level, internship months and graduation year are recorded only.",
     "path_note": "Sequential study at {} hours/week. Each step shows its duration basis. Catalogue hours are not reverified; missing hours use explicit team estimates. Total weeks sum the rounded step durations.",
-    "adv_worker": "Recorded experience: {} years; it does not change ranking."
+    "adv_worker": "Recorded experience: {} years; it does not change ranking.",
+    "courses_note": "Course links point to the providers recorded in the catalogue. Current access, fees and catalogue hours have not been reverified. Documented durations require a source; other catalogue hours are unverified estimates, and missing hours use labelled team estimates.",
+    "courses_title": "Learning resource catalogue (verification pending)",
+    "search_caption": "No course is mapped for: {}. Find a provider and verify the link, duration and fees before using it."
   },
   "zh": {
     "summary_full": "匹配很强：**{0}**，加权覆盖 {1}%——这个岗位的要求你已经全部具备。下面的路径是加深，不是补缺口。",
@@ -110,7 +113,7 @@
     "robust_note": "两组排名使用不同证据：一份点名技能领域的 2025 年报道，以及一项到 2030 年的全球雇主预测。无法映射到目录技能的 WEF 信号不会影响分数。",
     "why_title": "为什么推荐这个岗位",
     "why_transfer": "你的技能可以迁移",
-    "why_transfer_item": "{a} → {b}，可迁移 {pct}%",
+    "why_transfer_item": "{a} → {b}：{pct}%（团队规则系数，非实测能力迁移比例）",
     "why_gap": "还缺什么",
     "why_gap_body": "共 {total} 项要求，还缺 {n} 项{core}。按每周 {hours} 小时算，大约 {weeks} 周。",
     "why_gap_none": "没有缺口——这个岗位的要求你已经全部覆盖。",
@@ -155,7 +158,7 @@
     "prev_quarter": "上一季度：2026 Q1",
     "dosm_title": "马来西亚线上招聘广告岗位数",
     "hover_basis": "职业大类到技能的完整映射随各期来源快照保存在 data/trends/。",
-    "disclose_body": "**推理阶段没有使用任何大语言模型。** 每个分数都来自公开可读的规则（覆盖度、岗位聚焦度、可迁移性、趋势、缺口成本），代码在 `src/utils.py`。\n\n**数据**：演示画像与示例简历均为合成数据，不读取或存储任何真实个人资料。应用分开展示三层证据：DOSM 马来西亚线上招聘广告岗位数（2026 Q2）、点名技能领域的 JobStreet / Randstad 报道（2025），以及 WEF 对 2025–2030 年全球雇主预期的预测。职业到技能的关联是我们设置的代理映射；WEF 方向不是马来西亚观测值，固定 ±0.7 权重也是原型启发值，并非来源统计。来源快照由团队人工转录，不进行抓取。\n\n**岗位**：目录是参照 O*NET / ESCO 职业技能清单整理的子集，不是官方导出；系统不会凭空生成目录里不存在的岗位。\n\n**课程**：路径里的链接只是 HRD Corp 目录的「搜索方向」，不是已核实的课程、价格或时长。\n\n**人的决策**：本工具辅助职业决策，不给人打招聘分，也不做招聘决定。\n\n**估计值**：分数与周数都是原型估算，不是就业预测。",
+    "disclose_body": "**推理阶段没有使用任何大语言模型。** 每个分数都来自公开可读的规则（覆盖度、岗位聚焦度、可迁移性、趋势、缺口成本），代码在 `src/utils.py`。\n\n**数据**：演示画像与示例简历均为合成数据，不读取或存储任何真实个人资料。应用分开展示三层证据：DOSM 马来西亚线上招聘广告岗位数（2026 Q2）、点名技能领域的 JobStreet / Randstad 报道（2025），以及 WEF 对 2025–2030 年全球雇主预期的预测。职业到技能的关联是我们设置的代理映射；WEF 方向不是马来西亚观测值，固定 ±0.7 权重也是原型启发值，并非来源统计。来源快照由团队人工转录，不进行抓取。\n\n**岗位**：目录是参照 O*NET / ESCO 职业技能清单整理的子集，不是官方导出；系统不会凭空生成目录里不存在的岗位。\n\n**课程。** 课程链接指向目录记录的提供方。本次未重新核实可访问性、费用或目录小时数。有来源的已核实时长须有明确记录；其他目录时长待核实，缺少时长时使用标明的团队估算。\n\n**人的决策**：本工具辅助职业决策，不给人打招聘分，也不做招聘决定。\n\n**估计值**：分数与周数都是原型估算，不是就业预测。",
     "radar_index_note": "图上编号与表格行号一一对应。职业大类按 DOSM 口径划分；“专业人员”指需要专业资历的岗位（工程师、会计师、医生、教师等）。",
     "all_down_note": "本季度 {n} 个职业大类全部环比下降，与 DOSM 原文的总量口径一致；环比只与上一季度相比，不等于长期趋势。",
     "occ_scope_note": "这一层只展示马来西亚招聘广告总量，不参与岗位打分；决定排序的是下面的技能信号。",
@@ -181,7 +184,10 @@
     "worker_note": "技能和目标领域影响匹配，每周学习时间影响计划时长。工作年限、紧迫程度和预算目前仅记录，不参与评分或课程筛选。",
     "grad_note": "技能与专业领域影响匹配，每周时间影响学习时长。学历、实习月数及毕业年份目前仅记录。",
     "path_note": "按每周 {} 小时顺序学习，各步骤注明时长依据。目录时长尚未重新核验；缺少时长时使用明确标注的团队估算。总周数为各步骤向上取整后的周数之和。",
-    "adv_worker": "记录的工作经验为 {} 年，目前不影响排序。"
+    "adv_worker": "记录的工作经验为 {} 年，目前不影响排序。",
+    "courses_note": "课程链接指向目录记录的提供方。本次未重新核实可访问性、费用或目录小时数。有来源的已核实时长须有明确记录；其他目录时长待核实，缺少时长时使用标明的团队估算。",
+    "courses_title": "学习资源目录（待核实）",
+    "search_caption": "以下技能尚未关联课程：{}。请寻找提供方并核实链接、时长和费用。"
   },
   "ms": {
     "summary_full": "Padanan kukuh: **{0}**, liputan berwajaran {1}% — semua keperluan sudah dipenuhi. Laluan di bawah ialah pendalaman, bukan jurang.",
@@ -202,7 +208,7 @@
     "robust_note": "Kedua-dua paparan kedudukan menggunakan bukti berbeza: artikel 2025 yang menamakan bidang kemahiran dan unjuran majikan global hingga 2030. Isyarat WEF yang tidak sepadan dengan katalog kemahiran tidak mengubah skor.",
     "why_title": "Mengapa peranan ini disyorkan",
     "why_transfer": "Kemahiran anda boleh dipindahkan",
-    "why_transfer_item": "{a} → {b}, {pct}% boleh dipindahkan",
+    "why_transfer_item": "{a} → {b}: {pct}% (pekali aturan pasukan, bukan pemindahan keupayaan terukur)",
     "why_gap": "Apa yang masih kurang",
     "why_gap_body": "{total} keperluan, masih kurang {n}{core}. Kira-kira {weeks} minggu pada {hours} jam/minggu.",
     "why_gap_none": "Tiada jurang — keperluan peranan ini sudah diliputi sepenuhnya.",
@@ -247,7 +253,7 @@
     "prev_quarter": "suku sebelumnya: 2026 Q1",
     "dosm_title": "Iklan tawaran kerja dalam talian Malaysia",
     "hover_basis": "Pemetaan penuh kumpulan pekerjaan kepada kemahiran disimpan bersama setiap snapshot bertarikh dalam data/trends/.",
-    "disclose_body": "**Tiada model bahasa dijalankan semasa inferens.** Setiap skor datang daripada peraturan terbuka (liputan, fokus peranan, kebolehpindahan, trend, kos jurang) dalam `src/utils.py`.\n\n**Data.** Profil demo dan CV contoh adalah sintetik — tiada data peribadi dibaca atau disimpan. Aplikasi memisahkan tiga lapisan bukti: tawaran kerja dalam talian DOSM Malaysia (2026 Q2), artikel JobStreet / Randstad yang menamakan bidang kemahiran (2025), dan jangkaan majikan global WEF untuk 2025–2030. Pemetaan pekerjaan kepada kemahiran ialah proksi kami; arah WEF ialah unjuran, bukan pemerhatian Malaysia, dan pemberat tetap ±0.7 ialah heuristik prototaip, bukan statistik sumber. Snapshot sumber ditranskripsi secara manual; tiada data digores.\n\n**Peranan.** Katalog ialah subset berdasarkan senarai O*NET / ESCO, bukan ekstrak rasmi, dan tidak mencipta peranan yang tiada dalam fail.\n\n**Kursus.** Pautan laluan ialah arah carian pada direktori HRD Corp, bukan kursus/harga/tempoh disahkan.\n\n**Keputusan manusia.** Alat ini menyokong keputusan kerjaya; ia tidak menilai orang untuk pengambilan kerja.\n\n**Anggaran.** Skor dan minggu ialah anggaran prototaip, bukan ramalan pekerjaan.",
+    "disclose_body": "**Tiada model bahasa dijalankan semasa inferens.** Setiap skor datang daripada peraturan terbuka (liputan, fokus peranan, kebolehpindahan, trend, kos jurang) dalam `src/utils.py`.\n\n**Data.** Profil demo dan CV contoh adalah sintetik — tiada data peribadi dibaca atau disimpan. Aplikasi memisahkan tiga lapisan bukti: tawaran kerja dalam talian DOSM Malaysia (2026 Q2), artikel JobStreet / Randstad yang menamakan bidang kemahiran (2025), dan jangkaan majikan global WEF untuk 2025–2030. Pemetaan pekerjaan kepada kemahiran ialah proksi kami; arah WEF ialah unjuran, bukan pemerhatian Malaysia, dan pemberat tetap ±0.7 ialah heuristik prototaip, bukan statistik sumber. Snapshot sumber ditranskripsi secara manual; tiada data digores.\n\n**Peranan.** Katalog ialah subset berdasarkan senarai O*NET / ESCO, bukan ekstrak rasmi, dan tidak mencipta peranan yang tiada dalam fail.\n\n**Kursus.** Pautan kursus merujuk penyedia dalam katalog. Akses semasa, yuran dan jam katalog belum disahkan semula. Tempoh disahkan memerlukan sumber; jam katalog lain belum disahkan, dan jam yang tiada menggunakan anggaran pasukan berlabel.\n\n**Keputusan manusia.** Alat ini menyokong keputusan kerjaya; ia tidak menilai orang untuk pengambilan kerja.\n\n**Anggaran.** Skor dan minggu ialah anggaran prototaip, bukan ramalan pekerjaan.",
     "radar_index_note": "Nombor pada carta sepadan dengan nombor baris jadual. Kumpulan mengikut klasifikasi pekerjaan DOSM; “Profesional” bermaksud peranan yang memerlukan kelayakan profesional (jurutera, akauntan, doktor, guru).",
     "all_down_note": "Kesemua {n} kumpulan menurun pada suku ini, selaras dengan jumlah dalam terbitan DOSM: satu suku hanya dibandingkan dengan suku sebelumnya, bukan trend jangka panjang.",
     "occ_scope_note": "Panel ini hanya melaporkan jumlah iklan di Malaysia; ia tidak menilai peranan. Isyarat kemahiran di bawah yang menentukan susunan.",
@@ -273,6 +279,9 @@
     "worker_note": "Kemahiran dan bidang sasaran mempengaruhi padanan; jam mingguan mempengaruhi tempoh. Pengalaman, kesegeraan dan bajet hanya direkodkan, bukan digunakan dalam skor atau penapisan kursus.",
     "grad_note": "Kemahiran dan bidang pengajian mempengaruhi padanan; jam mingguan mempengaruhi tempoh. Tahap pendidikan, latihan industri dan tahun graduasi hanya direkodkan.",
     "path_note": "Belajar secara berurutan pada {} jam seminggu. Asas tempoh ditunjukkan setiap langkah. Jam katalog belum disahkan semula; jam yang tiada menggunakan anggaran pasukan. Jumlah minggu ialah jumlah minggu setiap langkah yang dibundarkan ke atas.",
-    "adv_worker": "Pengalaman direkodkan: {} tahun; tidak mengubah kedudukan."
+    "adv_worker": "Pengalaman direkodkan: {} tahun; tidak mengubah kedudukan.",
+    "courses_note": "Pautan kursus merujuk penyedia dalam katalog. Akses semasa, yuran dan jam katalog belum disahkan semula. Tempoh disahkan memerlukan sumber; jam katalog lain belum disahkan, dan jam yang tiada menggunakan anggaran pasukan berlabel.",
+    "courses_title": "Katalog sumber pembelajaran (pengesahan tertunda)",
+    "search_caption": "Tiada kursus dipadankan untuk: {}. Cari penyedia dan sahkan pautan, tempoh dan yuran sebelum digunakan."
   }
 }

@@ -1,13 +1,7 @@
-# Runtime dependencies. Major versions only, so the app installs on any
-# Linux/Python 3.11-3.12 host (Replit, Streamlit Cloud, local) without wheels
-# that do not exist for the platform.
-streamlit>=1.30,<2
-pandas>=2.0,<4
-numpy>=1.24
-pyarrow>=14.0
-
-# Radar chart of the official DOSM counts
-matplotlib>=3.7
-
-# Optional, only needed inside the RunPod container image (see runpod/requirements.txt).
-# runpod
+# Exact direct-runtime pins, validated on Windows / Python 3.12.
+# Not a full transitive lock and not proof of Linux/Replit compatibility.
+streamlit==1.66.0
+pandas==3.0.6
+numpy==2.5.4
+pyarrow==26.0.0
+matplotlib==3.11.2
