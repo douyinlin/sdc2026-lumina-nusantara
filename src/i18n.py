@@ -865,6 +865,8 @@ for _lang, _extra in _load_copy("decision_copy.json").items():
     STRINGS.setdefault(_lang, {}).update(_extra)
 for _lang, _names in _load_copy("role_names.json").items():
     ROLE_PARENTHETICAL.setdefault(_lang, {}).update(_names)
+for _lang, _cats in _load_copy("categories.json").items():
+    CATEGORY_LABELS.setdefault(_lang, {}).update(_cats)
 
 
 def role_label(lang: str, name: str) -> str:

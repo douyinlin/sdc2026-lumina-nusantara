@@ -45,7 +45,8 @@
     "impact_gap": "Skills to close",
     "impact_weeks": "Est. weeks",
     "impact_roles": "Best match after the plan",
-    "impact_note": "Computed from your own profile and pathway. Product metrics, not claims about how many people found jobs."
+    "impact_note": "Computed from your own profile and pathway. Product metrics, not claims about how many people found jobs.",
+    "scope_all": "Showing the roles closest to this profile — {0} in the catalogue."
   },
   "zh": {
     "summary_full": "匹配度很高：**{0}**，加权覆盖 {1}%——这个岗位的要求你已经全部具备。下方的学习路径是加深，不是补缺口。",
@@ -93,7 +94,8 @@
     "impact_gap": "待补技能",
     "impact_weeks": "预计周数",
     "impact_roles": "学完后的最高匹配分",
-    "impact_note": "由你自己的技能档案和学习路径算出。这是产品指标，不是“帮多少人转职”的效果宣称。"
+    "impact_note": "由你自己的技能档案和学习路径算出。这是产品指标，不是“帮多少人转职”的效果宣称。",
+    "scope_all": "只显示与这个档案最接近的岗位 —— 目录中共 {0} 个。"
   },
   "ms": {
     "summary_full": "Padanan kukuh: **{0}** pada liputan berwajaran {1}% — semua keperluan peranan ini sudah dipenuhi. Laluan di bawah ialah pendalaman, bukan jurang.",
@@ -141,6 +143,7 @@
     "impact_gap": "Kemahiran untuk ditutup",
     "impact_weeks": "Anggaran minggu",
     "impact_roles": "Padanan terbaik selepas pelan",
-    "impact_note": "Dikira daripada profil anda sendiri dan laluan pembelajaran. Ini metrik produk, bukan dakwaan berapa orang mendapat kerja."
+    "impact_note": "Dikira daripada profil anda sendiri dan laluan pembelajaran. Ini metrik produk, bukan dakwaan berapa orang mendapat kerja.",
+    "scope_all": "Hanya memaparkan peranan paling hampir dengan profil ini — {0} dalam katalog."
   }
 }

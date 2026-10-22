@@ -23,7 +23,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "src"))
 
 from utils import GAP_COST, TRANSFERABILITY, Role, pathway, rank, sdg_summary  # noqa: E402
-from i18n import ROLE_PARENTHETICAL, STRINGS, T, cat, role_label, skill_label  # noqa: E402
+from i18n import CATEGORY_LABELS, ROLE_PARENTHETICAL, STRINGS, T, cat, role_label, skill_label  # noqa: E402
 from labels import field_label, group_label, skill_option_label  # noqa: E402
 from presentation import CSS_PATH, brand, copy_for, flow_header, learning_path, score_panel, skill_chips  # noqa: E402
 
@@ -45,6 +45,8 @@ for _lang, _extra in _load_copy("decision_copy.json").items():
     STRINGS.setdefault(_lang, {}).update(_extra)
 for _lang, _names in _load_copy("role_names.json").items():
     ROLE_PARENTHETICAL.setdefault(_lang, {}).update(_names)
+for _lang, _cats in _load_copy("categories.json").items():
+    CATEGORY_LABELS.setdefault(_lang, {}).update(_cats)
 
 DATA = ROOT / "data"
 TREND_FILE = DATA / "trends" / "latest.json"
@@ -610,6 +612,19 @@ p, li, label, .stMarkdown { color: #4c5540; }
   border: 1px solid rgba(138,154,91,.45) !important;
   color: #4b5a2a !important;
 }
+/* a disabled primary button used to keep the green gradient while Streamlit
+   dimmed only the inner label, so the text vanished into the background */
+.stButton > button[kind="primary"]:disabled {
+  background: #e3e8d8 !important; border: 1px solid #cfd8c0 !important;
+  color: #6b7560 !important; box-shadow: none; transform: none;
+  opacity: 1 !important; cursor: not-allowed;
+}
+.stButton > button[kind="primary"]:disabled p,
+.stButton > button[kind="primary"]:disabled span,
+.stButton > button[kind="primary"]:disabled div {
+  color: #6b7560 !important;
+}
+.stButton > button[kind="primary"]:disabled:hover { transform: none; box-shadow: none; }
 
 /* tabs */
 .stTabs [data-baseweb="tab-list"] { gap: 6px; border-bottom: 1px solid rgba(138,154,91,.25); }
@@ -1544,8 +1559,14 @@ def screen_js_results() -> None:
     # one grey line instead of four: context, scope and the honesty note together
     _ctx = (t["adv_worker"].format(st.session_state.get("years", 0)) if persona == "worker"
             else t["adv_grad"].format(st.session_state.get("intern", 0)))
-    _scope = (t["domain_same"].format(field, len(same)) if same
-              else t["domain_adjacent"].format(field))
+    if persona == "worker":
+        # the worker flow never picked a field, so the domain filter is a default,
+        # not the user's own choice — say so instead of naming a field
+        _scope = t["scope_all"].format(len(pool_base))
+    elif same:
+        _scope = t["domain_same"].format(field_label(lang_now, field), len(same))
+    else:
+        _scope = t["domain_adjacent"].format(field_label(lang_now, field))
     st.caption(f"{_ctx} · {_scope} · {copy_for(lang_now)['rank_note']}")
     roles_by_name = {x.name: x for x in roles}
     why_block(t, lang_now, top1, roles_by_name.get(top1["role"]), trend, skills, hours, scale)
