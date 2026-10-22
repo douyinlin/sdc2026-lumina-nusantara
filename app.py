@@ -26,6 +26,14 @@ from utils import GAP_COST, TRANSFERABILITY, Role, pathway, rank, sdg_summary  #
 from i18n import STRINGS, T, cat, role_label, skill_label  # noqa: E402
 from labels import field_label, group_label, skill_option_label  # noqa: E402
 from presentation import CSS_PATH, brand, copy_for, flow_header, learning_path, score_panel, skill_chips  # noqa: E402
+from decision_copy import EXTRA as _DECISION_COPY  # noqa: E402
+
+# `i18n` merges this copy at import time, but Streamlit keeps imported modules
+# alive across reruns and redeploys: a redeploy can leave a stale STRINGS dict
+# behind and the page dies on a missing key. app.py is re-executed on every run,
+# so the merge is repeated here — the one place guaranteed to run fresh code.
+for _lang, _extra in _DECISION_COPY.items():
+    STRINGS.setdefault(_lang, {}).update(_extra)
 
 DATA = ROOT / "data"
 TREND_FILE = DATA / "trends" / "latest.json"
