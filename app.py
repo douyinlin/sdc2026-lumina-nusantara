@@ -625,6 +625,130 @@ ORBS_HTML = """
 <div class="sr-orb sr-o4"></div>
 """
 
+def render_landing_particles() -> None:
+    """Render cursor-reactive particles above the role-picker cards."""
+    components.html(
+        """
+        <style>
+          html, body { width:100%; height:100%; margin:0; overflow:hidden; background:transparent; }
+          #particle-scene { position:relative; width:100%; height:100%; overflow:hidden; }
+          canvas { display:block; width:100%; height:100%; }
+        </style>
+        <div id="particle-scene" aria-hidden="true"></div>
+        <script>
+          const root = document.getElementById("particle-scene");
+          const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          root.appendChild(canvas);
+          const pointer = { x:-1000, y:-1000, active:false, strength:0 };
+          const colors = ["211, 185, 255", "255, 255, 255", "181, 138, 231", "168, 185, 160"];
+          const particles = [];
+          const trail = [];
+          let width = 1, height = 1, raf = 0;
+
+          function resize() {
+            const box = root.getBoundingClientRect();
+            const dpr = Math.min(devicePixelRatio || 1, 1.5);
+            width = Math.max(1, box.width);
+            height = Math.max(1, box.height);
+            canvas.width = Math.round(width * dpr);
+            canvas.height = Math.round(height * dpr);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            particles.length = 0;
+            const count = Math.min(420, Math.round(width * height / 620));
+            for (let i = 0; i < count; i++) {
+              const x = Math.random() * width, y = Math.random() * height;
+              particles.push({ x, y, homeX:x, homeY:y, vx:0, vy:0,
+                radius:.9 + Math.random() * 1.9,
+                color:colors[Math.floor(Math.random() * colors.length)],
+                alpha:.34 + Math.random() * .50, phase:Math.random() * Math.PI * 2 });
+            }
+          }
+
+          function movePointer(event) {
+            const box = root.getBoundingClientRect();
+            const x = event.clientX - box.left, y = event.clientY - box.top;
+            if (pointer.active && !reducedMotion) {
+              const dx = x - pointer.x, dy = y - pointer.y;
+              const distance = Math.hypot(dx, dy);
+              const pieces = Math.min(8, Math.ceil(distance / 12));
+              for (let i = 0; i < pieces; i++) {
+                const t = (i + 1) / (pieces + 1);
+                trail.push({ x:pointer.x + dx * t, y:pointer.y + dy * t,
+                  vx:(Math.random() - .5) * 1.5, vy:(Math.random() - .5) * 1.5,
+                  life:1, radius:.8 + Math.random() * 2.1,
+                  color:colors[Math.floor(Math.random() * colors.length)] });
+              }
+            }
+            pointer.x = x; pointer.y = y; pointer.active = true; pointer.strength = 1;
+            if (reducedMotion) drawStatic();
+          }
+
+          function drawStatic() {
+            ctx.clearRect(0, 0, width, height);
+            for (const p of particles) {
+              ctx.fillStyle = `rgba(${p.color}, ${p.alpha})`;
+              ctx.beginPath(); ctx.arc(p.homeX, p.homeY, p.radius, 0, Math.PI * 2); ctx.fill();
+            }
+            if (pointer.active) drawGlow(0.38);
+          }
+
+          function drawGlow(amount) {
+            const radius = Math.max(80, Math.min(width, height) * .25);
+            const glow = ctx.createRadialGradient(pointer.x, pointer.y, 0,
+              pointer.x, pointer.y, radius);
+            glow.addColorStop(0, `rgba(255,255,255,${.56 * amount})`);
+            glow.addColorStop(.35, `rgba(226,208,255,${.28 * amount})`);
+            glow.addColorStop(1, "rgba(226,208,255,0)");
+            ctx.fillStyle = glow;
+            ctx.fillRect(pointer.x - radius, pointer.y - radius, radius * 2, radius * 2);
+          }
+
+          function render(time) {
+            ctx.clearRect(0, 0, width, height);
+            if (pointer.active) {
+              drawGlow(pointer.strength);
+              pointer.strength = Math.max(.30, pointer.strength * .992);
+            }
+            for (const p of particles) {
+              const dx = p.x - pointer.x, dy = p.y - pointer.y;
+              const distance = Math.hypot(dx, dy) || 1;
+              if (pointer.active && distance < 115) {
+                const force = (1 - distance / 115) * .9;
+                p.vx += dx / distance * force;
+                p.vy += dy / distance * force;
+              }
+              p.vx += (p.homeX - p.x) * .012;
+              p.vy += (p.homeY - p.y) * .012;
+              p.vx *= .91; p.vy *= .91;
+              p.x += p.vx; p.y += p.vy;
+              const twinkle = .76 + Math.sin(time * .0015 + p.phase) * .24;
+              ctx.fillStyle = `rgba(${p.color}, ${p.alpha * twinkle})`;
+              ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill();
+            }
+            for (let i = trail.length - 1; i >= 0; i--) {
+              const p = trail[i];
+              p.x += p.vx; p.y += p.vy; p.life -= .014;
+              if (p.life <= 0) { trail.splice(i, 1); continue; }
+              ctx.fillStyle = `rgba(${p.color}, ${p.life * .82})`;
+              ctx.beginPath(); ctx.arc(p.x, p.y, p.radius * p.life, 0, Math.PI * 2); ctx.fill();
+            }
+            raf = requestAnimationFrame(render);
+          }
+
+          root.addEventListener("pointermove", movePointer, { passive:true });
+          root.addEventListener("pointerleave", () => { pointer.active = false; }, { passive:true });
+          new ResizeObserver(resize).observe(root);
+          resize();
+          if (reducedMotion) drawStatic();
+          else raf = requestAnimationFrame(render);
+        </script>
+        """,
+        height=205,
+        scrolling=False,
+    )
+
 # Shared look for every screen after the landing: same palette, calmer motion.
 APP_CSS = """
 <style>
@@ -1252,7 +1376,8 @@ def screen_landing() -> None:
         """,
         unsafe_allow_html=True,
     )
-    st.markdown("<div style='height:14px'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
+    render_landing_particles()
 
     c1, c2, c3 = st.columns(3, gap="medium")
     with c1:
