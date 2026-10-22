@@ -8,6 +8,15 @@ every role mapped to the UN SDGs.
 
 **Live demo:** https://sdc2026-lumina-nusantara-65cnugvuxdle5dgp9ky3fs.streamlit.app
 
+> [!IMPORTANT]
+> ### 📁 Submission Documents 提交文件
+>
+> The two signed submission PDFs, the Replit proof of use and the online demo guide are in the
+> [submission/](submission) folder. Start with [submission/README.md](submission/README.md).
+>
+> 两份已签署的提交 PDF、Replit 使用证明与在线演示说明都在 [submission/](submission) 目录内。
+> 请先读 [submission/README.md](submission/README.md)。
+
 ---
 
 ## Team Information
