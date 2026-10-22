@@ -13,7 +13,9 @@
       "occupation": "Professional, Scientific and Technical Activities",
       "offers": 26441,
       "offers_prev": 25238,
-      "change_pct": 4.8
+      "change_pct": 4.8,
+      "occupation_zh": "专业、科学与技术活动",
+      "occupation_ms": "Aktiviti Profesional, Saintifik dan Teknikal"
     },
     {
       "skill": "digital marketing",
@@ -22,7 +24,9 @@
       "occupation": "Advertising and Marketing Professionals",
       "offers": 21663,
       "offers_prev": 21411,
-      "change_pct": 1.2
+      "change_pct": 1.2,
+      "occupation_zh": "广告与市场专业人员",
+      "occupation_ms": "Profesional Pengiklanan dan Pemasaran"
     },
     {
       "skill": "prompt engineering",
@@ -31,7 +35,9 @@
       "occupation": "Technicians and Associate Professionals",
       "offers": 63803,
       "offers_prev": 42382,
-      "change_pct": 50.5
+      "change_pct": 50.5,
+      "occupation_zh": "技术与辅助专业人员",
+      "occupation_ms": "Juruteknik dan Profesional Bersekutu"
     },
     {
       "skill": "sql",
@@ -40,7 +46,9 @@
       "occupation": "Administrative Associate Professionals",
       "offers": 34034,
       "offers_prev": 13001,
-      "change_pct": 161.8
+      "change_pct": 161.8,
+      "occupation_zh": "行政辅助专业人员",
+      "occupation_ms": "Profesional Bersekutu Pentadbiran"
     },
     {
       "skill": "bookkeeping",
@@ -49,7 +57,9 @@
       "occupation": "Accountants and Auditors",
       "offers": 9990,
       "offers_prev": 9462,
-      "change_pct": 5.6
+      "change_pct": 5.6,
+      "occupation_zh": "会计与审计人员",
+      "occupation_ms": "Akauntan dan Juruaudit"
     },
     {
       "skill": "reporting",
@@ -58,7 +68,9 @@
       "occupation": "Administrative Professionals",
       "offers": 7544,
       "offers_prev": 7996,
-      "change_pct": -5.7
+      "change_pct": -5.7,
+      "occupation_zh": "行政专业人员",
+      "occupation_ms": "Profesional Pentadbiran"
     },
     {
       "skill": "customer support",
@@ -67,7 +79,9 @@
       "occupation": "Wholesale and Retail Trade",
       "offers": 44927,
       "offers_prev": 38061,
-      "change_pct": 18.0
+      "change_pct": 18.0,
+      "occupation_zh": "批发与零售贸易",
+      "occupation_ms": "Perdagangan Borong dan Runcit"
     },
     {
       "skill": "team lead",
@@ -76,7 +90,13 @@
       "occupation": "Managers",
       "offers": 48864,
       "offers_prev": 46638,
-      "change_pct": 4.8
+      "change_pct": 4.8,
+      "occupation_zh": "管理人员",
+      "occupation_ms": "Pengurus"
     }
-  ]
+  ],
+  "source_zh": "马来西亚统计局（DOSM）大数据分析：就业市场洞察与 My Job Profile",
+  "source_ms": "Jabatan Perangkaan Malaysia (DOSM) — Analitik Data Raya: Wawasan Pasaran Kerja dan My Job Profile",
+  "latest_period": "2025 Q2",
+  "previous_period": "2025 Q1"
 }

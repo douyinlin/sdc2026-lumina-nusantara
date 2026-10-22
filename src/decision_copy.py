@@ -6,6 +6,10 @@ glance. ``i18n`` merges these keys into ``STRINGS`` at import time.
 
 EXTRA = {
     "en": {
+        "summary_full": "Strong match: **{0}** at {1}% weighted coverage — every requirement for this role is already covered. The pathway below is depth, not a gap.",
+        "ev_line": "Evidence: {occ}, {cur} offers in {period} vs {prev} in {prev_period} ({chg}).",
+        "named_area": "Named in the report: {area}.",
+        "scen_compare": "Compare the two disruption scenarios",
         "src_label": "Which evidence drives the ranking?",
         "src_dosm": "DOSM vacancy counts · 2025 Q2",
         "src_jobstreet": "Named skill demand · 2025",
@@ -68,6 +72,10 @@ EXTRA = {
         ),
     },
     "zh": {
+        "summary_full": "匹配度很高：**{0}**，加权覆盖 {1}%——这个岗位的要求你已经全部具备。下方的学习路径是加深，不是补缺口。",
+        "ev_line": "证据：{occ}，{period} 为 {cur} 条，{prev_period} 为 {prev} 条（{chg}）。",
+        "named_area": "报告明确点名：{area}。",
+        "scen_compare": "两种冲击情景并排比较",
         "src_label": "哪个证据来源决定排名？",
         "src_dosm": "DOSM 职位空缺数 · 2025 Q2",
         "src_jobstreet": "具名技能需求 · 2025",
@@ -121,6 +129,10 @@ EXTRA = {
         "impact_note": "由你自己的技能档案和学习路径算出。这是产品指标，不是“帮多少人转职”的效果宣称。",
     },
     "ms": {
+        "summary_full": "Padanan kukuh: **{0}** pada liputan berwajaran {1}% — semua keperluan peranan ini sudah dipenuhi. Laluan di bawah ialah pendalaman, bukan jurang.",
+        "ev_line": "Bukti: {occ}, {cur} kekosongan pada {period} berbanding {prev} pada {prev_period} ({chg}).",
+        "named_area": "Dinamakan dalam laporan: {area}.",
+        "scen_compare": "Banding kedua-dua senario gangguan",
         "src_label": "Sumber bukti mana yang menentukan susunan?",
         "src_dosm": "Kiraan kekosongan DOSM · 2025 Q2",
         "src_jobstreet": "Permintaan kemahiran bernama · 2025",

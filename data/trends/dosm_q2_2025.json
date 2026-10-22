@@ -12,23 +12,92 @@
   "previous_period": "2025 Q1",
   "previous_released": "2026-01-30",
   "previous_url": "https://www.dosm.gov.my/portal-main/release-content/big-data-analytics-job-market-insights-and-my-job-profile-first-q12025",
-  "total": {"q2_2025": 281736, "q1_2025": 263083, "qoq_pct": 7.1, "published_change": "increased 7.1% vs Q1 2025"},
+  "total": {
+    "q2_2025": 281736,
+    "q1_2025": 263083,
+    "qoq_pct": 7.1,
+    "published_change": "increased 7.1% vs Q1 2025"
+  },
   "occupations_q2_2025": [
-    {"group": "Technicians and Associate Professionals", "offers": 63803, "offers_prev": 42382},
-    {"group": "Managers", "offers": 48864, "offers_prev": 46638},
-    {"group": "Administrative Associate Professionals", "offers": 34034, "offers_prev": 13001},
-    {"group": "Advertising and Marketing Professionals", "offers": 21663, "offers_prev": 21411},
-    {"group": "Managing Directors and Chief Executives", "offers": 12954, "offers_prev": 13088},
-    {"group": "Accountants and Auditors", "offers": 9990, "offers_prev": 9462},
-    {"group": "Administrative Professionals", "offers": 7544, "offers_prev": 7996}
+    {
+      "group": "Technicians and Associate Professionals",
+      "offers": 63803,
+      "offers_prev": 42382,
+      "group_zh": "技术与辅助专业人员",
+      "group_ms": "Juruteknik dan Profesional Bersekutu"
+    },
+    {
+      "group": "Managers",
+      "offers": 48864,
+      "offers_prev": 46638,
+      "group_zh": "管理人员",
+      "group_ms": "Pengurus"
+    },
+    {
+      "group": "Administrative Associate Professionals",
+      "offers": 34034,
+      "offers_prev": 13001,
+      "group_zh": "行政辅助专业人员",
+      "group_ms": "Profesional Bersekutu Pentadbiran"
+    },
+    {
+      "group": "Advertising and Marketing Professionals",
+      "offers": 21663,
+      "offers_prev": 21411,
+      "group_zh": "广告与市场专业人员",
+      "group_ms": "Profesional Pengiklanan dan Pemasaran"
+    },
+    {
+      "group": "Managing Directors and Chief Executives",
+      "offers": 12954,
+      "offers_prev": 13088,
+      "group_zh": "董事总经理与首席执行官",
+      "group_ms": "Pengarah Urusan dan Ketua Eksekutif"
+    },
+    {
+      "group": "Accountants and Auditors",
+      "offers": 9990,
+      "offers_prev": 9462,
+      "group_zh": "会计与审计人员",
+      "group_ms": "Akauntan dan Juruaudit"
+    },
+    {
+      "group": "Administrative Professionals",
+      "offers": 7544,
+      "offers_prev": 7996,
+      "group_zh": "行政专业人员",
+      "group_ms": "Profesional Pentadbiran"
+    }
   ],
   "sectors_q2_2025": [
-    {"sector": "Wholesale and Retail Trade", "offers": 44927, "offers_prev": 38061},
-    {"sector": "Professional, Scientific and Technical Activities", "offers": 26441, "offers_prev": 25238},
-    {"sector": "Administrative and Support Service Activities", "offers": 25673, "offers_prev": 25723},
-    {"sector": "Financial and Insurance / Takaful Activities", "offers": 22266, "offers_prev": 18917},
-    {"sector": "Manufacturing", "offers": 20816, "offers_prev": 17108}
+    {
+      "sector": "Wholesale and Retail Trade",
+      "offers": 44927,
+      "offers_prev": 38061
+    },
+    {
+      "sector": "Professional, Scientific and Technical Activities",
+      "offers": 26441,
+      "offers_prev": 25238
+    },
+    {
+      "sector": "Administrative and Support Service Activities",
+      "offers": 25673,
+      "offers_prev": 25723
+    },
+    {
+      "sector": "Financial and Insurance / Takaful Activities",
+      "offers": 22266,
+      "offers_prev": 18917
+    },
+    {
+      "sector": "Manufacturing",
+      "offers": 20816,
+      "offers_prev": 17108
+    }
   ],
   "professionals_share_q2_2025": 0.458,
-  "services_share_q2_2025": 0.647
+  "services_share_q2_2025": 0.647,
+  "source_zh": "马来西亚统计局（DOSM）大数据分析：就业市场洞察与 My Job Profile",
+  "source_ms": "Jabatan Perangkaan Malaysia (DOSM) — Analitik Data Raya: Wawasan Pasaran Kerja dan My Job Profile"
 }

@@ -23,10 +23,11 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "src"))
 
 from utils import GAP_COST, TRANSFERABILITY, Role, pathway, rank, sdg_summary  # noqa: E402
-from i18n import STRINGS, T, cat, role_label, skill_label  # noqa: E402
+from i18n import ROLE_PARENTHETICAL, STRINGS, T, cat, role_label, skill_label  # noqa: E402
 from labels import field_label, group_label, skill_option_label  # noqa: E402
 from presentation import CSS_PATH, brand, copy_for, flow_header, learning_path, score_panel, skill_chips  # noqa: E402
 from decision_copy import EXTRA as _DECISION_COPY  # noqa: E402
+from role_names import ROLES as _ROLE_NAMES  # noqa: E402
 
 # `i18n` merges this copy at import time, but Streamlit keeps imported modules
 # alive across reruns and redeploys: a redeploy can leave a stale STRINGS dict
@@ -34,6 +35,8 @@ from decision_copy import EXTRA as _DECISION_COPY  # noqa: E402
 # so the merge is repeated here — the one place guaranteed to run fresh code.
 for _lang, _extra in _DECISION_COPY.items():
     STRINGS.setdefault(_lang, {}).update(_extra)
+for _lang, _names in _ROLE_NAMES.items():
+    ROLE_PARENTHETICAL.setdefault(_lang, {}).update(_names)
 
 DATA = ROOT / "data"
 TREND_FILE = DATA / "trends" / "latest.json"
@@ -248,6 +251,15 @@ def load_trend() -> dict:
                 "note": "Simulated weights for demonstration.", "signals": []}
 
 
+def _loc(row: dict, field: str, lang: str = "en") -> str:
+    """Localized variant of a data field, falling back to English."""
+    if lang and lang != "en":
+        value = row.get(f"{field}_{lang}")
+        if value:
+            return value
+    return row.get(field) or ""
+
+
 def _signal_strength(sig: dict) -> float:
     """Turn either a simulated weight or a real % change into a -1..1 signal."""
     if "weight" in sig:
@@ -288,6 +300,8 @@ def _named_skill_snapshot() -> dict:
         "is_simulated": False,
         "signals": signals,
         "source": d.get("source"),
+        "source_zh": d.get("source_zh"),
+        "source_ms": d.get("source_ms"),
         "source_url": d.get("source_url"),
         "retrieved_at": d.get("retrieved_at"),
         "published": d.get("published"),
@@ -842,7 +856,7 @@ RADAR_CSS = """
 """
 
 
-def dosm_radar(t: dict, d: dict) -> None:
+def dosm_radar(t: dict, d: dict, lang: str = "en") -> None:
     """Radar of the official DOSM occupational counts (current vs previous quarter)."""
     occ = d.get("occupations_q2_2025") or []
     if len(occ) < 3:
@@ -855,7 +869,7 @@ def dosm_radar(t: dict, d: dict) -> None:
     except Exception:
         return
 
-    labels = [o["group"] for o in occ]
+    labels = [_loc(o, "group", lang) for o in occ]
     cur = [o["offers"] for o in occ]
     prev = [o.get("offers_prev") or 0 for o in occ]
 
@@ -876,14 +890,17 @@ def dosm_radar(t: dict, d: dict) -> None:
     ax.fill(angles, cur_c, color="#5b7fa6", alpha=0.22)
     ax.scatter(angles[:-1], cur, color="#5b7fa6", s=13, zorder=5)
 
-    short = [
-        l.replace(" and Associate Professionals", " & Assc.")
-        .replace(" and Chief Executives", " & CEOs")
-        .replace(" and Marketing Professionals", " & Mktg")
-        .replace(" and Auditors", " & Auditors")
-        .replace("Administrative Professionals", "Admin Prof.")
-        for l in labels
-    ]
+    if lang == "en":
+        short = [
+            l.replace(" and Associate Professionals", " & Assc.")
+            .replace(" and Chief Executives", " & CEOs")
+            .replace(" and Marketing Professionals", " & Mktg")
+            .replace(" and Auditors", " & Auditors")
+            .replace("Administrative Professionals", "Admin Prof.")
+            for l in labels
+        ]
+    else:  # CJK / Malay labels are long: keep the head, drop the tail
+        short = [l if len(l) <= 9 else l[:9] + "…" for l in labels]
     ax.set_xticks(angles[:-1])
     ax.set_xticklabels(short, fontsize=6.0, color="#3f4a26")
     ax.set_yticklabels([])
@@ -930,7 +947,7 @@ def dosm_panel(t: dict, lang: str) -> None:
     left, right = st.columns([1, 2], gap="medium")
     with left:
         st.markdown(f"**{t['radar_title']}**")
-        dosm_radar(t, d)
+        dosm_radar(t, d, lang)
     with right:
         st.markdown(f"**{t['radar_values']}**")
         body_rows = []
@@ -941,7 +958,7 @@ def dosm_panel(t: dict, lang: str) -> None:
             row_style = "padding:4px 8px;border-bottom:1px solid #eef0e8"
             body_rows.append(
                 "<tr>"
-                f"<td style='{row_style}'>{o['group']}</td>"
+                f"<td style='{row_style}'>{_loc(o, 'group', lang)}</td>"
                 f"<td style='{row_style};text-align:right;font-variant-numeric:tabular-nums'>{_fmt(prev)}</td>"
                 f"<td style='{row_style};text-align:right;font-variant-numeric:tabular-nums;font-weight:650'>"
                 f"{_fmt(o['offers'])}</td>"
@@ -974,7 +991,7 @@ def skill_evidence_panel(t: dict, lang: str) -> None:
 
     st.markdown(f"### {t['skill_layer_title']}")
     st.caption(
-        f"**{t['skill_layer_note']}** · {d.get('source')} · {d.get('published')} · "
+        f"**{t['skill_layer_note']}** · {_loc(d, 'source', lang)} · {d.get('published')} · "
         f"[{t['view_source']}]({d.get('source_url')})"
     )
 
@@ -983,7 +1000,7 @@ def skill_evidence_panel(t: dict, lang: str) -> None:
     if facts:
         st.markdown("**" + t["facts_title"] + "**")
         for f in facts:
-            st.markdown(f"- {f['fact']}")
+            st.markdown(f"- {_loc(f, 'fact', lang)}")
         st.markdown("")
 
     signals = d.get("skill_signals") or []
@@ -993,13 +1010,17 @@ def skill_evidence_panel(t: dict, lang: str) -> None:
         cards = []
         for sig in signals[:9]:
             kind, icon = cls.get(sig["direction"], ("flat", "•"))
+            # the article names an area, not a percentage: show the area, keep the
+            # original sentence only as the hover title (it is a quote, not our copy)
             evidence = sig["evidence"]
+            area = _loc(sig, "area", lang)
+            body = t["named_area"].format(area=area) if area else evidence
             cards.append(
                 '<div class="tr-card ' + kind + '" title="' + evidence.replace('"', "'") + '">'
                 + '<div class="tr-skill">' + skill_label(lang, sig["skill"]) + '</div>'
                 + '<div class="tr-dir">' + icon + " " + t.get(sig["direction"], sig["direction"]) + '</div>'
                 + '<span class="tr-badge" style="max-width:100%;white-space:normal;line-height:1.35;'
-                  'font-size:10.5px;font-weight:500">' + evidence + '</span>'
+                  'font-size:10.5px;font-weight:500">' + body + '</span>'
                 + '</div>'
             )
         st.markdown('<div class="tr-grid">' + "".join(cards) + '</div>', unsafe_allow_html=True)
@@ -1274,15 +1295,50 @@ def screen_js_intake() -> None:
 # Screen: jobseeker results — persona aware
 # --------------------------------------------------------------------------- #
 
+def _evidence_lines(t: dict, lang: str, role: Role | None, trend: dict) -> list[str]:
+    """Translate a signal into one sentence a person can read, in their language."""
+    wanted = set(role.required_skills) if role else set()
+    hits = [s for s in (trend.get("signals") or []) if s.get("skill") in wanted]
+    hits.sort(key=lambda s: -abs(_signal_strength(s)))
+    period = trend.get("latest_period") or "2025 Q2"
+    prev_period = trend.get("previous_period") or "2025 Q1"
+    out = []
+    for s in hits[:2]:
+        occ = _loc(s, "occupation", lang)
+        if occ and s.get("offers") is not None:
+            out.append(t["ev_line"].format(
+                occ=occ,
+                cur=f'{s["offers"]:,}',
+                prev=f'{s.get("offers_prev") or 0:,}',
+                period=period,
+                prev_period=prev_period,
+                chg=f'{s.get("change_pct") or 0:+.1f}%',
+            ))
+        else:
+            area = _loc(s, "area", lang)
+            out.append(t["named_area"].format(area=area) if area else (s.get("evidence") or ""))
+    return out
+
+
 def why_block(t: dict, lang: str, result: dict, role: Role | None, trend: dict,
               skills: list[str], hours: int, scale: float) -> None:
     """Three plain-language reasons for the top match: transfer, gap, evidence.
 
     Reads existing model fields only — no new score, no new number invented here.
+    When there is no gap the three columns would be empty boxes, so it degrades to
+    one line plus the evidence instead of showing "none / nothing missing".
     """
+    missing = result["missing"]
+    lines = _evidence_lines(t, lang, role, trend)
+
+    if not missing:
+        st.caption(t["why_gap_none"])
+        for line in lines[:2]:
+            st.caption(line)
+        return
+
     st.markdown(f"**{t['why_title']}**")
     left, mid, right = st.columns(3)
-    missing = result["missing"]
 
     with left:
         pairs = []
@@ -1302,25 +1358,17 @@ def why_block(t: dict, lang: str, result: dict, role: Role | None, trend: dict,
 
     with mid:
         st.markdown(f"**{t['why_gap']}**")
-        if missing:
-            core = sum(1 for s in missing if role and role.tier_of(s) == "core")
-            weeks = max(1, round(sum(max(1, round(GAP_COST.get(s, 0.7) * 6)) for s in missing) * scale))
-            st.caption(t["why_gap_body"].format(
-                n=len(missing), total=len(missing) + len(result["covered"]),
-                core=core, weeks=weeks, hours=hours))
-        else:
-            st.caption(t["why_gap_none"])
+        core = sum(1 for s in missing if role and role.tier_of(s) == "core")
+        weeks = max(1, round(sum(max(1, round(GAP_COST.get(s, 0.7) * 6)) for s in missing) * scale))
+        st.caption(t["why_gap_body"].format(
+            n=len(missing), total=len(missing) + len(result["covered"]),
+            core=core, weeks=weeks, hours=hours))
 
     with right:
         st.markdown(f"**{t['why_trend']}**")
-        wanted = set(role.required_skills) if role else set()
-        hits = [s for s in (trend.get("signals") or []) if s.get("skill") in wanted]
-        hits.sort(key=lambda s: -abs(_signal_strength(s)))
-        if hits:
-            for s in hits[:2]:
-                basis = (s.get("basis") or "").strip()
-                st.caption(t["why_trend_item"].format(
-                    skill=skill_label(lang, s["skill"]), basis=basis[:150]))
+        if lines:
+            for line in lines:
+                st.caption(line)
         else:
             st.caption(t["why_trend_none"])
 
@@ -1388,7 +1436,7 @@ def screen_js_results() -> None:
         "font-size:10.5px;font-weight:700;letter-spacing:.06em;vertical-align:middle;"
         "background:#e4eed6;color:#3f5a1e}</style>"
         f'<div style="margin:2px 0 6px"><span class="src-badge">{t["src_badge_obs"]}</span> '
-        f'<span style="font-size:11.5px;color:#7a836a">{trend.get("source") or ""}</span></div>',
+        f'<span style="font-size:11.5px;color:#7a836a">{_loc(trend, "source", lang_now)}</span></div>',
         unsafe_allow_html=True,
     )
     st.caption(t["src_note_" + src])
@@ -1433,7 +1481,7 @@ def screen_js_results() -> None:
     _pos_mod = {r["role"]: i + 1 for i, r in enumerate(_mod)}
     _pos_fast = {r["role"]: i + 1 for i, r in enumerate(_fast)}
     _score_fast = {r["role"]: r["score"] for r in _fast}
-    with st.expander(t["scenario"] + " · " + t["moderate"] + " / " + t["fast"], expanded=False):
+    with st.expander(t["scen_compare"], expanded=False):
         st.markdown(
             '<span style="display:inline-block;padding:2px 9px;border-radius:999px;font-size:10.5px;'
             'font-weight:700;letter-spacing:.06em;background:#f7e6c8;color:#7a4d0a">'
@@ -1476,31 +1524,24 @@ def screen_js_results() -> None:
     top_role = role_label(lang_now, top1["role"])
     missing_labels = ", ".join(skill_label(lang_now, x) for x in top1["missing"]) or t["none"]
 
-    if cover >= 0.7:
+    if missing_n == 0:
+        st.success(t["summary_full"].format(top_role, round(cover * 100)))
+    elif cover >= 0.7:
         st.success(t["summary_strong"].format(top_role, round(cover * 100), missing_labels))
     elif cover >= 0.4:
         st.info(t["summary_partial"].format(top_role, round(cover * 100), missing_n, missing_labels))
     else:
         st.warning(t["summary_weak"].format(top_role, round(cover * 100), missing_n, total_n))
 
-    if persona == "worker":
-        st.caption(t["adv_worker"].format(st.session_state.get("years", 0)))
-    else:
-        st.caption(t["adv_grad"].format(st.session_state.get("intern", 0)))
-
-    if same:
-        st.caption(t["domain_same"].format(field, len(same)))
-    else:
-        st.caption(t["domain_adjacent"].format(field))
-    st.caption(copy_for(lang_now)["rank_note"])
-    st.caption(t["role_source"])
+    # one grey line instead of four: context, scope and the honesty note together
+    _ctx = (t["adv_worker"].format(st.session_state.get("years", 0)) if persona == "worker"
+            else t["adv_grad"].format(st.session_state.get("intern", 0)))
+    _scope = (t["domain_same"].format(field, len(same)) if same
+              else t["domain_adjacent"].format(field))
+    st.caption(f"{_ctx} · {_scope} · {copy_for(lang_now)['rank_note']}")
     roles_by_name = {x.name: x for x in roles}
     why_block(t, lang_now, top1, roles_by_name.get(top1["role"]), trend, skills, hours, scale)
     for i, r in enumerate(results[:4]):
-        dom = ROLE_META.get(r["role"], {}).get("domain", "")
-        badge = t["badge_same"] if dom == FIELD_DOMAIN.get(field) else t["badge_adjacent"]
-        if i == 0:
-            st.caption(badge)
         r["tiers"] = {sk: roles_by_name.get(r["role"], Role(r["role"], [], 0)).tier_of(sk) for sk in r["missing"]}
         role_card(t, r, expanded=(i == 0), lang=lang_now)
 
@@ -1550,8 +1591,7 @@ def screen_js_results() -> None:
             ], lang_now),
             unsafe_allow_html=True,
         )
-        st.caption(t["path_note"].format(hours))
-        st.caption(t["path_evidence"].format(src=t["src_" + src]))
+        st.caption(f"{t['path_note'].format(hours)} {t['path_evidence'].format(src=t['src_' + src])}")
 
         # The pathway is a plan only if the ranking actually moves. Re-score the
         # user's own profile after each step and show it.

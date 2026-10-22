@@ -10,22 +10,30 @@
     {
       "fact": "ICT-related job postings grew nearly 25% year-on-year in 2025",
       "kind": "quantified",
-      "basis": "Jobstreet by SEEK Malaysia, quoted in the article"
+      "basis": "Jobstreet by SEEK Malaysia, quoted in the article",
+      "fact_zh": "2025 年 ICT 相关招聘广告同比增长近 25%",
+      "fact_ms": "Iklan kerja berkaitan ICT meningkat hampir 25% tahun ke tahun pada 2025"
     },
     {
       "fact": "36% of job advertisements now list specific skill requirements as the primary filter, often ahead of formal qualifications",
       "kind": "quantified",
-      "basis": "Jobstreet by SEEK Malaysia, quoted in the article"
+      "basis": "Jobstreet by SEEK Malaysia, quoted in the article",
+      "fact_zh": "36% 的招聘广告把具体技能要求列为首要筛选条件，往往排在正式学历之前",
+      "fact_ms": "36% iklan kerja kini menyenaraikan keperluan kemahiran khusus sebagai penapis utama, selalunya mendahului kelayakan formal"
     },
     {
       "fact": "Skilled workers earn 72% more than low-skilled counterparts",
       "kind": "quantified",
-      "basis": "Department of Statistics Malaysia, cited in the article"
+      "basis": "Department of Statistics Malaysia, cited in the article",
+      "fact_zh": "技术工人的收入比低技能劳动者高 72%",
+      "fact_ms": "Pekerja mahir memperoleh 72% lebih tinggi berbanding rakan berkemahiran rendah"
     },
     {
       "fact": "Data-centre mechanical and electrical professionals can command 20%-50% pay increases, versus 5%-10% for most professionals",
       "kind": "quantified",
-      "basis": "Randstad Malaysia, cited in the article"
+      "basis": "Randstad Malaysia, cited in the article",
+      "fact_zh": "数据中心机电专业人员的薪资涨幅可达 20%–50%，而多数专业岗位为 5%–10%",
+      "fact_ms": "Profesional mekanikal dan elektrik pusat data boleh mendapat kenaikan gaji 20%–50%, berbanding 5%–10% bagi kebanyakan profesional"
     }
   ],
   "skill_signals": [
@@ -34,60 +42,78 @@
       "direction": "rising",
       "evidence_kind": "named_skill",
       "evidence": "Demand is described as heavily concentrated in applied AI",
-      "quote_area": "applied artificial intelligence"
+      "quote_area": "applied artificial intelligence",
+      "area_zh": "应用人工智能",
+      "area_ms": "kecerdasan buatan gunaan"
     },
     {
       "skill": "machine learning",
       "direction": "rising",
       "evidence_kind": "named_skill",
       "evidence": "Demand is described as heavily concentrated in applied AI",
-      "quote_area": "applied artificial intelligence"
+      "quote_area": "applied artificial intelligence",
+      "area_zh": "应用人工智能",
+      "area_ms": "kecerdasan buatan gunaan"
     },
     {
       "skill": "web development",
       "direction": "rising",
       "evidence_kind": "named_skill",
       "evidence": "Demand is described as heavily concentrated in software development",
-      "quote_area": "software development"
+      "quote_area": "software development",
+      "area_zh": "软件开发",
+      "area_ms": "pembangunan perisian"
     },
     {
       "skill": "cybersecurity",
       "direction": "rising",
       "evidence_kind": "named_skill",
       "evidence": "Demand is described as heavily concentrated in cybersecurity",
-      "quote_area": "cybersecurity"
+      "quote_area": "cybersecurity",
+      "area_zh": "网络安全",
+      "area_ms": "keselamatan siber"
     },
     {
       "skill": "data visualisation",
       "direction": "rising",
       "evidence_kind": "named_skill",
       "evidence": "Demand is described as heavily concentrated in data analytics",
-      "quote_area": "data analytics"
+      "quote_area": "data analytics",
+      "area_zh": "数据分析",
+      "area_ms": "analitik data"
     },
     {
       "skill": "communication",
       "direction": "rising",
       "evidence_kind": "named_skill",
       "evidence": "Employers list communication among the baseline human-centric skills of a hybrid skill set",
-      "quote_area": "communication"
+      "quote_area": "communication",
+      "area_zh": "沟通",
+      "area_ms": "komunikasi"
     },
     {
       "skill": "project management",
       "direction": "rising",
       "evidence_kind": "named_skill",
       "evidence": "Employers list project management among the baseline human-centric skills of a hybrid skill set",
-      "quote_area": "project management"
+      "quote_area": "project management",
+      "area_zh": "项目管理",
+      "area_ms": "pengurusan projek"
     },
     {
       "skill": "quality assurance",
       "direction": "rising",
       "evidence_kind": "named_skill",
       "evidence": "Analytical thinking and problem solving are named as baseline skills, which quality work depends on",
-      "quote_area": "analytical thinking, problem solving"
+      "quote_area": "analytical thinking, problem solving",
+      "area_zh": "分析思维与问题解决",
+      "area_ms": "pemikiran analitik dan penyelesaian masalah"
     }
   ],
   "direction_notes": {
     "rising": "The article names this area as a place where demand is concentrated or growing.",
     "slower_growth": "The article says routine roles face slower growth or decline but does not name a specific skill, so no individual skill is marked as declining."
-  }
+  },
+  "source_zh": "Jobstreet by SEEK Malaysia 与 Randstad Malaysia，经《The Edge Malaysia》报道",
+  "source_ms": "Jobstreet by SEEK Malaysia dan Randstad Malaysia, dilaporkan oleh The Edge Malaysia"
 }

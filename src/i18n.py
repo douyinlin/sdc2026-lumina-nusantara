@@ -856,6 +856,16 @@ def skill_label(lang: str, key: str) -> str:
     return f"{key}（{gloss}）" if gloss and lang == "zh" else (f"{key} ({gloss})" if gloss else key)
 
 
+try:  # pragma: no cover - trivial import guard
+    from role_names import ROLES as _ROLE_NAMES
+except ImportError:  # package-relative import when `src` is a package
+    from .role_names import ROLES as _ROLE_NAMES
+
+for _lang, _names in _ROLE_NAMES.items():
+    ROLE_PARENTHETICAL.setdefault(_lang, {}).update(_names)
+del _ROLE_NAMES
+
+
 def role_label(lang: str, name: str) -> str:
     if lang == "en":
         return name
