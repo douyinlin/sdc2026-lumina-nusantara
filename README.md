@@ -67,8 +67,8 @@ and two disruption scenarios so the user sees how robust each choice is.
 | # | Must-have feature | How we deliver it |
 | --- | --- | --- |
 | 1 | Skills profile intake | Questionnaire + synthetic CV parsing into a shared skill taxonomy |
-| 2 | AI-trend signal layer | Versioned trend snapshot; every forecast exposes source URL and retrieval date |
-| 3 | Future-role matching | Explainable score decomposed into coverage, transferability, demand trend and gap cost |
+| 2 | AI-trend signal layer | Separate Malaysia job-offering observations, reported named-skill signals and global WEF forecasts; each source shows its date and link |
+| 3 | Future-role matching | Explainable score decomposed into skill coverage, role focus, transferability, demand trend and gap cost |
 | 4 | Personalised reskilling pathway | Ordered learning plan with estimated hours, free / HRD Corp-claimable resources |
 | 5 | SDG mapping | Each role and skill tagged to at least one SDG, plus a personal contribution view |
 | 6 | Handling uncertainty | Moderate vs fast AI-disruption scenarios, explicitly labelled as estimates |
@@ -98,8 +98,8 @@ and two disruption scenarios so the user sees how robust each choice is.
 |-- docs/
 |   `-- architecture.png    # System block diagram
 |-- src/                    # Engine: demo UI, matching, pathway, SDG
-|-- data/                   # Synthetic profiles, sample CV, trend snapshot
-|-- tests/                  # 13 unit tests
+|-- data/                   # Synthetic profiles, sample CV, dated trend source snapshots
+|-- tests/                  # unit tests
 |-- runpod/                 # Optional RunPod handler (not used by the demo)
 |-- team/                   # Team-only material (not part of the submission)
 |-- LICENSE                 # Apache License 2.0
@@ -159,14 +159,35 @@ This application does **not** call a RunPod endpoint. CV parsing is a local rege
 
 ---
 
+## Trend sources and scoring
+
+The app keeps three kinds of evidence distinct:
+
+- **Malaysia observations:** DOSM online job offerings for 2026 Q1 and Q2, stored in
+  `data/trends/dosm_q2_2026.json` ([Q2 release](https://www.dosm.gov.my/portal-main/release-content/big-data-analytics-job-market-insights-q22026),
+  [Q1 release](https://www.dosm.gov.my/portal-main/release-content/big-data-analytics-job-market-insights-q12026)).
+  These are advertised offerings by occupation group, not all vacancies and not
+  skill-level counts.
+- **Reported skill signals:** the [2025 JobStreet / Randstad report](https://theedgemalaysia.com/node/791561)
+  names skill areas but does not publish comparable percentages for each skill.
+- **Global forecast:** WEF's [*Future of Jobs Report 2025*](https://www.weforum.org/publications/the-future-of-jobs-report-2025/3-skills-outlook)
+  describes employer expectations through 2030. It is not a Malaysia-specific
+  measurement. Only aligned or explicitly mapped skills in the app's catalogue
+  affect ranking; unmapped forecast items are shown as context.
+
+Qualitative rising and declining directions use a fixed ±0.7 score signal (stable is
+0.0). This is a prototype ranking heuristic, not a statistic published by DOSM, WEF
+or JobStreet. Source snapshots are transcribed and checked manually; there is no
+automated ingestion or scraping job.
+
 ## Challenges & Learnings
 
-- **Trustworthy, updatable trend data** is the hardest part: sources change format,
-  and hard-coded lists are explicitly disqualified. Every ingestion run is versioned
-  with its source URL and retrieval date.
-- **Avoiding invented jobs and courses**: any language model only phrases
-  explanations; roles, skills and courses come from curated tables with URLs.
-- **Explaining a score** is harder than computing one — the four weighted components
+- **Trustworthy, updatable trend data** is the hardest part: official occupation counts,
+  reported skill names and global forecasts measure different things, so we keep them
+  separate and label every proxy.
+- **Avoiding invented jobs and courses**: roles, skills and courses come from
+  curated tables with URLs; the live app does not call a language model.
+- **Explaining a score** is harder than computing one — the five weighted components
   are exposed in the UI so a non-expert can audit the ranking.
 - **Keeping the demo honest**: synthetic data only, no real CVs, and a visible
   reminder that predictions are estimates rather than facts.

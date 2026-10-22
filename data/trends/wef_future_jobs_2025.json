@@ -1,0 +1,101 @@
+{
+  "is_simulated": false,
+  "scope": "Global employer expectations; not a Malaysia-specific measurement",
+  "source": "World Economic Forum, The Future of Jobs Report 2025 — Skills Outlook",
+  "source_url": "https://www.weforum.org/publications/the-future-of-jobs-report-2025/3-skills-outlook",
+  "published": "2025-01-07",
+  "retrieved_at": "2026-10-22",
+  "horizon": "2025-2030",
+  "extraction_note": "Directions are employer expectations reported by WEF, not observed Malaysian demand. The report does not publish a comparable per-skill percentage for most entries. Mapped skills are explicit prototype taxonomy proxies and do not claim equivalence.",
+  "scoring_note": "Qualitative rising/stable/declining directions use a fixed ±0.7/0.0 score signal; this is a ranking heuristic, not a WEF statistic.",
+  "skill_signals": [
+    {
+      "skill": "AI and big data",
+      "model_skill": "machine learning",
+      "direction": "rising",
+      "mapping_kind": "proxy",
+      "mapping_note": "The app uses machine learning as a proxy for this broader WEF skill group.",
+      "mapping_note_zh": "应用以“机器学习”作为 WEF 更广泛技能类别的匹配代理。",
+      "mapping_note_ms": "Aplikasi menggunakan pembelajaran mesin sebagai proksi bagi kategori kemahiran WEF yang lebih luas.",
+      "evidence": "WEF reports AI and big data among the fastest-growing skills expected through 2030.",
+      "evidence_zh": "WEF 报告将 AI 与大数据列为预计到 2030 年增长最快的技能之一。",
+      "evidence_ms": "WEF meletakkan AI dan data raya antara kemahiran yang dijangka berkembang paling pantas hingga 2030.",
+      "skill_zh": "人工智能与大数据",
+      "skill_ms": "AI dan data raya"
+    },
+    {
+      "skill": "Networks and cybersecurity",
+      "model_skill": "cybersecurity",
+      "direction": "rising",
+      "mapping_kind": "aligned",
+      "evidence": "WEF expects networks and cybersecurity skills to rise in importance through 2030.",
+      "evidence_zh": "WEF 预计网络与网络安全技能的重要性到 2030 年将继续上升。",
+      "evidence_ms": "WEF menjangka kepentingan rangkaian dan keselamatan siber meningkat hingga 2030.",
+      "skill_zh": "网络与网络安全",
+      "skill_ms": "Rangkaian dan keselamatan siber"
+    },
+    {
+      "skill": "Technological literacy",
+      "direction": "rising",
+      "mapping_kind": "unmapped",
+      "evidence": "WEF expects technological literacy to rise in importance through 2030.",
+      "evidence_zh": "WEF 预计技术素养的重要性到 2030 年将继续上升。",
+      "evidence_ms": "WEF menjangka literasi teknologi semakin penting hingga 2030.",
+      "skill_zh": "技术素养",
+      "skill_ms": "Literasi teknologi"
+    },
+    {
+      "skill": "Creative thinking",
+      "direction": "rising",
+      "mapping_kind": "unmapped",
+      "evidence": "WEF expects creative thinking to rise in importance through 2030.",
+      "evidence_zh": "WEF 预计创造性思维的重要性到 2030 年将继续上升。",
+      "evidence_ms": "WEF menjangka pemikiran kreatif semakin penting hingga 2030.",
+      "skill_zh": "创造性思维",
+      "skill_ms": "Pemikiran kreatif"
+    },
+    {
+      "skill": "Resilience, flexibility and agility",
+      "direction": "rising",
+      "mapping_kind": "unmapped",
+      "evidence": "WEF expects resilience, flexibility and agility to rise in importance through 2030.",
+      "evidence_zh": "WEF 预计韧性、灵活性与敏捷性到 2030 年将更加重要。",
+      "evidence_ms": "WEF menjangka daya tahan, fleksibiliti dan ketangkasan semakin penting hingga 2030.",
+      "skill_zh": "韧性、灵活性与敏捷性",
+      "skill_ms": "Daya tahan, fleksibiliti dan ketangkasan"
+    },
+    {
+      "skill": "Service orientation and customer service",
+      "model_skill": "customer support",
+      "direction": "stable",
+      "mapping_kind": "aligned",
+      "evidence": "WEF lists service orientation and customer service among core skills expected to remain relatively stable.",
+      "evidence_zh": "WEF 将服务意识与客户服务列为预计保持相对稳定的核心技能。",
+      "evidence_ms": "WEF menyenaraikan orientasi perkhidmatan dan khidmat pelanggan sebagai kemahiran teras yang dijangka kekal agak stabil.",
+      "skill_zh": "服务意识与客户服务",
+      "skill_ms": "Orientasi perkhidmatan dan khidmat pelanggan"
+    },
+    {
+      "skill": "Quality control",
+      "direction": "stable",
+      "mapping_kind": "unmapped",
+      "evidence": "WEF identifies quality control among skills expected to remain relatively stable.",
+      "evidence_zh": "WEF 将质量控制列为预计保持相对稳定的技能。",
+      "evidence_ms": "WEF mengenal pasti kawalan kualiti sebagai kemahiran yang dijangka kekal agak stabil.",
+      "skill_zh": "质量控制",
+      "skill_ms": "Kawalan kualiti"
+    },
+    {
+      "skill": "Manual dexterity, endurance and precision",
+      "direction": "declining",
+      "mapping_kind": "unmapped",
+      "evidence": "WEF reports a notable net decline; 24% of surveyed employers expect this skill group to decrease in importance.",
+      "evidence_zh": "WEF 报告该技能组预计出现明显净下降；24% 的受访雇主预计其重要性会降低。",
+      "evidence_ms": "WEF melaporkan penurunan bersih yang ketara; 24% majikan yang disurvei menjangka kepentingan kumpulan kemahiran ini menurun.",
+      "skill_zh": "手工灵巧度、耐力与精确度",
+      "skill_ms": "Ketangkasan manual, daya tahan dan ketepatan"
+    }
+  ],
+  "source_zh": "世界经济论坛《2025 年未来就业报告》——技能展望",
+  "source_ms": "Forum Ekonomi Dunia, Laporan Future of Jobs 2025 — Outlook Kemahiran"
+}

@@ -17,7 +17,7 @@ LANGS = ("en", "zh", "ms")
 
 # keys assembled at runtime, so the regex cannot see them
 DYNAMIC = [
-    "src_dosm", "src_jobstreet", "src_badge_obs", "src_badge_scenario",
+    "src_jobstreet", "src_wef", "src_badge_obs", "src_badge_forecast", "src_badge_scenario",
     "moderate", "fast",
 ]
 

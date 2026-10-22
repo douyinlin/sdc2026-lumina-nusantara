@@ -49,7 +49,6 @@ for _lang, _cats in _load_copy("categories.json").items():
     CATEGORY_LABELS.setdefault(_lang, {}).update(_cats)
 
 DATA = ROOT / "data"
-TREND_FILE = DATA / "trends" / "latest.json"
 
 # --------------------------------------------------------------------------- #
 # Skill taxonomy — every skill maps to an engine key so scoring stays simple.
@@ -253,14 +252,6 @@ def load_courses() -> dict[str, dict]:
         return {}
 
 
-def load_trend() -> dict:
-    try:
-        return json.loads(TREND_FILE.read_text(encoding="utf-8"))
-    except Exception:
-        return {"is_simulated": True, "source_url": None, "retrieved_at": None,
-                "note": "Simulated weights for demonstration.", "signals": []}
-
-
 def _loc(row: dict, field: str, lang: str = "en") -> str:
     """Localized variant of a data field, falling back to English."""
     if lang and lang != "en":
@@ -271,7 +262,7 @@ def _loc(row: dict, field: str, lang: str = "en") -> str:
 
 
 def _signal_strength(sig: dict) -> float:
-    """Turn either a simulated weight or a real % change into a -1..1 signal."""
+    """Turn a fixed qualitative weight or a published percentage into a -1..1 signal."""
     if "weight" in sig:
         return float(sig["weight"])
     pct = sig.get("change_pct")
@@ -307,6 +298,7 @@ def _named_skill_snapshot() -> dict:
         "kind": "jobstreet",
         "scenario": False,
         "observed": True,
+        "forecast": False,
         "is_simulated": False,
         "signals": signals,
         "source": d.get("source"),
@@ -318,18 +310,51 @@ def _named_skill_snapshot() -> dict:
     }
 
 
-def load_snapshot(kind: str = "dosm") -> dict:
-    """One ranked-evidence source, each with its own provenance on the page."""
+WEF_SIGNAL_WEIGHT = 0.7
+
+
+def _wef_skill_snapshot() -> dict:
+    """WEF skills outlook through 2030; broad categories map only when stated."""
+    path = DATA / "trends" / "wef_future_jobs_2025.json"
+    try:
+        d = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"kind": "wef", "signals": [], "source": None, "forecast": True}
+    signals = []
+    for item in d.get("skill_signals") or []:
+        weight = {"rising": WEF_SIGNAL_WEIGHT, "declining": -WEF_SIGNAL_WEIGHT}.get(item.get("direction"), 0.0)
+        signals.append({**item, "skill": item.get("model_skill") or item["skill"], "weight": weight})
+    return {
+        "kind": "wef",
+        "scenario": False,
+        "observed": False,
+        "forecast": True,
+        "is_simulated": False,
+        "signals": signals,
+        "source": d.get("source"),
+        "source_url": d.get("source_url"),
+        "source_zh": d.get("source_zh"),
+        "source_ms": d.get("source_ms"),
+        "retrieved_at": d.get("retrieved_at"),
+        "published": d.get("published"),
+        "horizon": d.get("horizon"),
+        "scope": d.get("scope"),
+        "scoring_note": d.get("scoring_note"),
+    }
+
+
+def load_snapshot(kind: str = "wef") -> dict:
+    """One skill-evidence source; DOSM occupation counts stay a separate panel."""
     if kind == "jobstreet":
         return _named_skill_snapshot()
-    return load_trend()
+    return _wef_skill_snapshot()
 
 
 def apply_trend(roles: list[Role], trend: dict) -> list[Role]:
-    """Blend the curated role trend with the live skill signals.
+    """Use a selected source signal directly; keep the catalogue baseline if absent.
 
-    A role the source says nothing about keeps its curated trend: silence is not
-    evidence that the trend halved.
+    A qualitative source direction has a visible fixed scoring weight; it is not
+    presented as a source-published percentage.
     """
     signals = trend.get("signals") or []
     out = []
@@ -339,12 +364,11 @@ def apply_trend(roles: list[Role], trend: dict) -> list[Role]:
             out.append(Role(role.name, role.required_skills, role.trend, role.sdg, dict(role.tiers)))
             continue
         delta = sum(relevant) / len(relevant)
-        blended = 0.5 * role.trend + 0.5 * delta
         out.append(
             Role(
                 role.name,
                 role.required_skills,
-                max(-1.0, min(1.0, blended)),
+                max(-1.0, min(1.0, delta)),
                 role.sdg,
                 dict(role.tiers),
             )
@@ -881,7 +905,7 @@ RADAR_CSS = """
 
 def dosm_radar(t: dict, d: dict, lang: str = "en") -> None:
     """Radar of the official DOSM occupational counts (current vs previous quarter)."""
-    occ = d.get("occupations_q2_2025") or []
+    occ = d.get("occupations") or []
     if len(occ) < 3:
         return
     try:
@@ -907,9 +931,9 @@ def dosm_radar(t: dict, d: dict, lang: str = "en") -> None:
     ax.set_theta_offset(np.pi / 2)
     ax.set_theta_direction(-1)
 
-    ax.plot(angles, prev_c, color="#b7c1a5", linewidth=1.2, label="2025 Q1")
+    ax.plot(angles, prev_c, color="#b7c1a5", linewidth=1.2, label=d.get("previous_period", "Previous"))
     ax.fill(angles, prev_c, color="#b7c1a5", alpha=0.16)
-    ax.plot(angles, cur_c, color="#5b7fa6", linewidth=1.7, label="2025 Q2")
+    ax.plot(angles, cur_c, color="#5b7fa6", linewidth=1.7, label=d.get("latest_period", "Latest"))
     ax.fill(angles, cur_c, color="#5b7fa6", alpha=0.22)
     ax.scatter(angles[:-1], cur, color="#5b7fa6", s=13, zorder=5)
 
@@ -939,14 +963,14 @@ def dosm_radar(t: dict, d: dict, lang: str = "en") -> None:
 
 def dosm_panel(t: dict, lang: str) -> None:
     """Layer 1 — official DOSM occupational demand (labelled as an occupational signal)."""
-    path = DATA / "trends" / "dosm_q2_2025.json"
+    path = DATA / "trends" / "dosm_q2_2026.json"
     if not path.exists():
         return
     try:
         d = json.loads(path.read_text(encoding="utf-8"))
     except Exception:
         return
-    occ = d.get("occupations_q2_2025") or []
+    occ = d.get("occupations") or []
     if not occ:
         return
 
@@ -958,10 +982,10 @@ def dosm_panel(t: dict, lang: str) -> None:
         f'<div class="ds-title">🇲🇾 {t["dosm_title"]}</div>'
         f'<div class="ds-src">{t["dosm_source"]} · {d.get("latest_period")} · {d.get("latest_released")}</div>'
         "</div>"
-        f'<div class="ds-total">{t["dosm_total"]}: <b>{_fmt(total.get("q2_2025", 0))}</b> '
+        f'<div class="ds-total">{t["dosm_total"]}: <b>{_fmt(total.get("offers", 0))}</b> '
         f'({t["dosm_qoq"]} {total.get("qoq_pct", 0):+.1f}%)</div>'
         f'<div class="ds-note">{t["occ_layer_note"]}</div>'
-        f'<div class="ds-note">📄 <a href="{d.get("latest_url", "")}" target="_blank">{t["view_source"]}</a>'
+        f'<div class="ds-note">📄 <a href="{d.get("source_url", "")}" target="_blank">{t["view_source"]}</a>'
         f' · {t["prev_quarter"]}</div>'
         "</div>",
         unsafe_allow_html=True,
@@ -993,13 +1017,13 @@ def dosm_panel(t: dict, lang: str) -> None:
             "<table style='width:100%;border-collapse:collapse;font-size:11.5px;color:#3f4a26'>"
             "<thead><tr>"
             f"<th style='{head_style};text-align:left'>{t['col_occ']}</th>"
-            f"<th style='{head_style};text-align:right'>2025 Q1</th>"
-            f"<th style='{head_style};text-align:right'>2025 Q2</th>"
+            f"<th style='{head_style};text-align:right'>{d.get('previous_period', '')}</th>"
+            f"<th style='{head_style};text-align:right'>{d.get('latest_period', '')}</th>"
             f"<th style='{head_style};text-align:right'>{t['dosm_qoq']}</th>"
             "</tr></thead><tbody>" + "".join(body_rows) + "</tbody></table>",
             unsafe_allow_html=True,
         )
-        st.caption(t["radar_footnote"])
+        st.caption(t["radar_footnote"].format(previous=d.get("previous_period", "")))
 
 
 def skill_evidence_panel(t: dict, lang: str) -> None:
@@ -1051,11 +1075,67 @@ def skill_evidence_panel(t: dict, lang: str) -> None:
     st.caption(t["proxy_caveat"])
 
 
+def future_skill_panel(t: dict, lang: str) -> None:
+    """Layer 3 — global employer forecasts, kept separate from local observations."""
+    path = DATA / "trends" / "wef_future_jobs_2025.json"
+    try:
+        d = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return
+
+    st.markdown(f"### {t['future_skill_title']}")
+    st.caption(
+        f"**{t['future_skill_note']}** · {_loc(d, 'source', lang)} · "
+        f"{d.get('published')} · {d.get('horizon')} · [{t['view_source']}]({d.get('source_url')})"
+    )
+    signals = d.get("skill_signals") or []
+    if signals:
+        st.markdown(TREND_CSS, unsafe_allow_html=True)
+        cls = {"rising": ("up", "📈"), "declining": ("down", "📉"), "stable": ("flat", "➖")}
+        cards = []
+        for sig in signals:
+            kind, icon = cls.get(sig["direction"], ("flat", "•"))
+            name = _loc(sig, "skill", lang)
+            evidence = _loc(sig, "evidence", lang)
+            mapping = _loc(sig, "mapping_note", lang)
+            body = evidence + (f" {mapping}" if mapping else "")
+            mapping_kind = sig.get("mapping_kind")
+            mapping_label = (
+                t["mapping_unmapped"] if mapping_kind == "unmapped"
+                else t["mapping_proxy"] if mapping_kind == "proxy"
+                else t["mapping_aligned"]
+            )
+            cards.append(
+                '<div class="tr-card ' + kind + '" title="' + body.replace('"', "'") + '">'
+                + '<div class="tr-skill">' + name + '</div>'
+                + '<div class="tr-dir">' + icon + " " + t.get(sig["direction"], sig["direction"]) + '</div>'
+                + '<div class="tr-evidence" style="font-size:10px;color:#6b765b;margin:3px 0">' + mapping_label + '</div>'
+                + '<span class="tr-badge" style="max-width:100%;white-space:normal;line-height:1.35;'
+                  'font-size:10.5px;font-weight:500">' + evidence + '</span>'
+                + '</div>'
+            )
+        st.markdown('<div class="tr-grid">' + "".join(cards) + '</div>', unsafe_allow_html=True)
+    st.caption(t["future_skill_caveat"])
+
+
+def team_trend_source_note(t: dict) -> None:
+    """Keep HR and curriculum views explicit about the forecast behind scores."""
+    path = DATA / "trends" / "wef_future_jobs_2025.json"
+    try:
+        source_url = json.loads(path.read_text(encoding="utf-8")).get("source_url")
+    except Exception:
+        source_url = None
+    link = f' · [{t["view_source"]}]({source_url})' if source_url else ""
+    st.caption(t["team_wef_note"] + link)
+
+
 def trend_cards(t: dict, trend: dict, lang: str = "en") -> None:
-    """Both layers, clearly separated."""
+    """Local job-offering counts, local named skills and global forecasts."""
     dosm_panel(t, lang)
     st.divider()
     skill_evidence_panel(t, lang)
+    st.divider()
+    future_skill_panel(t, lang)
 
 
 def role_card(t: dict, result: dict, expanded: bool = False, lang: str = "en") -> None:
@@ -1325,8 +1405,8 @@ def _evidence_lines(t: dict, lang: str, role: Role | None, trend: dict) -> list[
     wanted = set(role.required_skills) if role else set()
     hits = [s for s in (trend.get("signals") or []) if s.get("skill") in wanted]
     hits.sort(key=lambda s: -abs(_signal_strength(s)))
-    period = trend.get("latest_period") or "2025 Q2"
-    prev_period = trend.get("previous_period") or "2025 Q1"
+    period = trend.get("latest_period") or ""
+    prev_period = trend.get("previous_period") or ""
     out = []
     for s in hits[:2]:
         occ = _loc(s, "occupation", lang)
@@ -1341,7 +1421,10 @@ def _evidence_lines(t: dict, lang: str, role: Role | None, trend: dict) -> list[
             ))
         else:
             area = _loc(s, "area", lang)
-            out.append(t["named_area"].format(area=area) if area else (s.get("evidence") or ""))
+            evidence = _loc(s, "evidence", lang)
+            line = t["named_area"].format(area=area) if area else evidence
+            mapping = _loc(s, "mapping_note", lang)
+            out.append(f"{line} {mapping}" if mapping else line)
     return out
 
 
@@ -1440,7 +1523,7 @@ def screen_js_results() -> None:
             st.session_state.get("intern", 0),
         ))
 
-    # Section 2 stays open: the official DOSM counts and the named-skill evidence are
+    # Section 2 stays open: the DOSM counts and named-skill evidence are
     # the proof behind every recommendation, so they must be visible without a click.
     lang_now = st.session_state.get("lang", "en")
     st.caption(copy_for(lang_now)["market_note"])
@@ -1450,7 +1533,7 @@ def screen_js_results() -> None:
     # something the judge can switch and see, not a claim on a slide.
     src = st.radio(
         t["src_label"],
-        ["dosm", "jobstreet"],
+        ["jobstreet", "wef"],
         horizontal=True,
         key="trend_source",
         format_func=lambda k: t["src_" + k],
@@ -1460,7 +1543,7 @@ def screen_js_results() -> None:
         "<style>.src-badge{display:inline-block;padding:2px 9px;border-radius:999px;"
         "font-size:10.5px;font-weight:700;letter-spacing:.06em;vertical-align:middle;"
         "background:#e4eed6;color:#3f5a1e}</style>"
-        f'<div style="margin:2px 0 6px"><span class="src-badge">{t["src_badge_obs"]}</span> '
+        f'<div style="margin:2px 0 6px"><span class="src-badge">{t["src_badge_forecast"] if trend.get("forecast") else t["src_badge_obs"]}</span> '
         f'<span style="font-size:11.5px;color:#7a836a">{_loc(trend, "source", lang_now)}</span></div>',
         unsafe_allow_html=True,
     )
@@ -1476,24 +1559,24 @@ def screen_js_results() -> None:
     results = rank(skills, roles, scenario=scenario)
 
     # ---- does the recommendation survive a different evidence source? ----
-    # Same profile, same model, two independent datasets. A role that stays in
-    # the top five under both is not an artefact of one file.
+    # Same profile and model, viewed through a Malaysian article and a global
+    # employer forecast. The comparison exposes source sensitivity.
     def _under(kind: str) -> dict[str, tuple[int, float]]:
         ranked = rank(skills, apply_trend(pool_base, load_snapshot(kind)), scenario=scenario)
         return {r["role"]: (i + 1, r["score"]) for i, r in enumerate(ranked)}
 
-    _u_dosm, _u_named = _under("dosm"), _under("jobstreet")
+    _u_jobstreet, _u_wef = _under("jobstreet"), _under("wef")
     with st.expander(t["robust_title"], expanded=True):
         rows = []
         for r in results[:5]:
-            (pa, sa) = _u_dosm.get(r["role"], (0, 0.0))
-            (pb, sb) = _u_named.get(r["role"], (0, 0.0))
+            (pa, sa) = _u_jobstreet.get(r["role"], (0, 0.0))
+            (pb, sb) = _u_wef.get(r["role"], (0, 0.0))
             rows.append({
                 t["col_role"]: role_label(lang_now, r["role"]),
-                t["robust_dosm"]: pa,
-                t["robust_named"]: pb,
-                t["robust_score_dosm"]: sa,
-                t["robust_score_named"]: sb,
+                t["robust_jobstreet"]: pa,
+                t["robust_wef"]: pb,
+                t["robust_score_jobstreet"]: sa,
+                t["robust_score_wef"]: sb,
                 t["robust_delta"]: round(sb - sa, 1),
                 t["robust_verdict"]: t["robust_hold"] if pa <= 5 and pb <= 5 else t["robust_sensitive"],
             })
@@ -1716,6 +1799,7 @@ def screen_hr_intake() -> None:
     top_bar(t)
     step_banner(t)
     st.subheader(t["hr_h"])
+    team_trend_source_note(t)
     st.caption(t["hr_sub"])
 
     roster: dict[str, int] = {}
@@ -1744,7 +1828,7 @@ def screen_hr_results() -> None:
             go("hr_intake")
         return
 
-    roles = {r.name: r for r in apply_trend(load_roles(), load_trend())}
+    roles = {r.name: r for r in apply_trend(load_roles(), load_snapshot("wef"))}
     total_people = sum(roster.values())
     demand: dict[str, int] = {}
     for name, n in roster.items():
@@ -1849,13 +1933,14 @@ def screen_cc_results() -> None:
             go("cc_intake")
         return
 
-    roles = {r.name: r for r in apply_trend(load_roles(), load_trend())}
+    roles = {r.name: r for r in apply_trend(load_roles(), load_snapshot("wef"))}
     needed = sorted({s for r in roles.values() if r.name in targets for s in r.required_skills})
     covered = [s for s in needed if s in taught]
     missing = [s for s in needed if s not in taught]
     coverage = len(covered) / len(needed) if needed else 0
 
     st.subheader(t["cc_overview"])
+    team_trend_source_note(t)
     a, b, c = st.columns(3)
     a.metric(t["cc_prog_lbl"], st.session_state.get("prog", "—"))
     b.metric(t["cc_cohort_lbl"], st.session_state.get("cohort", 0))

@@ -27,7 +27,7 @@ STRINGS = {
         "hr_b3": "Decide what to train first, and why",
         "hr_b4": "Map the plan to the UN SDGs",
         "hr_btn": "Start as HR →",
-        "foot": "Demo runs on synthetic profiles and simulated trend weights — no real CVs, no personal data stored.",
+        "foot": "Demo uses synthetic profiles and source-based trend signals — no real CVs, no personal data stored.",
         "step1": "Tell us about you", "step1s": "CV upload or tick your skills by category",
         "step2": "See the radar", "step2s": "dated public trend signals, source shown",
         "step3": "Get matched", "step3s": "roles with an explainable score and gap",
@@ -53,7 +53,7 @@ STRINGS = {
         "scenario": "AI disruption scenario",
         "moderate": "Moderate disruption",
         "fast": "Fast disruption",
-        "ranked_note": "Ranked by an explainable weighted score. Open a role to see the four components.",
+        "ranked_note": "Ranked by an explainable weighted score. Open a role to see the five components.",
         "p4": "4 · Skills to close and your pathway",
         "gap": "Gap for **{}**: {} of {} required skills missing.",
         "covered_all": "You cover every skill for this role — look at the next option in the ranking.",
@@ -208,19 +208,26 @@ STRINGS = {
         "col_direction": "Direction",
         "col_evidence": "Evidence in the source",
         "proxy_caveat": "Caveat: the report names the demand areas but publishes no per-skill percentages, so no number is attached to an individual skill. Occupational counts above are a proxy, not proof, of skill demand.",
+        "future_skill_title": "Global employer outlook to 2030 (WEF forecast)",
+        "future_skill_note": "Forecast · global scope · separate from Malaysia observations",
+        "future_skill_caveat": "The WEF directions describe employer expectations, not Malaysian demand or measured job counts. Only aligned or explicitly mapped taxonomy skills affect ranking; unmapped items are context only. Rising/declining signals use a fixed ±0.7 heuristic, not WEF percentages.",
+        "mapping_aligned": "Mapped to a catalogue skill",
+        "mapping_proxy": "Proxy mapping used in ranking",
+        "mapping_unmapped": "Context only · not scored",
+        "team_wef_note": "HR and curriculum trend summaries use mapped signals from a global employer forecast through 2030, not Malaysia-specific observations.",
         "radar_title": "Occupational demand radar",
         "radar_values": "Figures (official DOSM)",
-        "radar_footnote": "QoQ = change against 2025 Q1 as published in the DOSM release.",
+        "radar_footnote": "QoQ = change against {previous} as published in the DOSM release.",
         "col_occ": "Occupation group",
-        "radar_note": "{} (blue) compared with {} (grey) — official DOSM online-vacancy counts.",
-        "prev_quarter": "previous quarter: 2025 Q1",
-        "dosm_title": "Malaysia online job vacancies",
+        "radar_note": "{} (blue) compared with {} (grey) — official DOSM advertised job-offering counts.",
+        "prev_quarter": "previous quarter: 2026 Q1",
+        "dosm_title": "Malaysia advertised online job offerings",
         "dosm_source": "DOSM Job Market Insights",
         "dosm_total": "Total advertised online",
         "dosm_qoq": "QoQ",
         "dosm_q1_link": "previous quarter",
         "derived_from": "Skill directions derived from the official counts above",
-        "hover_basis": "Hover a card to see which official figure it comes from; the full mapping is in data/trends/latest.json.",
+        "hover_basis": "The full occupation-to-skill mapping is kept with each dated source snapshot in data/trends/.",
         "why_score": "This role needs {} skills; you already have {} ({}% coverage).",
         "tier_core": "core", "tier_important": "important", "tier_nice": "nice to have",
         "my_demand": "Malaysia demand",
@@ -231,12 +238,12 @@ STRINGS = {
         "disclose_body": (
             "**No language model runs at inference time.** Every score comes from a published rule "
             "(coverage, role focus, transferability, trend, gap cost) that you can read in `src/utils.py`.\n\n"
-            "**Data.** Demo profiles and the sample CV are synthetic — no real person's data is read or "
-            "stored. Trend numbers come from two published sources, transcribed by the team with the "
-            "release date and link shown on the radar: DOSM online-vacancy counts (2025 Q2) and the "
-            "Jobstreet / Randstad report on named skill demand. Mapping an occupation group to a skill "
-            "is our own step and every row states its basis. To add the next quarter, drop the JSON in "
-            "`data/trends/` and restart — nothing is scraped.\n\n"
+            "**Data.** Demo profiles and the sample CV are synthetic — no real person's data is read or stored. "
+            "The app separates three evidence layers: DOSM Malaysia online job offerings (2026 Q2), a "
+            "JobStreet / Randstad article naming skill areas (2025), and WEF global employer expectations "
+            "for 2025–2030. Occupation-to-skill links are our proxies; WEF directions are forecasts, not "
+            "Malaysian observations, and the fixed ±0.7 ranking weight is a prototype heuristic, not a "
+            "source statistic. Snapshots are transcribed manually; nothing is scraped.\n\n"
             "**Roles.** The catalogue is a curated subset modelled on O*NET / ESCO occupation skill lists; it is "
             "not an official extract, and it never invents a role that does not exist in the file.\n\n"
             "**Courses.** Pathway links are a *search direction* on the HRD Corp directory, not a verified "
@@ -277,7 +284,7 @@ STRINGS = {
         "hr_b3": "决定先培训什么、为什么",
         "hr_b4": "把培训计划对应到联合国 SDG",
         "hr_btn": "以 HR 身份开始 →",
-        "foot": "演示使用合成画像与模拟趋势权重 —— 不涉及真实简历，不存储任何个人数据。",
+        "foot": "演示使用合成画像与有来源的趋势信号 —— 不涉及真实简历，不存储任何个人数据。",
         "step1": "描述你自己", "step1s": "上传简历，或按分类勾选技能",
         "step2": "看趋势雷达", "step2s": "公开趋势信号，标注来源与日期",
         "step3": "获得匹配", "step3s": "岗位排序 + 可解释分数 + 缺口",
@@ -303,7 +310,7 @@ STRINGS = {
         "scenario": "AI 冲击情景",
         "moderate": "温和冲击",
         "fast": "快速冲击",
-        "ranked_note": "按可解释的加权分数排序。展开任一岗位可看到四个分量的拆解。",
+        "ranked_note": "按可解释的加权分数排序。展开任一岗位可看到五个分量的拆解。",
         "p4": "4 · 需要补齐的技能与学习路径",
         "gap": "**{}** 的缺口：{} 项必备技能中缺 {} 项。",
         "covered_all": "你已经覆盖该岗位的全部技能 —— 可以看看排名里的下一个岗位。",
@@ -450,19 +457,26 @@ STRINGS = {
         "col_direction": "趋势",
         "col_evidence": "报告中的依据",
         "proxy_caveat": "说明：该报告点名了需求领域，但没有公布到单项技能的百分比，因此这里不为任何单项技能标注数字。上方的职业招聘数是代理指标，不是技能需求的直接证明。",
+        "future_skill_title": "WEF 全球雇主展望至 2030 年（预测）",
+        "future_skill_note": "预测 · 全球范围 · 与马来西亚观测数据分开展示",
+        "future_skill_caveat": "WEF 方向表示雇主预期，不代表马来西亚需求或实测招聘数。只有明确映射到目录的技能会影响排名；未映射项仅作背景。上升/下降信号使用固定 ±0.7 启发权重，不是 WEF 百分比。",
+        "mapping_aligned": "已映射到目录技能",
+        "mapping_proxy": "代理映射 · 参与排名",
+        "mapping_unmapped": "仅作背景 · 不参与评分",
+        "team_wef_note": "HR 与课程趋势摘要使用全球雇主对 2030 年前的预测信号，不是马来西亚本地观测数据。",
         "radar_title": "职业需求雷达图",
         "radar_values": "具体数字（DOSM 官方）",
-        "radar_footnote": "环比 = 与 2025 年第一季度相比的变化（依 DOSM 发布口径）。",
+        "radar_footnote": "环比 = 与 {previous} 相比的变化（依 DOSM 发布口径）。",
         "col_occ": "职业大类",
-        "radar_note": "{}（蓝色）与 {}（灰色）对比 —— DOSM 官方在线招聘广告数。",
-        "prev_quarter": "上一季度：2025 Q1",
-        "dosm_title": "马来西亚在线招聘广告",
+        "radar_note": "{}（蓝色）与 {}（灰色）对比 —— DOSM 官方线上招聘广告岗位数。",
+        "prev_quarter": "上一季度：2026 Q1",
+        "dosm_title": "马来西亚线上招聘广告岗位数",
         "dosm_source": "DOSM 就业市场洞察",
         "dosm_total": "在线招聘广告总数",
         "dosm_qoq": "环比",
         "dosm_q1_link": "上一季度",
         "derived_from": "技能方向由上方官方数据推导",
-        "hover_basis": "鼠标悬停卡片可看到它对应哪项官方数据；完整映射见 data/trends/latest.json。",
+        "hover_basis": "职业大类到技能的完整映射随各期来源快照保存在 data/trends/。",
         "why_score": "这个岗位要求 {} 项技能，你已具备 {} 项（覆盖 {}﻿%）。",
         "tier_core": "核心", "tier_important": "重要", "tier_nice": "加分",
         "my_demand": "马来西亚需求",
@@ -473,13 +487,11 @@ STRINGS = {
         "disclose_body": (
             "**推理阶段没有使用任何大语言模型。** 每个分数都来自公开可读的规则"
             "（覆盖度、岗位聚焦度、可迁移性、趋势、缺口成本），代码在 `src/utils.py`。\n\n"
-            "**数据**：演示画像与示例简历均为合成数据，不读取或存储任何真实个人资料。趋势数字来自"
-            "两份公开来源，由团队人工转录，页面上标明发布日期与链接：DOSM 线上职位空缺数（2025 Q2），"
-            "以及 Jobstreet / Randstad 关于具名技能需求的报道。把「职业大类」映射到「技能」是我们自己"
-            "的一步，每一行都写明了依据。要加入下一个季度，把 JSON 放进 `data/trends/` 并重启即可 —— "
-            "没有抓取任何数据。\n\n"
-            "**岗位**：目录是参照 O*NET / ESCO 职业技能清单整理的子集，不是官方导出；"
-            "系统不会凭空生成目录里不存在的岗位。\n\n"
+            "**数据**：演示画像与示例简历均为合成数据，不读取或存储任何真实个人资料。应用分开展示三层证据："
+            "DOSM 马来西亚线上招聘广告岗位数（2026 Q2）、点名技能领域的 JobStreet / Randstad 报道（2025），"
+            "以及 WEF 对 2025–2030 年全球雇主预期的预测。职业到技能的关联是我们设置的代理映射；WEF 方向"
+            "不是马来西亚观测值，固定 ±0.7 权重也是原型启发值，并非来源统计。来源快照由团队人工转录，不进行抓取。\n\n"
+            "**岗位**：目录是参照 O*NET / ESCO 职业技能清单整理的子集，不是官方导出；系统不会凭空生成目录里不存在的岗位。\n\n"
             "**课程**：路径里的链接只是 HRD Corp 目录的「搜索方向」，不是已核实的课程、价格或时长。\n\n"
             "**人的决策**：本工具辅助职业决策，不给人打招聘分，也不做招聘决定。\n\n"
             "**估计值**：分数与周数都是原型估算，不是就业预测。"
@@ -516,7 +528,7 @@ STRINGS = {
         "hr_b3": "Tentukan apa yang perlu dilatih dahulu",
         "hr_b4": "Petakan pelan kepada SDG",
         "hr_btn": "Mula sebagai HR →",
-        "foot": "Demo menggunakan profil sintetik dan pemberat trend simulasi — tiada CV sebenar, tiada data peribadi disimpan.",
+        "foot": "Demo menggunakan profil sintetik dan isyarat trend bersumber — tiada CV sebenar, tiada data peribadi disimpan.",
         "step1": "Ceritakan tentang anda", "step1s": "Muat naik CV atau tanda kemahiran mengikut kategori",
         "step2": "Lihat radar", "step2s": "isyarat trend awam bertarikh, sumber dipaparkan",
         "step3": "Dapatkan padanan", "step3s": "peranan dengan skor dan jurang yang jelas",
@@ -542,7 +554,7 @@ STRINGS = {
         "scenario": "Senario gangguan AI",
         "moderate": "Gangguan sederhana",
         "fast": "Gangguan pantas",
-        "ranked_note": "Disusun mengikut skor berwajaran yang boleh dijelaskan. Buka peranan untuk lihat empat komponen.",
+        "ranked_note": "Disusun mengikut skor berwajaran yang boleh dijelaskan. Buka peranan untuk lihat lima komponen.",
         "p4": "4 · Kemahiran untuk ditutup dan laluan anda",
         "gap": "Jurang untuk **{}**: {} daripada {} kemahiran diperlukan masih kurang.",
         "covered_all": "Anda sudah meliputi semua kemahiran untuk peranan ini — lihat pilihan seterusnya.",
@@ -589,19 +601,26 @@ STRINGS = {
         "col_direction": "Arah",
         "col_evidence": "Bukti dalam sumber",
         "proxy_caveat": "Nota: laporan menamakan bidang permintaan tetapi tidak menerbitkan peratusan bagi setiap kemahiran, jadi tiada angka dilampirkan pada kemahiran tertentu. Kiraan pekerjaan di atas ialah proksi, bukan bukti, permintaan kemahiran.",
+        "future_skill_title": "Unjuran majikan global WEF hingga 2030",
+        "future_skill_note": "Unjuran · skop global · dipisahkan daripada pemerhatian Malaysia",
+        "future_skill_caveat": "Arah WEF ialah jangkaan majikan, bukan permintaan Malaysia atau kiraan kerja terukur. Hanya kemahiran yang dipadankan dengan jelas mempengaruhi kedudukan; item tanpa padanan hanya konteks. Isyarat meningkat/menurun menggunakan heuristik tetap ±0.7, bukan peratusan WEF.",
+        "mapping_aligned": "Dipadankan dengan kemahiran katalog",
+        "mapping_proxy": "Pemetaan proksi · mempengaruhi kedudukan",
+        "mapping_unmapped": "Konteks sahaja · tidak diskor",
+        "team_wef_note": "Ringkasan trend HR dan kurikulum menggunakan isyarat unjuran majikan global hingga 2030, bukan pemerhatian khusus Malaysia.",
         "radar_title": "Radar permintaan pekerjaan",
         "radar_values": "Angka rasmi DOSM",
-        "radar_footnote": "QoQ = perubahan berbanding 2025 Q1 seperti diterbitkan DOSM.",
+        "radar_footnote": "QoQ = perubahan berbanding {previous} seperti diterbitkan DOSM.",
         "col_occ": "Kumpulan pekerjaan",
-        "radar_note": "{} (biru) berbanding {} (kelabu) — kiraan iklan rasmi DOSM.",
-        "prev_quarter": "suku sebelumnya: 2025 Q1",
-        "dosm_title": "Iklan kekosongan jawatan dalam talian Malaysia",
+        "radar_note": "{} (biru) berbanding {} (kelabu) — kiraan tawaran kerja dalam talian rasmi DOSM.",
+        "prev_quarter": "suku sebelumnya: 2026 Q1",
+        "dosm_title": "Iklan tawaran kerja dalam talian Malaysia",
         "dosm_source": "DOSM Job Market Insights",
         "dosm_total": "Jumlah iklan dalam talian",
         "dosm_qoq": "QoQ",
         "dosm_q1_link": "suku sebelumnya",
         "derived_from": "Arah kemahiran diterbitkan daripada kiraan rasmi di atas",
-        "hover_basis": "Tuding kad untuk lihat angka rasmi sumbernya; pemetaan penuh dalam data/trends/latest.json.",
+        "hover_basis": "Pemetaan penuh kumpulan pekerjaan kepada kemahiran disimpan bersama setiap snapshot bertarikh dalam data/trends/.",
         "why_score": "Peranan ini memerlukan {} kemahiran; anda sudah ada {} ({}% liputan).",
         "tier_core": "teras", "tier_important": "penting", "tier_nice": "nilai tambah",
         "my_demand": "Permintaan Malaysia",
@@ -613,11 +632,11 @@ STRINGS = {
             "**Tiada model bahasa dijalankan semasa inferens.** Setiap skor datang daripada peraturan terbuka "
             "(liputan, fokus peranan, kebolehpindahan, trend, kos jurang) dalam `src/utils.py`.\n\n"
             "**Data.** Profil demo dan CV contoh adalah sintetik — tiada data peribadi dibaca atau disimpan. "
-            "Angka trend datang daripada dua sumber terbitan, ditranskripsi oleh pasukan dengan tarikh "
-            "keluaran dan pautan dipaparkan: kiraan kekosongan dalam talian DOSM (2025 Q2) dan laporan "
-            "Jobstreet / Randstad tentang permintaan kemahiran bernama. Pemetaan kumpulan pekerjaan kepada "
-            "kemahiran ialah langkah kami sendiri dan setiap baris menyatakan asasnya. Untuk menambah suku "
-            "berikutnya, letak JSON dalam `data/trends/` dan mulakan semula — tiada data digores.\n\n"
+            "Aplikasi memisahkan tiga lapisan bukti: tawaran kerja dalam talian DOSM Malaysia (2026 Q2), "
+            "artikel JobStreet / Randstad yang menamakan bidang kemahiran (2025), dan jangkaan majikan global "
+            "WEF untuk 2025–2030. Pemetaan pekerjaan kepada kemahiran ialah proksi kami; arah WEF ialah unjuran, "
+            "bukan pemerhatian Malaysia, dan pemberat tetap ±0.7 ialah heuristik prototaip, bukan statistik sumber. "
+            "Snapshot sumber ditranskripsi secara manual; tiada data digores.\n\n"
             "**Peranan.** Katalog ialah subset berdasarkan senarai O*NET / ESCO, bukan ekstrak rasmi, dan tidak "
             "mencipta peranan yang tiada dalam fail.\n\n"
             "**Kursus.** Pautan laluan ialah arah carian pada direktori HRD Corp, bukan kursus/harga/tempoh disahkan.\n\n"

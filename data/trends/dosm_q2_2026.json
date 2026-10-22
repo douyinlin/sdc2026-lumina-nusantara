@@ -1,0 +1,80 @@
+{
+  "source": "DOSM Big Data Analytics: Job Market Insights, Second Quarter of 2026",
+  "publisher": "Department of Statistics Malaysia (DOSM)",
+  "source_url": "https://www.dosm.gov.my/portal-main/release-content/big-data-analytics-job-market-insights-q22026",
+  "previous_url": "https://www.dosm.gov.my/portal-main/release-content/big-data-analytics-job-market-insights-q12026",
+  "dataset": "Online job offerings advertised through major private recruitment platforms",
+  "is_simulated": false,
+  "manually_entered": true,
+  "extraction_note": "Counts transcribed from DOSM Q1 and Q2 2026 releases on 2026-10-22. Quarter-on-quarter percentages are calculated from the two published counts. These are advertised job offerings, not all vacancies in Malaysia and not skill-level counts.",
+  "latest_period": "2026 Q2",
+  "latest_released": "2026-08-18",
+  "previous_period": "2026 Q1",
+  "previous_released": "2026-06-25",
+  "retrieved_at": "2026-10-22",
+  "total": {
+    "offers": 555509,
+    "offers_prev": 626861,
+    "qoq_pct": -11.4
+  },
+  "occupations": [
+    {
+      "group": "Professionals",
+      "offers": 285907,
+      "offers_prev": 315768,
+      "group_zh": "专业人员",
+      "group_ms": "Profesional"
+    },
+    {
+      "group": "Managers",
+      "offers": 87950,
+      "offers_prev": 99447,
+      "group_zh": "管理人员",
+      "group_ms": "Pengurus"
+    },
+    {
+      "group": "Technicians and Associate Professionals",
+      "offers": 86512,
+      "offers_prev": 93987,
+      "group_zh": "技术人员与辅助专业人员",
+      "group_ms": "Juruteknik dan Profesional Bersekutu"
+    },
+    {
+      "group": "Advertising and Marketing Professionals",
+      "offers": 40640,
+      "offers_prev": 48186,
+      "group_zh": "广告与市场专业人员",
+      "group_ms": "Profesional Pengiklanan dan Pemasaran"
+    },
+    {
+      "group": "Managing Directors and Chief Executives",
+      "offers": 26649,
+      "offers_prev": 26869,
+      "group_zh": "董事总经理与首席执行官",
+      "group_ms": "Pengarah Urusan dan Ketua Eksekutif"
+    },
+    {
+      "group": "Administrative Associate Professionals",
+      "offers": 23984,
+      "offers_prev": 26257,
+      "group_zh": "行政辅助专业人员",
+      "group_ms": "Profesional Bersekutu Pentadbiran"
+    },
+    {
+      "group": "Accountants and Auditors",
+      "offers": 22067,
+      "offers_prev": 24784,
+      "group_zh": "会计与审计人员",
+      "group_ms": "Akauntan dan Juruaudit"
+    },
+    {
+      "group": "Software Developers",
+      "offers": 19899,
+      "offers_prev": 20089,
+      "group_zh": "软件开发人员",
+      "group_ms": "Pembangun Perisian"
+    }
+  ],
+  "source_zh": "马来西亚统计局（DOSM）《就业市场洞察》2026 年第二季度",
+  "source_ms": "DOSM — Job Market Insights, Suku Kedua 2026"
+}
