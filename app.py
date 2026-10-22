@@ -613,10 +613,6 @@ LANDING_CSS = """
 .sr-step em { font-style:normal; font-size:17px; }
 
 .sr-foot { text-align: center; color: #7a836a; font-size: 12.5px; margin-top: 16px; }
-/* the embedded hero is inset by the page container; round it so it reads
-   as a deliberate card rather than a leaking rectangle */
-iframe[data-testid="stIFrame"] { border-radius: 22px; overflow: hidden;
-  box-shadow: 0 24px 60px rgba(41,35,56,.20); }
 .sr-pulse { display:inline-block; width:8px; height:8px; border-radius:50%;
             background:#8A9A5B; margin-right:7px; animation: sr-glow 1.8s ease-in-out infinite; }
 </style>
@@ -628,7 +624,133 @@ ORBS_HTML = """<div class="sr-orb sr-o1"></div>
 <div class="sr-orb sr-o4"></div>
 """
 
+# --------------------------------------------------------------------------- #
+# Landing particle band — Three.js, recoloured to the app palette.
+# The original template was a purple full-screen hero with 26k points; this is
+# a 230px band above the three entry cards, 12k points, transparent background,
+# normal (not additive) blending so the dust stays visible on cream paper.
+# Fails silently: no WebGL, no CDN, or reduced-motion → a still frame or nothing.
+# --------------------------------------------------------------------------- #
 
+HERO_PARTICLES_HTML = """
+<!doctype html><html><head><meta charset="utf-8">
+<style>
+  html,body{margin:0;height:100%;background:transparent;overflow:hidden}
+  canvas{display:block;width:100%;height:100%}
+</style></head><body>
+<canvas id="sr-particles"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script>
+(function () {
+  var canvas = document.getElementById("sr-particles");
+  if (!window.THREE || !canvas) { canvas.style.display = "none"; return; }
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  var renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({canvas: canvas, alpha: true, antialias: false});
+  } catch (e) { canvas.style.display = "none"; return; }
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+  renderer.setClearColor(0x000000, 0);
+
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(48, 1, 0.1, 100);
+  camera.position.z = 7.4;
+
+  // sage, olive, pale lime, one muted blue accent, and cream for highlights
+  var PALETTE = [0x6f8140, 0x8a9a5b, 0xa8b878, 0x5b7fa6, 0xefe7cf];
+  var colors = PALETTE.map(function (hex) { return new THREE.Color(hex); });
+
+  function pick() { return colors[Math.floor(Math.random() * colors.length)]; }
+
+  // a slowly turning ring of dust — the shape the template used, fewer points
+  function makeCloud(count, majorRadius, tubeRadius, size, opacity) {
+    var positions = new Float32Array(count * 3);
+    var vertexColors = new Float32Array(count * 3);
+    for (var i = 0; i < count; i++) {
+      var u = Math.random() * Math.PI * 2;
+      var v = Math.random() * Math.PI * 2;
+      var jitter = (Math.random() - 0.5) * 0.30;
+      var r = majorRadius + Math.cos(v) * tubeRadius + jitter;
+      positions[i * 3] = Math.cos(u) * r;
+      positions[i * 3 + 1] = Math.sin(u) * r * 0.80 + Math.sin(v * 2 + u) * 0.10;
+      positions[i * 3 + 2] = Math.sin(v) * tubeRadius + Math.sin(u * 3) * 0.12;
+      var c = pick();
+      vertexColors.set([c.r, c.g, c.b], i * 3);
+    }
+    var geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute("color", new THREE.BufferAttribute(vertexColors, 3));
+    return new THREE.Points(geometry, new THREE.PointsMaterial({
+      size: size, vertexColors: true, transparent: true, opacity: opacity,
+      depthWrite: false, sizeAttenuation: true
+    }));
+  }
+
+  var group = new THREE.Group();
+  group.add(makeCloud(5200, 1.30, 0.55, 0.044, 0.62));
+  group.add(makeCloud(1800, 1.15, 0.78, 0.030, 0.38));
+  group.scale.set(1.30, 1.30, 1.30);
+  group.rotation.x = 0.46;
+  scene.add(group);
+
+  // loose dust around it, so the band does not look like a floating donut
+  var dustCount = 600;
+  var dustPos = new Float32Array(dustCount * 3);
+  var dustCol = new Float32Array(dustCount * 3);
+  for (var d = 0; d < dustCount; d++) {
+    dustPos[d * 3] = (Math.random() - 0.5) * 11;
+    dustPos[d * 3 + 1] = (Math.random() - 0.5) * 3.4;
+    dustPos[d * 3 + 2] = (Math.random() - 0.5) * 3 - 1;
+    var dc = pick();
+    dustCol.set([dc.r, dc.g, dc.b], d * 3);
+  }
+  var dustGeo = new THREE.BufferGeometry();
+  dustGeo.setAttribute("position", new THREE.BufferAttribute(dustPos, 3));
+  dustGeo.setAttribute("color", new THREE.BufferAttribute(dustCol, 3));
+  var dust = new THREE.Points(dustGeo, new THREE.PointsMaterial({
+    size: 0.026, vertexColors: true, transparent: true, opacity: 0.34, depthWrite: false
+  }));
+  scene.add(dust);
+
+  function resize() {
+    var box = canvas.getBoundingClientRect();
+    var w = Math.max(1, box.width), h = Math.max(1, box.height);
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.position.z = w < 700 ? 9.6 : 7.4;
+    camera.updateProjectionMatrix();
+  }
+  window.addEventListener("resize", resize);
+  resize();
+
+  var clock = new THREE.Clock();
+  var visible = true;
+  document.addEventListener("visibilitychange", function () {
+    visible = !document.hidden;
+  });
+
+  function frame() {
+    requestAnimationFrame(frame);
+    if (document.hidden) { return; }
+    var t = clock.getElapsedTime();
+    if (!reduce) {
+      group.rotation.y = t * 0.10;
+      group.rotation.x = 0.42 + Math.sin(t * 0.30) * 0.10;
+      group.position.y = Math.sin(t * 0.55) * 0.07;
+      dust.rotation.y = -t * 0.012;
+    }
+    renderer.render(scene, camera);
+  }
+  frame();
+})();
+</script></body></html>
+"""
+
+
+def landing_particles() -> None:
+    """Render the particle band; stays out of the way if WebGL is unavailable."""
+    components.html(HERO_PARTICLES_HTML, height=104, scrolling=False)
 
 
 # Shared look for every screen after the landing: same palette, calmer motion.
@@ -1234,23 +1356,6 @@ def role_card(t: dict, result: dict, expanded: bool = False, lang: str = "en") -
 
 
 # --------------------------------------------------------------------------- #
-# Landing hero — the supplied particle template, kept as a standalone file so it
-# can be diffed against the original and reloaded without a restart.
-# --------------------------------------------------------------------------- #
-
-HERO_FILE = DATA / "hero" / "particle_hero.html"
-
-
-def landing_source_hero() -> None:
-    """Embed the particle hero; Streamlit gives the iframe a fixed height."""
-    try:
-        html = HERO_FILE.read_text(encoding="utf-8")
-    except Exception:
-        return
-    components.html(html, height=700, scrolling=False)
-
-
-# --------------------------------------------------------------------------- #
 # Screen: landing (three entry points)
 # --------------------------------------------------------------------------- #
 
@@ -1264,17 +1369,18 @@ def screen_landing() -> None:
 
     t = T(st.session_state.get("lang", "en"))
 
-    landing_source_hero()
     st.markdown(
         f"""
-        <div class="sr-hero" style="padding:8px 0 2px">
+        <div class="sr-hero">
           <div class="sr-badge">{t['eyebrow']}</div>
-          <div class="sr-h1" style="font-size:34px;line-height:1.15">{t['h1']}</div>
-          <div class="sr-sub" style="font-size:13px;margin-top:2px">{t['hero_note']}</div>
+          <div class="sr-h1">{t['h1']}</div>
+          <div class="sr-sub">{t['hero_sub']}<br>
+            <span style="font-size:13px;color:#7a836a">{t['hero_note']}</span></div>
         </div>
         """,
         unsafe_allow_html=True,
     )
+    landing_particles()
 
     c1, c2, c3 = st.columns(3, gap="medium")
     with c1:
