@@ -1,0 +1,186 @@
+"""Copy for the trend-driven decision layer.
+
+Kept in one file so EN / 中文 / MS sit side by side and parity can be checked at a
+glance. ``i18n`` merges these keys into ``STRINGS`` at import time.
+"""
+
+EXTRA = {
+    "en": {
+        "src_label": "Which evidence drives the ranking?",
+        "src_dosm": "DOSM vacancy counts · 2025 Q2",
+        "src_jobstreet": "Named skill demand · 2025",
+        "src_badge_obs": "OBSERVED DATA",
+        "src_badge_scenario": "SCENARIO ESTIMATE",
+        "src_note_dosm": (
+            "Observed: DOSM publishes the online-vacancy counts. Turning each occupational group "
+            "into a skill direction is our own mapping, and every row states its basis."
+        ),
+        "src_note_jobstreet": (
+            "Observed but directional: the cited article names the skill areas and publishes no "
+            "per-skill percentages, so each signal is a fixed ±0.7 rather than a number we cannot source."
+        ),
+        "robust_title": "Does the recommendation survive a change of evidence source?",
+        "robust_dosm": "Rank · DOSM",
+        "robust_named": "Rank · named skills",
+        "robust_score_dosm": "Score · DOSM",
+        "robust_score_named": "Score · named",
+        "robust_delta": "Δ score",
+        "robust_shift": "Shift",
+        "robust_verdict": "Verdict",
+        "robust_hold": "holds under both",
+        "robust_sensitive": "source-sensitive",
+        "robust_note": (
+            "Two independent sources: one derived from DOSM vacancy counts, one from named skill "
+            "demand. A role inside the top five under both is less likely to be an artefact of one source."
+        ),
+        "why_title": "Why this role — not just how well it matches",
+        "why_transfer": "Carries over",
+        "why_transfer_item": "{a} → {b}: {pct}% transfers",
+        "why_gap": "Still missing",
+        "why_gap_body": "{n} of {total} requirements, {core} of them core · about {weeks} weeks at {hours} h/week",
+        "why_gap_none": "Nothing missing — this role is already fully covered.",
+        "why_trend": "What the evidence says",
+        "why_trend_item": "{skill}: {basis}",
+        "why_trend_none": "This source carries no signal for this role's skills, so the curated trend stands unchanged.",
+        "bridge_title": "If you learn one step at a time",
+        "path_evidence": "Order: cheapest to close first, then pulled forward by what “{src}” says is rising.",
+        "bridge_step": "After",
+        "bridge_weeks": "Weeks",
+        "bridge_best": "Best role",
+        "bridge_score": "Score",
+        "bridge_note": (
+            "Your own profile plus each pathway step, re-scored by the same weighted model. "
+            "An estimate, not a guarantee."
+        ),
+        "both_title": "Worth learning under both scenarios",
+        "both_note": (
+            "These sit in the gap of the top role whether disruption is moderate or fast, "
+            "so the effort pays off either way."
+        ),
+        "both_none": "The two scenarios ask for different things — this gap is scenario-dependent.",
+        "both_top": "Top role — moderate: {a} · fast: {b}",
+        "impact_gap": "Skills to close",
+        "impact_weeks": "Est. weeks",
+        "impact_roles": "Best match after the plan",
+        "impact_note": (
+            "Computed from your own profile and pathway. Product metrics, not claims about "
+            "how many people found jobs."
+        ),
+    },
+    "zh": {
+        "src_label": "哪个证据来源决定排名？",
+        "src_dosm": "DOSM 职位空缺数 · 2025 Q2",
+        "src_jobstreet": "具名技能需求 · 2025",
+        "src_badge_obs": "观测数据",
+        "src_badge_scenario": "情景估算",
+        "src_note_dosm": (
+            "观测数据：职位空缺数由 DOSM 发布。“职业大类 → 技能方向”的映射是我们自己做的，"
+            "每一行都写明了依据。"
+        ),
+        "src_note_jobstreet": (
+            "观测但只有方向：原文只点名技能领域，没有公布各技能百分比，所以每个信号用固定 ±0.7，"
+            "而不是编一个查不到的数字。"
+        ),
+        "robust_title": "换一个证据来源，推荐还站得住吗？",
+        "robust_dosm": "排名 · DOSM",
+        "robust_named": "排名 · 具名技能",
+        "robust_score_dosm": "分数 · DOSM",
+        "robust_score_named": "分数 · 具名技能",
+        "robust_delta": "分差",
+        "robust_shift": "变化",
+        "robust_verdict": "判断",
+        "robust_hold": "两个来源都成立",
+        "robust_sensitive": "依赖单一来源",
+        "robust_note": (
+            "两个独立来源：一个由 DOSM 空缺数推导，一个来自具名技能需求。"
+            "两种来源都进前五的岗位，更不可能是单一来源的产物。"
+        ),
+        "why_title": "为什么是这个岗位，而不只是分数多少",
+        "why_transfer": "你已经有的，能迁移过去",
+        "why_transfer_item": "{a} → {b}：可迁移 {pct}%",
+        "why_gap": "仍然缺什么",
+        "why_gap_body": "{total} 项要求里缺 {n} 项，其中 {core} 项是核心 · 每周 {hours} 小时约需 {weeks} 周",
+        "why_gap_none": "没有缺口——这个岗位的要求你已经全部覆盖。",
+        "why_trend": "证据怎么说",
+        "why_trend_item": "{skill}：{basis}",
+        "why_trend_none": "这个来源对岗位所需技能没有信号，因此保留人工设定的趋势值不变。",
+        "bridge_title": "一步一步学下去，排名会这样移动",
+        "path_evidence": "排序：先补最容易的，再按「{src}」指向的上升技能前移。",
+        "bridge_step": "学完第",
+        "bridge_weeks": "周数",
+        "bridge_best": "最高分岗位",
+        "bridge_score": "分数",
+        "bridge_note": "用你自己的技能加上路径的每一步，重新跑同一套加权模型。是估算，不是保证。",
+        "both_title": "两种情景下都值得学",
+        "both_note": "不管冲击是温和还是快速，这些技能都出现在首选岗位的缺口里，投入不会白费。",
+        "both_none": "两种情景要的东西不一样——这个缺口对情景敏感。",
+        "both_top": "首选岗位——温和：{a} · 快速：{b}",
+        "impact_gap": "待补技能",
+        "impact_weeks": "预计周数",
+        "impact_roles": "学完后的最高匹配分",
+        "impact_note": "由你自己的技能档案和学习路径算出。这是产品指标，不是“帮多少人转职”的效果宣称。",
+    },
+    "ms": {
+        "src_label": "Sumber bukti mana yang menentukan susunan?",
+        "src_dosm": "Kiraan kekosongan DOSM · 2025 Q2",
+        "src_jobstreet": "Permintaan kemahiran bernama · 2025",
+        "src_badge_obs": "DATA DIPERHATIKAN",
+        "src_badge_scenario": "ANGGARAN SENARIO",
+        "src_note_dosm": (
+            "Data diperhatikan: DOSM menerbitkan kiraan kekosongan. Pemetaan 'kumpulan pekerjaan → "
+            "arah kemahiran' ialah pemetaan kami sendiri, dan setiap baris menyatakan asasnya."
+        ),
+        "src_note_jobstreet": (
+            "Diperhatikan tetapi hanya arah: artikel menyebut bidang kemahiran tanpa peratusan setiap "
+            "kemahiran, jadi setiap isyarat ialah ±0.7 tetap, bukan angka yang tiada sumber."
+        ),
+        "robust_title": "Adakah cadangan ini bertahan bila sumber bukti bertukar?",
+        "robust_dosm": "Kedudukan · DOSM",
+        "robust_named": "Kedudukan · kemahiran bernama",
+        "robust_score_dosm": "Skor · DOSM",
+        "robust_score_named": "Skor · bernama",
+        "robust_delta": "Δ skor",
+        "robust_shift": "Perubahan",
+        "robust_verdict": "Penilaian",
+        "robust_hold": "kukuh pada kedua-dua sumber",
+        "robust_sensitive": "bergantung pada sumber",
+        "robust_note": (
+            "Dua sumber bebas: satu diterbitkan daripada kiraan kekosongan DOSM, satu daripada "
+            "permintaan kemahiran bernama. Peranan dalam lima teratas pada kedua-duanya kurang "
+            "berkemungkinan menjadi artifak satu sumber."
+        ),
+        "why_title": "Mengapa peranan ini, bukan sekadar berapa padanannya",
+        "why_transfer": "Yang anda sudah ada boleh dipindahkan",
+        "why_transfer_item": "{a} → {b}: {pct}% boleh dipindahkan",
+        "why_gap": "Apa yang masih kurang",
+        "why_gap_body": "{n} daripada {total} keperluan masih kurang, {core} daripadanya teras · kira-kira {weeks} minggu pada {hours} jam/minggu",
+        "why_gap_none": "Tiada jurang — keperluan peranan ini sudah diliputi sepenuhnya.",
+        "why_trend": "Apa kata bukti",
+        "why_trend_item": "{skill}: {basis}",
+        "why_trend_none": "Sumber ini tiada isyarat untuk kemahiran peranan ini, jadi trend terpilih dikekalkan.",
+        "bridge_title": "Jika anda belajar langkah demi langkah",
+        "path_evidence": "Susunan: yang paling murah ditutup dahulu, kemudian ditarik ke hadapan oleh apa yang “{src}” kata sedang naik.",
+        "bridge_step": "Selepas",
+        "bridge_weeks": "Minggu",
+        "bridge_best": "Peranan terbaik",
+        "bridge_score": "Skor",
+        "bridge_note": (
+            "Profil anda sendiri ditambah setiap langkah laluan, diskor semula oleh model berwajaran "
+            "yang sama. Anggaran, bukan jaminan."
+        ),
+        "both_title": "Berbaloi dipelajari dalam kedua-dua senario",
+        "both_note": (
+            "Kemahiran ini ada dalam jurang peranan teratas sama ada gangguan sederhana atau pantas, "
+            "jadi usaha tidak sia-sia."
+        ),
+        "both_none": "Kedua-dua senario meminta perkara berbeza — anggap jurang ini sensitif kepada senario.",
+        "both_top": "Peranan teratas — sederhana: {a} · pantas: {b}",
+        "impact_gap": "Kemahiran untuk ditutup",
+        "impact_weeks": "Anggaran minggu",
+        "impact_roles": "Padanan terbaik selepas pelan",
+        "impact_note": (
+            "Dikira daripada profil anda sendiri dan laluan pembelajaran. Ini metrik produk, "
+            "bukan dakwaan berapa orang mendapat kerja."
+        ),
+    },
+}

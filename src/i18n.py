@@ -231,8 +231,12 @@ STRINGS = {
         "disclose_body": (
             "**No language model runs at inference time.** Every score comes from a published rule "
             "(coverage, role focus, transferability, trend, gap cost) that you can read in `src/utils.py`.\n\n"
-            "**Data.** Demo profiles and the sample CV are synthetic. Trend weights are hand-set by the team "
-            "and labelled *simulated* — nothing is scraped, and no real person's data is read or stored.\n\n"
+            "**Data.** Demo profiles and the sample CV are synthetic — no real person's data is read or "
+            "stored. Trend numbers come from two published sources, transcribed by the team with the "
+            "release date and link shown on the radar: DOSM online-vacancy counts (2025 Q2) and the "
+            "Jobstreet / Randstad report on named skill demand. Mapping an occupation group to a skill "
+            "is our own step and every row states its basis. To add the next quarter, drop the JSON in "
+            "`data/trends/` and restart — nothing is scraped.\n\n"
             "**Roles.** The catalogue is a curated subset modelled on O*NET / ESCO occupation skill lists; it is "
             "not an official extract, and it never invents a role that does not exist in the file.\n\n"
             "**Courses.** Pathway links are a *search direction* on the HRD Corp directory, not a verified "
@@ -469,8 +473,11 @@ STRINGS = {
         "disclose_body": (
             "**推理阶段没有使用任何大语言模型。** 每个分数都来自公开可读的规则"
             "（覆盖度、岗位聚焦度、可迁移性、趋势、缺口成本），代码在 `src/utils.py`。\n\n"
-            "**数据**：演示画像与示例简历均为合成数据。趋势权重由团队人工设定并明确标注为"
-            "「模拟数据」—— 没有抓取任何数据，也不读取或存储任何真实个人资料。\n\n"
+            "**数据**：演示画像与示例简历均为合成数据，不读取或存储任何真实个人资料。趋势数字来自"
+            "两份公开来源，由团队人工转录，页面上标明发布日期与链接：DOSM 线上职位空缺数（2025 Q2），"
+            "以及 Jobstreet / Randstad 关于具名技能需求的报道。把「职业大类」映射到「技能」是我们自己"
+            "的一步，每一行都写明了依据。要加入下一个季度，把 JSON 放进 `data/trends/` 并重启即可 —— "
+            "没有抓取任何数据。\n\n"
             "**岗位**：目录是参照 O*NET / ESCO 职业技能清单整理的子集，不是官方导出；"
             "系统不会凭空生成目录里不存在的岗位。\n\n"
             "**课程**：路径里的链接只是 HRD Corp 目录的「搜索方向」，不是已核实的课程、价格或时长。\n\n"
@@ -605,8 +612,12 @@ STRINGS = {
         "disclose_body": (
             "**Tiada model bahasa dijalankan semasa inferens.** Setiap skor datang daripada peraturan terbuka "
             "(liputan, fokus peranan, kebolehpindahan, trend, kos jurang) dalam `src/utils.py`.\n\n"
-            "**Data.** Profil demo dan CV contoh adalah sintetik. Pemberat trend ditetapkan oleh pasukan dan "
-            "dilabel *simulasi* — tiada data digores, tiada data peribadi dibaca atau disimpan.\n\n"
+            "**Data.** Profil demo dan CV contoh adalah sintetik — tiada data peribadi dibaca atau disimpan. "
+            "Angka trend datang daripada dua sumber terbitan, ditranskripsi oleh pasukan dengan tarikh "
+            "keluaran dan pautan dipaparkan: kiraan kekosongan dalam talian DOSM (2025 Q2) dan laporan "
+            "Jobstreet / Randstad tentang permintaan kemahiran bernama. Pemetaan kumpulan pekerjaan kepada "
+            "kemahiran ialah langkah kami sendiri dan setiap baris menyatakan asasnya. Untuk menambah suku "
+            "berikutnya, letak JSON dalam `data/trends/` dan mulakan semula — tiada data digores.\n\n"
             "**Peranan.** Katalog ialah subset berdasarkan senarai O*NET / ESCO, bukan ekstrak rasmi, dan tidak "
             "mencipta peranan yang tiada dalam fail.\n\n"
             "**Kursus.** Pautan laluan ialah arah carian pada direktori HRD Corp, bukan kursus/harga/tempoh disahkan.\n\n"
@@ -708,6 +719,16 @@ STRINGS = {
         "cc_foot": "Data demo sintetik sahaja — tiada rekod pelajar dikumpul atau disimpan.",
     },
 }
+
+
+try:  # pragma: no cover - trivial import guard
+    from decision_copy import EXTRA as _EXTRA
+except ImportError:  # package-relative import when `src` is a package
+    from .decision_copy import EXTRA as _EXTRA
+
+for _lang, _extra in _EXTRA.items():
+    STRINGS.setdefault(_lang, {}).update(_extra)
+del _EXTRA
 
 
 def T(lang: str) -> dict:

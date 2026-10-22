@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "src"))
 
-from utils import Role, pathway, rank, sdg_summary  # noqa: E402
+from utils import GAP_COST, TRANSFERABILITY, Role, pathway, rank, sdg_summary  # noqa: E402
 from i18n import STRINGS, T, cat, role_label, skill_label  # noqa: E402
 from labels import field_label, group_label, skill_option_label  # noqa: E402
 from presentation import CSS_PATH, brand, copy_for, flow_header, learning_path, score_panel, skill_chips  # noqa: E402
@@ -251,13 +251,62 @@ def _signal_strength(sig: dict) -> float:
     return max(-1.0, min(1.0, float(pct) / 50.0))
 
 
+#: Named-skill signals carry a direction but no published percentage, so each one
+#: moves the trend by a fixed amount instead of an invented number.
+NAMED_SIGNAL_WEIGHT = 0.7
+
+
+def _named_skill_snapshot() -> dict:
+    """Layer 2 as a standalone signal source (direction only, no percentages)."""
+    path = DATA / "trends" / "jobstreet_skills_2025.json"
+    try:
+        d = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"kind": "jobstreet", "signals": [], "source": None}
+    signals = []
+    for s in d.get("skill_signals") or []:
+        weight = {"rising": NAMED_SIGNAL_WEIGHT, "declining": -NAMED_SIGNAL_WEIGHT}.get(s.get("direction"), 0.0)
+        signals.append({
+            "skill": s["skill"],
+            "direction": s.get("direction", "stable"),
+            "weight": weight,
+            "basis": s.get("evidence", ""),
+            "evidence_kind": s.get("evidence_kind", "named_skill"),
+        })
+    return {
+        "kind": "jobstreet",
+        "scenario": False,
+        "observed": True,
+        "is_simulated": False,
+        "signals": signals,
+        "source": d.get("source"),
+        "source_url": d.get("source_url"),
+        "retrieved_at": d.get("retrieved_at"),
+        "published": d.get("published"),
+    }
+
+
+def load_snapshot(kind: str = "dosm") -> dict:
+    """One ranked-evidence source, each with its own provenance on the page."""
+    if kind == "jobstreet":
+        return _named_skill_snapshot()
+    return load_trend()
+
+
 def apply_trend(roles: list[Role], trend: dict) -> list[Role]:
-    """Blend the curated role trend with the live skill signals."""
+    """Blend the curated role trend with the live skill signals.
+
+    A role the source says nothing about keeps its curated trend: silence is not
+    evidence that the trend halved.
+    """
     signals = trend.get("signals") or []
     out = []
     for role in roles:
         relevant = [_signal_strength(s) for s in signals if s["skill"] in (role.required_skills or [])]
-        delta = sum(relevant) / len(relevant) if relevant else 0.0
+        if not relevant:
+            out.append(Role(role.name, role.required_skills, role.trend, role.sdg, dict(role.tiers)))
+            continue
+        delta = sum(relevant) / len(relevant)
         blended = 0.5 * role.trend + 0.5 * delta
         out.append(
             Role(
@@ -1187,7 +1236,12 @@ def screen_js_intake() -> None:
                 for label in labels:
                     picked += LABEL_TO_KEYS[label]
     if st.button(t["use_skills"], use_container_width=True):
-        st.session_state["skills"] = picked
+        # Only overwrite when something was actually ticked: a CV upload already
+        # filled the profile, and an empty click must not wipe it.
+        if picked:
+            st.session_state["skills"] = picked
+        elif not st.session_state.get("skills"):
+            st.warning(t["not_detected"])
 
     current = st.session_state.get("skills") or []
     if current:
@@ -1212,6 +1266,57 @@ def screen_js_intake() -> None:
 # Screen: jobseeker results — persona aware
 # --------------------------------------------------------------------------- #
 
+def why_block(t: dict, lang: str, result: dict, role: Role | None, trend: dict,
+              skills: list[str], hours: int, scale: float) -> None:
+    """Three plain-language reasons for the top match: transfer, gap, evidence.
+
+    Reads existing model fields only — no new score, no new number invented here.
+    """
+    st.markdown(f"**{t['why_title']}**")
+    left, mid, right = st.columns(3)
+    missing = result["missing"]
+
+    with left:
+        pairs = []
+        for gap in missing:
+            best = max(((p, TRANSFERABILITY.get((p, gap), 0.0)) for p in skills),
+                       key=lambda kv: kv[1], default=(None, 0.0))
+            if best[0] and best[1] >= 0.4:
+                pairs.append((best[1], best[0], gap))
+        pairs.sort(reverse=True)
+        st.markdown(f"**{t['why_transfer']}**")
+        if pairs:
+            for score, have, gap in pairs[:3]:
+                st.caption(t["why_transfer_item"].format(
+                    a=skill_label(lang, have), b=skill_label(lang, gap), pct=round(score * 100)))
+        else:
+            st.caption(t["none"])
+
+    with mid:
+        st.markdown(f"**{t['why_gap']}**")
+        if missing:
+            core = sum(1 for s in missing if role and role.tier_of(s) == "core")
+            weeks = max(1, round(sum(max(1, round(GAP_COST.get(s, 0.7) * 6)) for s in missing) * scale))
+            st.caption(t["why_gap_body"].format(
+                n=len(missing), total=len(missing) + len(result["covered"]),
+                core=core, weeks=weeks, hours=hours))
+        else:
+            st.caption(t["why_gap_none"])
+
+    with right:
+        st.markdown(f"**{t['why_trend']}**")
+        wanted = set(role.required_skills) if role else set()
+        hits = [s for s in (trend.get("signals") or []) if s.get("skill") in wanted]
+        hits.sort(key=lambda s: -abs(_signal_strength(s)))
+        if hits:
+            for s in hits[:2]:
+                basis = (s.get("basis") or "").strip()
+                st.caption(t["why_trend_item"].format(
+                    skill=skill_label(lang, s["skill"]), basis=basis[:150]))
+        else:
+            st.caption(t["why_trend_none"])
+
+
 def screen_js_results() -> None:
     t = T(st.session_state.get("lang", "en"))
     screen_wrap()
@@ -1225,8 +1330,7 @@ def screen_js_results() -> None:
             go("js_intake")
         return
 
-    trend = load_trend()
-    all_roles = apply_trend(load_roles(), trend)
+    base_roles = load_roles()
     hours = st.session_state.get("hours", 8)
     scale = 8.0 / max(hours, 1)
 
@@ -1234,13 +1338,10 @@ def screen_js_results() -> None:
     field = st.session_state.get("field", "Business")
     raw_profile = st.session_state.get("skills") or skills
     # keep only skills the catalogue knows about (drop anything typed via an old key)
-    known = {sk for r in all_roles for sk in r.required_skills}
+    known = {sk for r in base_roles for sk in r.required_skills}
     skills = [sk for sk in raw_profile if sk in known] or raw_profile
-    same, adjacent = roles_for_field(all_roles, field)
-    pool = same if same else adjacent
-    if not pool:
-        pool = all_roles
-    roles = pool
+    same, adjacent = roles_for_field(base_roles, field)
+    pool_base = same if same else (adjacent or base_roles)
 
     st.subheader(t["p1"])
     st.markdown(
@@ -1260,9 +1361,31 @@ def screen_js_results() -> None:
 
     # Section 2 stays open: the official DOSM counts and the named-skill evidence are
     # the proof behind every recommendation, so they must be visible without a click.
-    st.caption(copy_for(st.session_state.get("lang", "en"))["market_note"])
+    lang_now = st.session_state.get("lang", "en")
+    st.caption(copy_for(lang_now)["market_note"])
     st.subheader(t["p2"])
-    trend_cards(t, trend, st.session_state.get('lang', 'en'))
+
+    # The ranking source is a user-visible choice, so "we track the market" is
+    # something the judge can switch and see, not a claim on a slide.
+    src = st.radio(
+        t["src_label"],
+        ["dosm", "jobstreet"],
+        horizontal=True,
+        key="trend_source",
+        format_func=lambda k: t["src_" + k],
+    )
+    trend = load_snapshot(src)
+    st.markdown(
+        "<style>.src-badge{display:inline-block;padding:2px 9px;border-radius:999px;"
+        "font-size:10.5px;font-weight:700;letter-spacing:.06em;vertical-align:middle;"
+        "background:#e4eed6;color:#3f5a1e}</style>"
+        f'<div style="margin:2px 0 6px"><span class="src-badge">{t["src_badge_obs"]}</span> '
+        f'<span style="font-size:11.5px;color:#7a836a">{trend.get("source") or ""}</span></div>',
+        unsafe_allow_html=True,
+    )
+    st.caption(t["src_note_" + src])
+    trend_cards(t, trend, lang_now)
+    roles = apply_trend(pool_base, trend)
 
     st.subheader(t["p3"])
     scenario = st.radio(
@@ -1271,6 +1394,31 @@ def screen_js_results() -> None:
     )
     results = rank(skills, roles, scenario=scenario)
 
+    # ---- does the recommendation survive a different evidence source? ----
+    # Same profile, same model, two independent datasets. A role that stays in
+    # the top five under both is not an artefact of one file.
+    def _under(kind: str) -> dict[str, tuple[int, float]]:
+        ranked = rank(skills, apply_trend(pool_base, load_snapshot(kind)), scenario=scenario)
+        return {r["role"]: (i + 1, r["score"]) for i, r in enumerate(ranked)}
+
+    _u_dosm, _u_named = _under("dosm"), _under("jobstreet")
+    with st.expander(t["robust_title"], expanded=True):
+        rows = []
+        for r in results[:5]:
+            (pa, sa) = _u_dosm.get(r["role"], (0, 0.0))
+            (pb, sb) = _u_named.get(r["role"], (0, 0.0))
+            rows.append({
+                t["col_role"]: role_label(lang_now, r["role"]),
+                t["robust_dosm"]: pa,
+                t["robust_named"]: pb,
+                t["robust_score_dosm"]: sa,
+                t["robust_score_named"]: sb,
+                t["robust_delta"]: round(sb - sa, 1),
+                t["robust_verdict"]: t["robust_hold"] if pa <= 5 and pb <= 5 else t["robust_sensitive"],
+            })
+        st.dataframe(rows, use_container_width=True, hide_index=True)
+        st.caption(t["robust_note"])
+
     # ---- uncertainty: show both scenarios side by side, ranked side by side ----
     _fast = rank(skills, roles, scenario="fast")
     _mod = results if scenario == "moderate" else rank(skills, roles, scenario="moderate")
@@ -1278,6 +1426,12 @@ def screen_js_results() -> None:
     _pos_fast = {r["role"]: i + 1 for i, r in enumerate(_fast)}
     _score_fast = {r["role"]: r["score"] for r in _fast}
     with st.expander(t["scenario"] + " · " + t["moderate"] + " / " + t["fast"], expanded=False):
+        st.markdown(
+            '<span style="display:inline-block;padding:2px 9px;border-radius:999px;font-size:10.5px;'
+            'font-weight:700;letter-spacing:.06em;background:#f7e6c8;color:#7a4d0a">'
+            f'{t["src_badge_scenario"]}</span>',
+            unsafe_allow_html=True,
+        )
         st.dataframe(
             [
                 {
@@ -1293,9 +1447,20 @@ def screen_js_results() -> None:
             hide_index=True,
         )
         st.caption(t["scen_note"])
+        st.caption(t["both_top"].format(
+            a=role_label(lang_now, _mod[0]["role"]), b=role_label(lang_now, _fast[0]["role"])))
+        gap_both = set(_mod[0]["missing"]) & set(_fast[0]["missing"])
+        st.markdown(f"**{t['both_title']}**")
+        if gap_both:
+            st.markdown(
+                skill_chips([skill_label(lang_now, x) for x in sorted(gap_both)]),
+                unsafe_allow_html=True,
+            )
+            st.caption(t["both_note"])
+        else:
+            st.caption(t["both_none"])
 
     # ---- neutral summary driven by weighted coverage, not by a gap count ----
-    lang_now = st.session_state.get("lang", "en")
     top1 = results[0]
     cover = top1["components"]["coverage"]
     missing_n = len(top1["missing"])
@@ -1322,6 +1487,7 @@ def screen_js_results() -> None:
     st.caption(copy_for(lang_now)["rank_note"])
     st.caption(t["role_source"])
     roles_by_name = {x.name: x for x in roles}
+    why_block(t, lang_now, top1, roles_by_name.get(top1["role"]), trend, skills, hours, scale)
     for i, r in enumerate(results[:4]):
         dom = ROLE_META.get(r["role"], {}).get("domain", "")
         badge = t["badge_same"] if dom == FIELD_DOMAIN.get(field) else t["badge_adjacent"]
@@ -1335,8 +1501,24 @@ def screen_js_results() -> None:
     courses = load_courses()
     if top["missing"]:
         total_required = len(top["covered"]) + len(top["missing"])
-        st.write(t["gap"].format(role_label(lang_now, top["role"]), len(top["missing"]), total_required))
         plan = pathway(top)
+        # Cheapest-first is the base order; the chosen evidence source then pulls the
+        # skills the market currently rewards towards the front of the queue.
+        _evidence = {s["skill"]: _signal_strength(s) for s in (trend.get("signals") or [])}
+        plan.sort(key=lambda p_: GAP_COST.get(p_["skill"], 0.7) - 0.35 * _evidence.get(p_["skill"], 0.0))
+        for _i, _p in enumerate(plan, 1):
+            _p["step"] = _i
+        # Product metrics, computed from this profile — never an outcome claim.
+        prof_full = skills + [p_["skill"] for p_ in plan]
+        after_score = rank(prof_full, roles, scenario=scenario)[0]["score"]
+        total_weeks = sum(max(1, round(p_["weeks"] * scale)) for p_ in plan)
+        m1, m2, m3 = st.columns(3)
+        m1.metric(t["impact_gap"], len(top["missing"]))
+        m2.metric(t["impact_weeks"], total_weeks)
+        m3.metric(t["impact_roles"], after_score,
+                  delta=round(after_score - top["score"], 1), delta_color="normal")
+        st.caption(t["impact_note"])
+        st.write(t["gap"].format(role_label(lang_now, top["role"]), len(top["missing"]), total_required))
         step_rows, course_rows = [], []
         for p_ in plan:
             weeks = max(1, round(p_["weeks"] * scale))
@@ -1361,6 +1543,23 @@ def screen_js_results() -> None:
             unsafe_allow_html=True,
         )
         st.caption(t["path_note"].format(hours))
+        st.caption(t["path_evidence"].format(src=t["src_" + src]))
+
+        # The pathway is a plan only if the ranking actually moves. Re-score the
+        # user's own profile after each step and show it.
+        st.markdown(f"**{t['bridge_title']}**")
+        bridge, prof = [], list(skills)
+        for p_ in plan:
+            prof = prof + [p_["skill"]]
+            best = rank(prof, roles, scenario=scenario)[0]
+            bridge.append({
+                t["bridge_step"]: f'{p_["step"]}. {skill_label(lang_now, p_["skill"])}',
+                t["bridge_weeks"]: max(1, round(p_["weeks"] * scale)),
+                t["bridge_best"]: role_label(lang_now, best["role"]),
+                t["bridge_score"]: best["score"],
+            })
+        st.dataframe(bridge, use_container_width=True, hide_index=True)
+        st.caption(t["bridge_note"])
 
         if course_rows:
             st.markdown(f"**{t['courses_title']}**")
