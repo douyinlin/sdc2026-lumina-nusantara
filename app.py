@@ -351,10 +351,12 @@ def load_snapshot(kind: str = "wef") -> dict:
 
 
 def apply_trend(roles: list[Role], trend: dict) -> list[Role]:
-    """Use a selected source signal directly; keep the catalogue baseline if absent.
+    """Blend the catalogue trend with the selected source's skill signals.
 
-    A qualitative source direction has a visible fixed scoring weight; it is not
-    presented as a source-published percentage.
+    Taking the source value alone would give every covered role the same trend
+    (+0.7 for any "rising" skill), so the ranking would stop differentiating
+    between roles. Half the catalogue baseline keeps them apart; a role the
+    source says nothing about keeps its baseline unchanged.
     """
     signals = trend.get("signals") or []
     out = []
@@ -364,11 +366,12 @@ def apply_trend(roles: list[Role], trend: dict) -> list[Role]:
             out.append(Role(role.name, role.required_skills, role.trend, role.sdg, dict(role.tiers)))
             continue
         delta = sum(relevant) / len(relevant)
+        blended = 0.5 * role.trend + 0.5 * delta
         out.append(
             Role(
                 role.name,
                 role.required_skills,
-                max(-1.0, min(1.0, delta)),
+                max(-1.0, min(1.0, blended)),
                 role.sdg,
                 dict(role.tiers),
             )
