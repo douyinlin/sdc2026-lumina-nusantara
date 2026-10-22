@@ -940,21 +940,13 @@ def dosm_radar(t: dict, d: dict, lang: str = "en") -> None:
     ax.fill(angles, cur_c, color="#5b7fa6", alpha=0.22)
     ax.scatter(angles[:-1], cur, color="#5b7fa6", s=13, zorder=5)
 
-    if lang == "en":
-        short = [
-            l.replace(" and Associate Professionals", " & Assc.")
-            .replace(" and Chief Executives", " & CEOs")
-            .replace(" and Marketing Professionals", " & Mktg")
-            .replace(" and Auditors", " & Auditors")
-            .replace("Administrative Professionals", "Admin Prof.")
-            for l in labels
-        ]
-    else:  # CJK / Malay labels are long: keep the head, drop the tail
-        short = [l if len(l) <= 9 else l[:9] + "…" for l in labels]
+    # Matplotlib has no CJK font in this environment, so Chinese or Malay axis
+    # labels render as empty boxes. Number the spokes instead and let the table
+    # beside the chart act as the legend — the same numbers appear there.
     ax.set_xticks(angles[:-1])
-    ax.set_xticklabels(short, fontsize=6.0, color="#3f4a26")
+    ax.set_xticklabels([str(i + 1) for i in range(n)], fontsize=8.0, color="#3f4a26")
     ax.set_yticklabels([])
-    ax.tick_params(axis="x", pad=4)
+    ax.tick_params(axis="x", pad=2)
     ax.grid(color="#d8dfca", linewidth=0.6)
     ax.spines["polar"].set_color("#e2e8d8")
     ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.19), ncol=2, frameon=False,
@@ -1001,13 +993,16 @@ def dosm_panel(t: dict, lang: str) -> None:
     with right:
         st.markdown(f"**{t['radar_values']}**")
         body_rows = []
-        for o in occ:
+        for idx, o in enumerate(occ, start=1):
             prev = o.get("offers_prev") or 0
             chg = ((o["offers"] - prev) / prev * 100) if prev else 0.0
             cls = "ds-up" if chg > 5 else ("ds-down" if chg < -5 else "ds-flat")
             row_style = "padding:4px 8px;border-bottom:1px solid #eef0e8"
+            num_style = (f"{row_style};text-align:right;color:#8a9478;"
+                         "font-variant-numeric:tabular-nums;width:1.6em")
             body_rows.append(
                 "<tr>"
+                f"<td style='{num_style}'>{idx}</td>"
                 f"<td style='{row_style}'>{_loc(o, 'group', lang)}</td>"
                 f"<td style='{row_style};text-align:right;font-variant-numeric:tabular-nums'>{_fmt(prev)}</td>"
                 f"<td style='{row_style};text-align:right;font-variant-numeric:tabular-nums;font-weight:650'>"
@@ -1019,6 +1014,7 @@ def dosm_panel(t: dict, lang: str) -> None:
         st.markdown(
             "<table style='width:100%;border-collapse:collapse;font-size:11.5px;color:#3f4a26'>"
             "<thead><tr>"
+            f"<th style='{head_style};text-align:right'>#</th>"
             f"<th style='{head_style};text-align:left'>{t['col_occ']}</th>"
             f"<th style='{head_style};text-align:right'>{d.get('previous_period', '')}</th>"
             f"<th style='{head_style};text-align:right'>{d.get('latest_period', '')}</th>"
@@ -1027,6 +1023,7 @@ def dosm_panel(t: dict, lang: str) -> None:
             unsafe_allow_html=True,
         )
         st.caption(t["radar_footnote"].format(previous=d.get("previous_period", "")))
+        st.caption(t["radar_index_note"])
 
 
 def skill_evidence_panel(t: dict, lang: str) -> None:
