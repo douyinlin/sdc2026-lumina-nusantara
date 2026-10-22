@@ -59,7 +59,7 @@ expected to need reskilling within three to five years (MOSTI).
 SkillRadar MY turns public AI and labour-market signals into a personal, auditable
 career plan: a normalised skills profile, a versioned trend layer that always shows
 its source and retrieval date, an explainable role-match score, an ordered reskilling
-pathway built from free or low-cost resources, an SDG tag on every role and skill,
+pathway built from free or low-cost resources, role-level SDG tags (skill-level reasons remain incomplete),
 and two disruption scenarios so the user sees how robust each choice is.
 
 ### Key Features
@@ -69,8 +69,8 @@ and two disruption scenarios so the user sees how robust each choice is.
 | 1 | Skills profile intake | Questionnaire + synthetic CV parsing into a shared skill taxonomy |
 | 2 | AI-trend signal layer | Separate Malaysia job-offering observations, reported named-skill signals and global WEF forecasts; each source shows its date and link |
 | 3 | Future-role matching | Explainable score decomposed into skill coverage, role focus, transferability, demand trend and gap cost |
-| 4 | Personalised reskilling pathway | Ordered learning plan with estimated hours, free / HRD Corp-claimable resources |
-| 5 | SDG mapping | Each role and skill tagged to at least one SDG, plus a personal contribution view |
+| 4 | Personalised reskilling pathway | Sequential learning plan with linked course records; duration provenance and missing resources are explicit |
+| 5 | SDG mapping | Role-level SDG tags and explanatory context; per-skill mapping remains incomplete |
 | 6 | Handling uncertainty | Moderate vs fast AI-disruption scenarios, explicitly labelled as estimates |
 
 ### Tech Stack
@@ -79,7 +79,7 @@ and two disruption scenarios so the user sees how robust each choice is.
 | --- | --- |
 | Frontend | Streamlit (Python) |
 | Backend | Python service modules (`src/`) |
-| Database | SQLite locally, Postgres when hosted |
+| Database | No database in the current UI; local JSON files and session state |
 | AI / Compute | No external AI service — deterministic rule engine runs in-app |
 | Hosting / Dev | Streamlit Community Cloud; Replit workspace |
 
@@ -94,14 +94,13 @@ and two disruption scenarios so the user sees how robust each choice is.
 |   |-- SDC2026_LuminaNusantara_Preliminary.pdf
 |   |-- SDC2026_LuminaNusantara_TechDeclaration.pdf
 |   |-- REPLIT PROOF OF USE.pdf
-|   `-- RUNPOD PROOF OF USE.pdf
 |-- docs/
 |   `-- architecture.png    # System block diagram
 |-- src/                    # Engine: demo UI, matching, pathway, SDG
 |-- data/                   # Synthetic profiles, sample CV, dated trend source snapshots
 |-- tests/                  # unit tests
 |-- runpod/                 # Optional RunPod handler (not used by the demo)
-|-- team/                   # Team-only material (not part of the submission)
+|-- team/                   # Team working material; tracked files are public if the repository is public
 |-- LICENSE                 # Apache License 2.0
 |-- requirements.txt
 `-- README.md
@@ -141,15 +140,15 @@ python -m unittest discover tests
 
 ## How We Use Replit *(Required)*
 
-Replit is our shared development workspace: all five members work on the same
-running prototype without any local setup, and the repository is imported directly
-from GitHub so `main` stays the single source of truth.
+Existing Replit usage evidence is preserved in `submission/`. This repaired local
+version has **not** been run or deployed on Replit during this change. The link above
+is an account profile, not verified proof of the current project deployment.
 
 - **Development:** the app runs from this repository inside Replit; `.replit` starts
   `python -m streamlit run app.py` on port 5000.
 - **Secrets:** any API keys live in Replit Secrets and are never committed.
 - **Hosting:** the public live demo is served by Streamlit Community Cloud, which
-  auto-deploys every push to `main`, so judges always see the latest build.
+  deployment settings and the deployed commit must be checked by the team.
 
 Proof of use: [`submission/REPLIT PROOF OF USE.pdf`](submission/REPLIT%20PROOF%20OF%20USE.pdf)
 
@@ -177,8 +176,9 @@ The app keeps three kinds of evidence distinct:
 
 Qualitative rising and declining directions use a fixed ±0.7 score signal (stable is
 0.0). This is a prototype ranking heuristic, not a statistic published by DOSM, WEF
-or JobStreet. Source snapshots are transcribed and checked manually; there is no
-automated ingestion or scraping job.
+or JobStreet. Source snapshots are maintained manually; there is no automated scraping job.
+The validated manual-import workflow below preserves the previous valid snapshot
+when validation fails. Source claims have not been reverified during this repair.
 
 ## Challenges & Learnings
 
@@ -225,3 +225,75 @@ automated ingestion or scraping job.
 ## License
 
 This project is licensed under the [Apache License 2.0](LICENSE).
+
+
+## Repair and validation — 2026-10-22
+
+Worker targets default to all fields and use separate state from graduate study
+fields. Skills are deduplicated on both sides of weighted and count-based coverage.
+Coverage is not a hiring probability. Scoring weights, transfer coefficients and
+scenario assumptions are team heuristics, not observed hiring outcomes.
+
+Skills, selected field and evidence/scenario affect matching. Weekly study hours
+change duration. Work experience, urgency, budget, degree level, internship months
+and graduation year are recorded only; they do not affect scoring or course filters.
+
+Study steps are sequential. For a positive recorded course duration, weeks are
+`ceil(course hours / weekly study hours)`. Existing catalogue hours are explicitly
+labelled unverified estimates. A future verified record must include
+`duration_verified: true` and `duration_source_url`. Missing/invalid hours use the
+original team assumption (`round(skill cost * 6)` weeks at 8 hours/week), labelled
+as a team estimate. Total weeks sum rounded step durations. Source verification
+and course access/fees remain team tasks. Completing a step is a hypothetical
+skill acquisition; the highest-scoring role after the plan may change.
+
+### Validated manual trend update
+
+1. Read the original source linked in the existing WEF/Jobstreet JSON. Review its
+   scope, date, skill direction and any taxonomy mapping. This is a human review,
+   not an automatic claim that a page was fetched or checked.
+2. Prepare a JSON file outside the repository, preserving the existing schema.
+   Include `source`, HTTPS `source_url`, `published`, `retrieved_at`,
+   `extraction_note`, and non-empty `skill_signals` with `skill`, `direction`,
+   `evidence`. Proxy mappings must have `mapping_note`. Do not invent percentages.
+3. Validate, then import (replace the example input path with your reviewed file):
+
+```powershell
+python -m src.trends wef "C:\path\reviewed-wef.json" --check
+python -m src.trends wef "C:\path\reviewed-wef.json"
+# For the other source, replace wef with jobstreet.
+```
+
+Successful imports atomically replace only the selected source, keeping an ignored
+`.json.bak` of the previous valid snapshot. Validation failure leaves it unchanged.
+Ignored per-source `.*-import-status.json` records the attempt; the UI warns after
+failed imports. A missing/corrupt active snapshot produces an explicit error,
+not a simulated replacement. Re-run the page after importing. Review `git diff`
+and the original evidence before manually committing. DOSM occupation panels
+remain separate from skill scoring; update those manually and review their diff.
+
+### Reproduce checks and run
+
+```powershell
+python -m pip install -r team/dev-env/requirements-dev.txt
+python -m unittest discover tests -v
+python tests/check_cv_intake.py
+python -m pip check
+python -m mypy --config-file team/dev-env/pyproject.toml
+python -m streamlit run app.py --server.headless true
+# In a second terminal, using an installed Chrome:
+python tests/check_post_selection_ui.py --url http://localhost:8501 --browser "C:\Program Files\Google\Chrome\Application\chrome.exe" --output test-results/browser
+```
+
+There is no separate frontend build: Streamlit runs the Python application.
+For hosted startup use `python -m streamlit run app.py --server.address 0.0.0.0
+--server.port 5000 --server.headless true` on one line. `.replit` already includes
+build/install and startup settings; importing and running this commit on the
+team's Replit account is still required. No API key is needed. `.env` is not loaded
+by the app; `PORT` is used only by the `.replit` deployment shell command. RunPod
+variables are reserved for the disconnected optional experiment.
+
+Validation performed locally: unit/integration tests, dependency consistency,
+mypy and a Chrome worker flow with field selection, edited synthetic skills,
+study hours, evidence/scenario switching and SDG display. See
+`team/DEVELOPMENT_LOG.md` for actual results and remaining limitations.

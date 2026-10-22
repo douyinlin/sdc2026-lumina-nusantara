@@ -46,7 +46,17 @@ class Role:
     tiers: dict[str, str] = field(default_factory=dict)
 
     def tier_of(self, skill: str) -> str:
-        return self.tiers.get(skill.strip().lower(), "important")
+        if not isinstance(self.tiers, dict):
+            raise ValueError("Skill tiers must be a dictionary")
+        normalized: dict[str, str] = {}
+        for key, value in self.tiers.items():
+            if not isinstance(key, str) or not isinstance(value, str) or value not in SKILL_TIER_WEIGHT:
+                raise ValueError("Invalid skill tier")
+            key = key.strip().casefold()
+            if key in normalized and normalized[key] != value:
+                raise ValueError("Conflicting skill tiers")
+            normalized[key] = value
+        return normalized.get(skill.strip().casefold(), "important")
 
 
 #: How easily one skill transfers into another (0..1).
@@ -212,7 +222,7 @@ def evaluate(profile: list[str], role: Role, scenario: str = "moderate") -> dict
     matched = match_coverage(profile, role.name, role.required_skills)
     covered, missing = matched["covered"], matched["missing"]
 
-    required = [s.strip().lower() for s in role.required_skills]
+    required = normalize_skills(role.required_skills)
     total_weight = sum(SKILL_TIER_WEIGHT[role.tier_of(s)] for s in required) or 1.0
     covered_weight = sum(SKILL_TIER_WEIGHT[role.tier_of(s)] for s in covered)
     coverage = covered_weight / total_weight
@@ -265,6 +275,7 @@ def evaluate(profile: list[str], role: Role, scenario: str = "moderate") -> dict
     return {
         "role": role.name,
         "score": round(score * 100, 1),
+        "coverage": matched["coverage"],
         "components": {
             "coverage": coverage,
             "focus": focus,

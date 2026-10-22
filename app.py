@@ -24,6 +24,10 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from utils import GAP_COST, TRANSFERABILITY, Role, pathway, rank, sdg_summary  # noqa: E402
 from i18n import CATEGORY_LABELS, ROLE_PARENTHETICAL, SKILL_PARENTHETICAL, STRINGS, T, cat, role_label, skill_label  # noqa: E402
+from src.cv import cv_to_skills
+from src.planning import filter_roles, learning_duration
+from src.trends import read_snapshot, update_status, apply_trend, _signal_strength
+from functools import partial
 from labels import field_label, group_label, skill_option_label  # noqa: E402
 from presentation import CSS_PATH, brand, copy_for, flow_header, learning_path, score_panel, skill_chips  # noqa: E402
 
@@ -154,22 +158,6 @@ TAXONOMY: dict[str, dict[str, list[str]]] = {
 
 LABEL_TO_KEYS = {label: keys for group in TAXONOMY.values() for label, keys in group.items()}
 
-ALIASES = {
-    "customer service": "customer support", "helpdesk": "customer support",
-    "zendesk": "crm administration", "salesforce": "crm administration",
-    "crm": "crm administration", "power bi": "data visualisation",
-    "tableau": "data visualisation", "dashboard": "data visualisation",
-    "chatgpt": "prompt engineering", "genai": "prompt engineering",
-    "generative ai": "prompt engineering", "llm": "prompt engineering",
-    "spreadsheet": "excel", "pandas": "python", "pytorch": "machine learning",
-    "tensorflow": "machine learning", "agile": "project management",
-    "scrum": "project management", "pmp": "project management",
-    "supervisor": "team lead", "manager": "team lead",
-    "stakeholder": "stakeholder management", "presentation": "presentation",
-    "rpa": "automation", "automation": "automation",
-    "process improvement": "process improvement",
-    "communication": "communication",
-}
 
 DEFAULT_ROLES = [
     Role("AI Operations Specialist", ["prompt engineering", "data visualisation", "sql", "customer support"], 0.8, ["4.4", "8.5"]),
@@ -243,7 +231,7 @@ def roles_for_field(roles: list[Role], field: str) -> tuple[list[Role], list[Rol
 
 
 def load_courses() -> dict[str, dict]:
-    """Verified course per skill (data/courses.json)."""
+    """Existing course records; durations remain unverified unless documented."""
     path = DATA / "courses.json"
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
@@ -295,15 +283,6 @@ def role_plain(lang: str, name: str) -> str:
     return ROLE_PARENTHETICAL.get(lang, {}).get(name) or name
 
 
-def _signal_strength(sig: dict) -> float:
-    """Turn a fixed qualitative weight or a published percentage into a -1..1 signal."""
-    if "weight" in sig:
-        return float(sig["weight"])
-    pct = sig.get("change_pct")
-    if pct is None:
-        return 0.0
-    # +50% or more -> +1.0 ; -50% or worse -> -1.0 ; scaled linearly in between
-    return max(-1.0, min(1.0, float(pct) / 50.0))
 
 
 #: Named-skill signals carry a direction but no published percentage, so each one
@@ -315,9 +294,9 @@ def _named_skill_snapshot() -> dict:
     """Layer 2 as a standalone signal source (direction only, no percentages)."""
     path = DATA / "trends" / "jobstreet_skills_2025.json"
     try:
-        d = json.loads(path.read_text(encoding="utf-8"))
-    except Exception:
-        return {"kind": "jobstreet", "signals": [], "source": None}
+        d = read_snapshot(path)
+    except (ValueError, OSError) as exc:
+        raise ValueError("Jobstreet snapshot unavailable; repair or import a valid snapshot") from exc
     signals = []
     for s in d.get("skill_signals") or []:
         weight = {"rising": NAMED_SIGNAL_WEIGHT, "declining": -NAMED_SIGNAL_WEIGHT}.get(s.get("direction"), 0.0)
@@ -354,9 +333,9 @@ def _wef_skill_snapshot() -> dict:
     """WEF skills outlook through 2030; broad categories map only when stated."""
     path = DATA / "trends" / "wef_future_jobs_2025.json"
     try:
-        d = json.loads(path.read_text(encoding="utf-8"))
-    except Exception:
-        return {"kind": "wef", "signals": [], "source": None, "forecast": True}
+        d = read_snapshot(path)
+    except (ValueError, OSError) as exc:
+        raise ValueError("WEF snapshot unavailable; repair or import a valid snapshot") from exc
     signals = []
     for item in d.get("skill_signals") or []:
         weight = {"rising": WEF_SIGNAL_WEIGHT, "declining": -WEF_SIGNAL_WEIGHT}.get(item.get("direction"), 0.0)
@@ -382,67 +361,18 @@ def _wef_skill_snapshot() -> dict:
 
 def load_snapshot(kind: str = "wef") -> dict:
     """One skill-evidence source; DOSM occupation counts stay a separate panel."""
+    status = update_status(DATA / "trends", kind)
+    t = T(st.session_state.get("lang", "en"))
+    st.caption(t["snapshot_note"])
+    if status.get("ok") is False:
+        st.warning(t["update_failed"])
     if kind == "jobstreet":
         return _named_skill_snapshot()
     return _wef_skill_snapshot()
 
 
-def apply_trend(roles: list[Role], trend: dict) -> list[Role]:
-    """Blend the catalogue trend with the selected source's skill signals.
-
-    Taking the source value alone would give every covered role the same trend
-    (+0.7 for any "rising" skill), so the ranking would stop differentiating
-    between roles. Half the catalogue baseline keeps them apart; a role the
-    source says nothing about keeps its baseline unchanged.
-    """
-    signals = trend.get("signals") or []
-    out = []
-    for role in roles:
-        relevant = [_signal_strength(s) for s in signals if s["skill"] in (role.required_skills or [])]
-        if not relevant:
-            out.append(Role(role.name, role.required_skills, role.trend, role.sdg, dict(role.tiers)))
-            continue
-        delta = sum(relevant) / len(relevant)
-        blended = 0.5 * role.trend + 0.5 * delta
-        out.append(
-            Role(
-                role.name,
-                role.required_skills,
-                max(-1.0, min(1.0, blended)),
-                role.sdg,
-                dict(role.tiers),
-            )
-        )
-    return out
 
 
-def cv_to_skills(uploaded) -> list[str]:
-    raw = uploaded.read()
-    name = (getattr(uploaded, "name", "") or "").lower()
-    if name.endswith(".pdf"):
-        chunks = []
-        for m in re.finditer(rb"stream\r?\n", raw):
-            start, end = m.end(), raw.find(b"endstream", m.end())
-            if end == -1:
-                continue
-            try:
-                blob = zlib.decompress(raw[start:end])
-            except Exception:
-                continue
-            chunks += [t.group(1).decode("latin-1", "ignore")
-                       for t in re.finditer(rb"\(((?:[^()\\]|\\.)*)\)\s*Tj", blob)]
-            for arr in re.finditer(rb"\[(.*?)\]\s*TJ", blob, re.S):
-                chunks += [t.group(1).decode("latin-1", "ignore")
-                           for t in re.finditer(rb"\(((?:[^()\\]|\\.)*)\)", arr.group(1))]
-        text = " ".join(chunks)
-    else:
-        text = raw.decode("utf-8", "ignore")
-    low = text.lower()
-    found: list[str] = []
-    for alias, key in ALIASES.items():
-        if alias in low and key not in found:
-            found.append(key)
-    return found
 
 
 # --------------------------------------------------------------------------- #
@@ -1442,6 +1372,12 @@ def screen_js_intake() -> None:
     st.markdown(f'<div class="sr-pill">{t["persona_ctx"]}</div>', unsafe_allow_html=True)
 
     if persona == "worker":
+        fields = ["all"] + list(FIELD_DOMAIN)
+        chosen = st.selectbox(t["target_field"], fields,
+            index=fields.index(st.session_state.get("worker_field", "all")) if st.session_state.get("worker_field", "all") in fields else 0,
+            key="worker_field_widget",
+            format_func=lambda f: t["all_fields"] if f == "all" else field_label(st.session_state.get("lang", "en"), f))
+        st.session_state["worker_field"] = chosen
         c1, c2 = st.columns(2)
         with c1:
             st.session_state["years"] = st.number_input(
@@ -1474,12 +1410,16 @@ def screen_js_intake() -> None:
                 format_func=lambda k: t["edu_" + k],
             )
             _lang = st.session_state.get("lang", "en")
+            remembered = st.session_state.get("graduate_field", st.session_state.get("field", "Business Administration"))
+            group_names = list(FIELDS)
+            remembered_group = next((g for g in group_names if remembered in FIELDS[g]), group_names[0])
             _group = st.selectbox(
-                t["q_field"], list(FIELDS),
+                t["q_field"], group_names, index=group_names.index(remembered_group),
                 format_func=lambda g: group_label(_lang, g),
             )
-            st.session_state["field"] = st.selectbox(
+            st.session_state["graduate_field"] = st.selectbox(
                 t["q_field_detail"], FIELDS[_group], label_visibility="visible",
+                index=FIELDS[_group].index(remembered) if remembered in FIELDS[_group] else 0,
                 format_func=lambda f: field_label(_lang, f),
             )
         with c2:
@@ -1534,7 +1474,7 @@ def screen_js_intake() -> None:
                     group, options=list(items), key=f"ms_{group}",
                     label_visibility="collapsed", placeholder=t["ms_placeholder"],
                     max_selections=6,
-                    format_func=lambda x, _l=lang: skill_option_label(_l, x),
+                    format_func=partial(skill_option_label, lang),
                 )
                 for label in labels:
                     picked += LABEL_TO_KEYS[label]
@@ -1602,7 +1542,7 @@ def _evidence_lines(t: dict, lang: str, role: Role | None, trend: dict) -> list[
 
 
 def why_block(t: dict, lang: str, result: dict, role: Role | None, trend: dict,
-              skills: list[str], hours: int, scale: float) -> None:
+              skills: list[str], hours: int) -> None:
     """Three plain-language reasons for the top match: transfer, gap, evidence.
 
     Reads existing model fields only — no new score, no new number invented here.
@@ -1640,7 +1580,8 @@ def why_block(t: dict, lang: str, result: dict, role: Role | None, trend: dict,
     with mid:
         st.markdown(f"**{t['why_gap']}**")
         core = sum(1 for s in missing if role and role.tier_of(s) == "core")
-        weeks = max(1, round(sum(max(1, round(GAP_COST.get(s, 0.7) * 6)) for s in missing) * scale))
+        weeks = sum(learning_duration(s, load_courses(), hours)["weeks"] for s in missing)
+        st.caption(t["path_note"].format(hours))
         st.caption(t["why_gap_body"].format(
             n=len(missing), total=len(missing) + len(result["covered"]),
             core=t["core_phrase"].format(k=core) if core else "",
@@ -1670,16 +1611,15 @@ def screen_js_results() -> None:
 
     base_roles = load_roles()
     hours = st.session_state.get("hours", 8)
-    scale = 8.0 / max(hours, 1)
 
     # Domain-aware filtering: never recommend a role from an unrelated field.
-    field = st.session_state.get("field", "Business")
+    field = st.session_state.get("worker_field", "all") if persona == "worker" else st.session_state.get("graduate_field", st.session_state.get("field", "Business Administration"))
     raw_profile = st.session_state.get("skills") or skills
     # keep only skills the catalogue knows about (drop anything typed via an old key)
     known = {sk for r in base_roles for sk in r.required_skills}
     skills = [sk for sk in raw_profile if sk in known] or raw_profile
     same, adjacent = roles_for_field(base_roles, field)
-    pool_base = same if same else (adjacent or base_roles)
+    pool_base = filter_roles(base_roles, ROLE_META, persona, field, FIELD_DOMAIN, ADJACENT)
 
     st.subheader(t["p1"])
     st.markdown(
@@ -1818,20 +1758,20 @@ def screen_js_results() -> None:
     # the persona advice and the field note are already visible above; one short
     # line here says how wide the shortlist is, and nothing else
     if persona == "worker":
-        # the worker flow never picked a field, so the domain filter is a default,
-        # not the user's own choice — say so instead of naming a field
-        _scope = t["scope_all"].format(len(pool_base))
+        # Report the explicit worker scope; never infer it from graduate state.
+        _scope = t["all_fields"] if field == "all" else t["target_field"] + ": " + field_label(lang_now, field)
     elif same:
         _scope = t["domain_same"].format(field_label(lang_now, field), len(same))
     else:
         _scope = t["domain_adjacent"].format(field_label(lang_now, field))
     st.caption(_scope)
     roles_by_name = {x.name: x for x in roles}
-    why_block(t, lang_now, top1, roles_by_name.get(top1["role"]), trend, skills, hours, scale)
+    why_block(t, lang_now, top1, roles_by_name.get(top1["role"]), trend, skills, hours)
     for i, r in enumerate(results[:4]):
         r["tiers"] = {sk: roles_by_name.get(r["role"], Role(r["role"], [], 0)).tier_of(sk) for sk in r["missing"]}
         role_card(t, r, expanded=(i == 0), lang=lang_now)
 
+    st.caption(t["coverage_disclaimer"])
     st.subheader(t["p4"])
     top = results[0]
     courses = load_courses()
@@ -1847,7 +1787,7 @@ def screen_js_results() -> None:
         # Product metrics, computed from this profile — never an outcome claim.
         prof_full = skills + [p_["skill"] for p_ in plan]
         after_score = rank(prof_full, roles, scenario=scenario)[0]["score"]
-        total_weeks = sum(max(1, round(p_["weeks"] * scale)) for p_ in plan)
+        total_weeks = sum(learning_duration(p_["skill"], courses, hours)["weeks"] for p_ in plan)
         m1, m2, m3 = st.columns(3)
         m1.metric(t["impact_gap"], len(top["missing"]))
         m2.metric(t["impact_weeks"], total_weeks)
@@ -1857,11 +1797,12 @@ def screen_js_results() -> None:
         st.write(t["gap"].format(role_plain(lang_now, top["role"]), len(top["missing"]), total_required))
         step_rows, course_rows = [], []
         for p_ in plan:
-            weeks = max(1, round(p_["weeks"] * scale))
+            weeks = learning_duration(p_["skill"], courses, hours)["weeks"]
             step_rows.append({
                 t["step"]: p_["step"],
                 t["skill"]: skill_label(lang_now, p_["skill"]),
                 t["weeks"]: weeks,
+                t["duration_basis"]: t[learning_duration(p_["skill"], courses, hours)["basis"]],
             })
             c = courses.get(p_["skill"])
             if c:
@@ -1889,13 +1830,17 @@ def screen_js_results() -> None:
             best = rank(prof, roles, scenario=scenario)[0]
             bridge.append({
                 t["bridge_step"]: f'{p_["step"]}. {skill_label(lang_now, p_["skill"])}',
-                t["bridge_weeks"]: max(1, round(p_["weeks"] * scale)),
+                t["bridge_weeks"]: learning_duration(p_["skill"], courses, hours)["weeks"],
                 t["bridge_best"]: role_label(lang_now, best["role"]),
                 t["bridge_score"]: best["score"],
             })
         st.dataframe(bridge, use_container_width=True, hide_index=True)
         st.caption(t["bridge_note"])
 
+        st.dataframe(step_rows, hide_index=True, use_container_width=True)
+        no_course = [p_["skill"] for p_ in plan if p_["skill"] not in courses]
+        if no_course:
+            st.caption(t["no_course"] + ": " + ", ".join(skill_label(lang_now, x) for x in no_course))
         if course_rows:
             st.markdown(f"**{t['courses_title']}**")
             st.dataframe(

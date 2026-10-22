@@ -42,3 +42,6 @@ Desktop.ini
 .vscode/
 .idea/
 *.code-workspace
+
+# Local manual-import status (not a source dataset)
+data/trends/.*-import-status.json

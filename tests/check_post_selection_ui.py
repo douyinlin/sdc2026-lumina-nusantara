@@ -56,15 +56,27 @@ with sync_playwright() as playwright:
     settle(app)
     healthy(app, t)
     expect(app.get_by_role("button", name=t["continue"], exact=True)).to_be_disabled()
+    # Exercise the new field control and weekly-hours input in a real browser.
+    app.get_by_role("combobox", name=t["target_field"], exact=True).click()
+    app.get_by_role("option", name="Computer Science", exact=True).click()
+    settle(app)
+    app.get_by_role("spinbutton", name=t["q_hours"], exact=True).fill("16")
+    app.get_by_role("spinbutton", name=t["q_hours"], exact=True).press("Enter")
+    settle(app)
     page.screenshot(path=str(args.output / "intake.png"), full_page=True)
     app.locator('input[type="file"]').set_input_files(ROOT / "data/sample_cv.txt")
     expect(app.get_by_role("button", name=t["continue"], exact=True)).to_be_enabled()
+    settle(app)
+    app.locator('input[type="file"]').set_input_files({"name": "synthetic-edit.txt", "mimeType": "text/plain", "buffer": b"Fictional profile: SQL, Python, Excel."})
     settle(app)
     app.get_by_role("button", name=t["continue"], exact=True).click()
     expect(app.get_by_role("heading", name=t["p3"], exact=True)).to_be_visible(timeout=45000)
     settle(app)
     healthy(app, t)
     page.screenshot(path=str(args.output / "results.png"), full_page=True)
+    app.get_by_text(t["src_jobstreet"], exact=True).first.click()
+    settle(app)
+    healthy(app, t)
     app.get_by_text(t["fast"], exact=True).click()
     settle(app)
     healthy(app, t)
@@ -78,5 +90,5 @@ with sync_playwright() as playwright:
     assert not errors, errors
     print(json.dumps({"tested_url": args.url, "flow": "worker",
                       "checks": ["empty profile", "synthetic CV", "results",
-                                 "scenario switch", "SDG toggle", "mobile capture"],
+                                 "target field", "weekly hours", "edited synthetic skills", "source switch", "scenario switch", "SDG toggle", "mobile capture"],
                       "page_errors": errors, "output": str(args.output)}))
