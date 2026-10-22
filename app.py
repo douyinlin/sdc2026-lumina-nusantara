@@ -1310,6 +1310,8 @@ def screen_js_intake() -> None:
         if st.button(t["back"], use_container_width=True):
             reset()
     with c2:
+        if not current:
+            st.caption(t["pick_first"])
         if st.button(t["continue"], type="primary", use_container_width=True, disabled=not current):
             go("js_results")
 
