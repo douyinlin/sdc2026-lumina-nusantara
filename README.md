@@ -59,7 +59,7 @@ expected to need reskilling within three to five years (MOSTI).
 SkillRadar MY turns public AI and labour-market signals into a personal, auditable
 career plan: a normalised skills profile, a versioned trend layer that always shows
 its source and retrieval date, an explainable role-match score, an ordered reskilling
-pathway built from free or low-cost resources, role-level SDG tags (skill-level reasons remain incomplete),
+pathway built from free or low-cost resources, SDG tags at both role and skill level,
 and two disruption scenarios so the user sees how robust each choice is.
 
 ### Key Features
@@ -69,8 +69,8 @@ and two disruption scenarios so the user sees how robust each choice is.
 | 1 | Skills profile intake | Questionnaire + synthetic CV parsing into a shared skill taxonomy |
 | 2 | AI-trend signal layer | Separate Malaysia job-offering observations, reported named-skill signals and global WEF forecasts; each source shows its date and link |
 | 3 | Future-role matching | Explainable score decomposed into skill coverage, role focus, transferability, demand trend and gap cost |
-| 4 | Personalised reskilling pathway | Sequential learning plan with linked course records; duration provenance and missing resources are explicit |
-| 5 | SDG mapping | Role-level SDG tags and explanatory context; per-skill mapping remains incomplete |
+| 4 | Personalised reskilling pathway | Sequential learning plan with linked course records (36 links, 30 of 54 catalogue skills); skills without a verified course get a search route instead of an invented one |
+| 5 | SDG mapping | Role-level SDG tags, plus a skill-to-target crosswalk (`data/skills_sdg.json`) shown on the results page; clearly labelled as the team's own reading of the 2030 Agenda |
 | 6 | Handling uncertainty | Moderate vs fast AI-disruption scenarios, explicitly labelled as estimates |
 
 ### Tech Stack

@@ -14,6 +14,7 @@ import hashlib
 import re
 import sys
 import zlib
+from urllib.parse import quote_plus
 from pathlib import Path
 
 import streamlit as st
@@ -230,6 +231,16 @@ def roles_for_field(roles: list[Role], field: str) -> tuple[list[Role], list[Rol
             adjacent.append(r)
     return same, adjacent
 
+
+SKILL_SDG_FILE = DATA / "skills_sdg.json"
+
+
+def load_skill_sdg() -> dict:
+    """Team-curated skill -> SDG targets; see the note inside the file."""
+    try:
+        return json.loads(SKILL_SDG_FILE.read_text(encoding="utf-8")).get("skills", {})
+    except Exception:
+        return {}
 
 def load_courses() -> dict[str, dict]:
     """Existing course records; durations remain unverified unless documented."""
@@ -1972,8 +1983,19 @@ def screen_js_results() -> None:
             )
             st.caption(t["courses_note"])
         else:
+            # No verified course for these skills: give a search route instead of
+            # pretending a resource exists.
             st.caption(t["search_caption"].format(
                 ", ".join(skill_label(lang_now, x) for x in top["missing"])))
+            links = []
+            for x in top["missing"]:
+                if x in courses:
+                    continue
+                query = quote_plus(x)
+                links.append(f"[{t['course_search_link']} · {skill_plain(lang_now, x)}]"
+                             f"(https://www.coursera.org/search?query={query})")
+            if links:
+                st.markdown(" · ".join(links))
     else:
         st.success(t["covered_all"])
 
@@ -2013,6 +2035,22 @@ def screen_js_results() -> None:
         )
     if chips:
         st.markdown("".join(chips), unsafe_allow_html=True)
+
+    # Skill level: which targets the skills on this pathway actually serve.
+    skill_sdg = load_skill_sdg()
+    step_skills = [p["skill"] for p in pathway(top)] if top["missing"] else list(top["covered"][:3])
+    mapped = [(s_, skill_sdg[s_]) for s_ in step_skills if s_ in skill_sdg]
+    if mapped:
+        st.markdown(f"**{t['skill_sdg_title']}**")
+        rows = "".join(
+            f'<span style="display:inline-block;background:#eef3e6;color:#3f4a26;'
+            f'padding:3px 10px;border-radius:999px;font-size:12px;margin:0 6px 6px 0">'
+            f'{skill_plain(lang_now, s_)} · {" / ".join(info["targets"])}</span>'
+            for s_, info in mapped
+        )
+        st.markdown(rows, unsafe_allow_html=True)
+        reached = sorted({t_ for _, info in mapped for t_ in info["targets"]})
+        st.caption(t["skill_sdg_note"].format(n=len(mapped), targets=", ".join(reached)))
 
     st.caption(t["sdg_note"])
 
