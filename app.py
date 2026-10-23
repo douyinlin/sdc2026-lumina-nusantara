@@ -541,50 +541,92 @@ ORBS_HTML = """
 <div class="sr-orb sr-o4"></div>
 """
 
-def render_landing_particles() -> None:
-    """Render cursor-reactive particles above the role-picker cards."""
+def render_particle_field() -> None:
+    """Render a cursor-reactive particle layer across the app viewport."""
+    st.markdown(
+        """
+        <style>
+          [data-testid="stAppViewContainer"] { isolation:isolate; }
+          [data-testid="stMainBlockContainer"] [data-testid="stElementContainer"] {
+            position:relative;
+            z-index:1;
+          }
+          [data-testid="stHeader"], [data-testid="stSidebar"] {
+            position:relative;
+            z-index:2;
+          }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
     st.iframe(
         """
         <style>
           html, body { width:100%; height:100%; margin:0; overflow:hidden; background:transparent; }
-          #particle-scene { position:relative; width:100%; height:100%; overflow:hidden; }
+          #particle-scene { position:fixed; inset:0; width:100vw; height:100vh; overflow:hidden; pointer-events:none; }
           canvas { display:block; width:100%; height:100%; }
         </style>
         <div id="particle-scene" aria-hidden="true"></div>
         <script>
           const root = document.getElementById("particle-scene");
-          const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+          const parentWindow = window.parent;
+          const parentDocument = parentWindow.document;
+          const reducedMotion = parentWindow.matchMedia("(prefers-reduced-motion: reduce)").matches;
           const canvas = document.createElement("canvas");
           const ctx = canvas.getContext("2d");
           root.appendChild(canvas);
+          const frame = window.frameElement;
+          const view = parentDocument.querySelector('[data-testid="stAppViewContainer"]');
           const pointer = { x:-1000, y:-1000, active:false, strength:0 };
           const colors = ["211, 185, 255", "255, 255, 255", "181, 138, 231", "168, 185, 160"];
           const particles = [];
           const trail = [];
           let width = 1, height = 1, raf = 0;
 
+          if (parentWindow.__skillRadarParticleCleanup) {
+            parentWindow.__skillRadarParticleCleanup();
+          }
+
+          if (frame) {
+            frame.title = "SkillRadar full-page cursor particle field";
+            Object.assign(frame.style, {
+              position:"fixed", inset:"0", width:"100vw", height:"100vh",
+              maxWidth:"none", border:"0", pointerEvents:"none", zIndex:"0"
+            });
+            let wrapper = frame.parentElement;
+            while (wrapper && wrapper !== parentDocument.body &&
+              wrapper.getAttribute("data-testid") !== "stElementContainer") {
+              wrapper = wrapper.parentElement;
+            }
+            if (wrapper && wrapper !== parentDocument.body) {
+              Object.assign(wrapper.style, {
+                position:"fixed", inset:"0", width:"100vw", height:"100vh",
+                margin:"0", padding:"0", pointerEvents:"none", zIndex:"0", overflow:"hidden"
+              });
+            }
+          }
+          if (view) view.style.isolation = "isolate";
+
           function resize() {
-            const box = root.getBoundingClientRect();
-            const dpr = Math.min(devicePixelRatio || 1, 1.5);
-            width = Math.max(1, box.width);
-            height = Math.max(1, box.height);
+            const dpr = Math.min(parentWindow.devicePixelRatio || 1, 1.5);
+            width = Math.max(1, parentWindow.innerWidth);
+            height = Math.max(1, parentWindow.innerHeight);
             canvas.width = Math.round(width * dpr);
             canvas.height = Math.round(height * dpr);
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
             particles.length = 0;
-            const count = Math.min(420, Math.round(width * height / 620));
+            const count = Math.min(520, Math.round(width * height / 1800));
             for (let i = 0; i < count; i++) {
               const x = Math.random() * width, y = Math.random() * height;
               particles.push({ x, y, homeX:x, homeY:y, vx:0, vy:0,
-                radius:.9 + Math.random() * 1.9,
+                radius:.7 + Math.random() * 1.7,
                 color:colors[Math.floor(Math.random() * colors.length)],
-                alpha:.34 + Math.random() * .50, phase:Math.random() * Math.PI * 2 });
+                alpha:.24 + Math.random() * .48, phase:Math.random() * Math.PI * 2 });
             }
           }
 
           function movePointer(event) {
-            const box = root.getBoundingClientRect();
-            const x = event.clientX - box.left, y = event.clientY - box.top;
+            const x = event.clientX, y = event.clientY;
             if (pointer.active && !reducedMotion) {
               const dx = x - pointer.x, dy = y - pointer.y;
               const distance = Math.hypot(dx, dy);
@@ -611,7 +653,7 @@ def render_landing_particles() -> None:
           }
 
           function drawGlow(amount) {
-            const radius = Math.max(80, Math.min(width, height) * .25);
+            const radius = Math.max(110, Math.min(width, height) * .25);
             const glow = ctx.createRadialGradient(pointer.x, pointer.y, 0,
               pointer.x, pointer.y, radius);
             glow.addColorStop(0, `rgba(255,255,255,${.56 * amount})`);
@@ -630,8 +672,8 @@ def render_landing_particles() -> None:
             for (const p of particles) {
               const dx = p.x - pointer.x, dy = p.y - pointer.y;
               const distance = Math.hypot(dx, dy) || 1;
-              if (pointer.active && distance < 115) {
-                const force = (1 - distance / 115) * .9;
+              if (pointer.active && distance < 130) {
+                const force = (1 - distance / 130) * 1.05;
                 p.vx += dx / distance * force;
                 p.vy += dy / distance * force;
               }
@@ -645,7 +687,7 @@ def render_landing_particles() -> None:
             }
             for (let i = trail.length - 1; i >= 0; i--) {
               const p = trail[i];
-              p.x += p.vx; p.y += p.vy; p.life -= .014;
+              p.x += p.vx; p.y += p.vy; p.life -= .018;
               if (p.life <= 0) { trail.splice(i, 1); continue; }
               ctx.fillStyle = `rgba(${p.color}, ${p.life * .82})`;
               ctx.beginPath(); ctx.arc(p.x, p.y, p.radius * p.life, 0, Math.PI * 2); ctx.fill();
@@ -653,15 +695,29 @@ def render_landing_particles() -> None:
             raf = requestAnimationFrame(render);
           }
 
-          root.addEventListener("pointermove", movePointer, { passive:true });
-          root.addEventListener("pointerleave", () => { pointer.active = false; }, { passive:true });
-          new ResizeObserver(resize).observe(root);
+          function handleBlur() { pointer.active = false; }
+          function cleanup() {
+            cancelAnimationFrame(raf);
+            parentDocument.removeEventListener("pointermove", movePointer);
+            parentWindow.removeEventListener("resize", resize);
+            parentWindow.removeEventListener("blur", handleBlur);
+            if (view) view.style.isolation = "";
+            delete parentWindow.__skillRadarParticleCleanup;
+          }
+          parentWindow.__skillRadarParticleCleanup = cleanup;
+
+          parentDocument.addEventListener("pointermove", movePointer, { passive:true });
+          parentWindow.addEventListener("resize", resize, { passive:true });
+          parentWindow.addEventListener("blur", handleBlur);
           resize();
           if (reducedMotion) drawStatic();
           else raf = requestAnimationFrame(render);
         </script>
         """,
-        height=205,
+        width="stretch",
+        height=1,
+        alt="SkillRadar full-page cursor particle field",
+        tab_index=-1,
     )
 
 # Shared look for every screen after the landing: same palette, calmer motion.
@@ -836,6 +892,10 @@ def screen_wrap() -> None:
     fade flag is set: otherwise clicking a button near the bottom of the
     landing page left the next screen scrolled halfway down.
     """
+    # Keep the particle backdrop mounted for every app stage, including long
+    # intake and results screens that scroll well below the initial viewport.
+    render_particle_field()
+
     stage = st.session_state.get("stage", "landing")
     if st.session_state.get("_scrolled_stage") != stage:
         st.session_state["_scrolled_stage"] = stage
@@ -1295,8 +1355,6 @@ def screen_landing() -> None:
         unsafe_allow_html=True,
     )
     st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
-    render_landing_particles()
-
     c1, c2, c3 = st.columns(3, gap="medium")
     with c1:
         with st.container(border=True):
