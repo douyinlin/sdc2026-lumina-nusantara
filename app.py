@@ -836,6 +836,9 @@ def theme_css(theme_key: str) -> str:
 .srui-chip {{ color:var(--sr-theme-ink) !important; border-color:var(--sr-theme-border) !important; background:var(--sr-theme-soft) !important; }}
 .srui-meter > span {{ background:linear-gradient(90deg,var(--sr-theme-primary),var(--sr-theme-secondary)) !important; }}
 .srui-path-step > div:hover {{ border-color:var(--sr-theme-secondary) !important; }}
+.st-key-theme_picker {{ position:fixed !important; top:12px !important; right:72px !important; z-index:999980 !important; width:30px !important; }}
+.st-key-theme_picker button {{ width:27px !important; min-width:27px !important; height:27px !important; min-height:27px !important; padding:0 !important; border-radius:50% !important; border:3px solid var(--sr-theme-soft) !important; background:var(--sr-theme-primary) !important; color:transparent !important; font-size:0 !important; box-shadow:0 1px 8px color-mix(in srgb,var(--sr-theme-primary) 42%,transparent) !important; }}
+.st-key-theme_picker button:hover {{ transform:scale(1.08) !important; filter:brightness(1.08); }}
 </style>"""
 
 def render_particle_field() -> None:
@@ -1225,6 +1228,13 @@ def screen_wrap() -> None:
     # Keep the particle backdrop mounted for every app stage, including long
     # intake and results screens that scroll well below the initial viewport.
     render_particle_field()
+    with st.popover("●", help="主题色 / Theme color", key="theme_picker"):
+        st.selectbox(
+            "选择主题色 / Choose a theme",
+            options=tuple(THEME_PALETTES),
+            key="theme_color",
+            format_func=lambda key: THEME_PALETTES[key]["label"],
+        )
 
     if st.session_state.pop("_intro_reveal_pending", False):
         st.markdown(ENTRY_REVEAL_CSS, unsafe_allow_html=True)
@@ -2644,13 +2654,6 @@ st.session_state.setdefault("stage", "landing")
 
 STAGE = current_stage()
 _T = T(st.session_state.get("lang", "en"))
-
-st.sidebar.selectbox(
-    "主题色 / Theme color",
-    options=tuple(THEME_PALETTES),
-    key="theme_color",
-    format_func=lambda key: THEME_PALETTES[key]["label"],
-)
 
 if STAGE != "landing":
     st.markdown(APP_CSS, unsafe_allow_html=True)
