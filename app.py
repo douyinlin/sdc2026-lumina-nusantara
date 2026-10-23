@@ -762,6 +762,82 @@ ORBS_HTML = """
 <div class="sr-orb sr-o4"></div>
 """
 
+THEME_PALETTES = {
+    "sage": {
+        "label": "🫒 鼠尾草绿 · Sage",
+        "primary": "#657b50", "secondary": "#82936c", "ink": "#344534",
+        "soft": "#e8efdf", "border": "#d4dfc9",
+        "wash1": "#f2f6ed", "wash2": "#eaf1e4", "wash3": "#eaf1f4",
+        "glow1": "rgba(138,154,91,.38)", "glow2": "rgba(112,153,168,.30)",
+    },
+    "mist": {
+        "label": "🩵 雾霭蓝 · Mist",
+        "primary": "#5d8199", "secondary": "#81a9bb", "ink": "#344b59",
+        "soft": "#e2eef3", "border": "#cbdde6",
+        "wash1": "#f0f6f8", "wash2": "#e7f0f5", "wash3": "#eef2f5",
+        "glow1": "rgba(112,164,185,.37)", "glow2": "rgba(145,170,196,.30)",
+    },
+    "lavender": {
+        "label": "💜 薰衣草紫 · Lavender",
+        "primary": "#77668f", "secondary": "#a28eb3", "ink": "#493e58",
+        "soft": "#eee8f3", "border": "#d9cde5",
+        "wash1": "#f6f2f8", "wash2": "#efe9f5", "wash3": "#e9eef5",
+        "glow1": "rgba(161,136,183,.35)", "glow2": "rgba(133,159,194,.27)",
+    },
+    "rose": {
+        "label": "🌸 柔和豆沙 · Rose",
+        "primary": "#a96370", "secondary": "#c6878b", "ink": "#543e43",
+        "soft": "#f5e9e8", "border": "#e6d1d0",
+        "wash1": "#faf3f2", "wash2": "#f5eae9", "wash3": "#f2edef",
+        "glow1": "rgba(202,137,143,.34)", "glow2": "rgba(172,151,182,.25)",
+    },
+    "oat": {
+        "label": "🌾 燕麦暖沙 · Oat",
+        "primary": "#967142", "secondary": "#b79768", "ink": "#4f4638",
+        "soft": "#f3ecdf", "border": "#e3d7c4",
+        "wash1": "#faf6ef", "wash2": "#f4eee2", "wash3": "#eff0e9",
+        "glow1": "rgba(192,157,105,.34)", "glow2": "rgba(152,174,150,.26)",
+    },
+    "seafoam": {
+        "label": "🪸 海盐薄荷 · Seafoam",
+        "primary": "#3e8279", "secondary": "#69a99b", "ink": "#304b46",
+        "soft": "#e2f0eb", "border": "#c9e0d8",
+        "wash1": "#eff7f4", "wash2": "#e3f1ec", "wash3": "#e7f1f3",
+        "glow1": "rgba(102,180,155,.34)", "glow2": "rgba(113,162,183,.27)",
+    },
+}
+
+
+def theme_css(theme_key: str) -> str:
+    palette = THEME_PALETTES.get(theme_key, THEME_PALETTES["sage"])
+    return f"""<style>
+[data-testid="stAppViewContainer"] {{
+  --sr-theme-primary:{palette['primary']}; --sr-theme-secondary:{palette['secondary']};
+  --sr-theme-ink:{palette['ink']}; --sr-theme-soft:{palette['soft']}; --sr-theme-border:{palette['border']};
+  background:linear-gradient(135deg,{palette['wash1']} 0%,{palette['wash2']} 48%,{palette['wash3']} 100%) !important;
+  background-size:220% 220% !important;
+}}
+.sr-o1 {{ background:radial-gradient(circle,{palette['glow1']},transparent 70%) !important; }}
+.sr-o2 {{ background:radial-gradient(circle,{palette['glow2']},transparent 70%) !important; }}
+.sr-o3 {{ background:radial-gradient(circle,{palette['glow2']},transparent 70%) !important; }}
+.sr-o4 {{ background:radial-gradient(circle,{palette['glow1']},transparent 70%) !important; }}
+.sr-badge {{ color:var(--sr-theme-ink) !important; background:var(--sr-theme-soft) !important; border-color:var(--sr-theme-border) !important; }}
+.sr-h1 {{ background-image:linear-gradient(92deg,var(--sr-theme-ink),var(--sr-theme-primary),var(--sr-theme-secondary)) !important; }}
+.sr-sub,.sr-desc {{ color:var(--sr-theme-ink) !important; }}
+.sr-title,.sr-step b {{ color:var(--sr-theme-ink) !important; }}
+[data-testid="stVerticalBlockBorderWrapper"] {{ border-color:var(--sr-theme-border) !important; box-shadow:0 18px 46px color-mix(in srgb,var(--sr-theme-primary) 13%,transparent) !important; }}
+.stButton > button[kind="primary"], .stMultiSelect [data-baseweb="tag"] {{ background:var(--sr-theme-primary) !important; border-color:var(--sr-theme-primary) !important; }}
+.stButton > button[kind="primary"] {{ box-shadow:0 8px 22px color-mix(in srgb,var(--sr-theme-primary) 24%,transparent) !important; }}
+.stButton > button:focus-visible,[data-baseweb="select"]:focus-within {{ outline-color:var(--sr-theme-secondary) !important; }}
+.stProgress > div > div > div > div {{ background:linear-gradient(90deg,var(--sr-theme-primary),var(--sr-theme-secondary)) !important; }}
+.srui-brand,.srui-flow h1,.srui-score strong,.srui-path-step h4 {{ color:var(--sr-theme-ink) !important; }}
+.srui-brand b,.srui-eyebrow,.srui-step.active,.srui-path-title {{ color:var(--sr-theme-primary) !important; }}
+.srui-step.active .srui-step-number,.srui-step.done .srui-step-number {{ color:var(--sr-theme-primary) !important; border-color:var(--sr-theme-border) !important; background:var(--sr-theme-soft) !important; box-shadow:none !important; }}
+.srui-chip {{ color:var(--sr-theme-ink) !important; border-color:var(--sr-theme-border) !important; background:var(--sr-theme-soft) !important; }}
+.srui-meter > span {{ background:linear-gradient(90deg,var(--sr-theme-primary),var(--sr-theme-secondary)) !important; }}
+.srui-path-step > div:hover {{ border-color:var(--sr-theme-secondary) !important; }}
+</style>"""
+
 def render_particle_field() -> None:
     """Render a cursor-reactive particle layer across the app viewport."""
     st.markdown(
@@ -1593,6 +1669,7 @@ def role_card(t: dict, result: dict, expanded: bool = False, lang: str = "en") -
 def screen_landing() -> None:
     screen_wrap()
     st.markdown(LANDING_CSS + ORBS_HTML, unsafe_allow_html=True)
+    st.markdown(theme_css(st.session_state.get("theme_color", "sage")), unsafe_allow_html=True)
 
     _, lang_col = st.columns([5, 1])
     with lang_col:
@@ -2483,6 +2560,7 @@ def screen_cc_results() -> None:
 st.set_page_config(page_title="SkillRadar MY", page_icon="📡", layout="wide")
 
 st.session_state.setdefault("lang", "en")
+st.session_state.setdefault("theme_color", "sage")
 play_intro()
 
 # Grouped so the list is scannable; the label shown is "GROUP — Field".
@@ -2567,9 +2645,17 @@ st.session_state.setdefault("stage", "landing")
 STAGE = current_stage()
 _T = T(st.session_state.get("lang", "en"))
 
+st.sidebar.selectbox(
+    "主题色 / Theme color",
+    options=tuple(THEME_PALETTES),
+    key="theme_color",
+    format_func=lambda key: THEME_PALETTES[key]["label"],
+)
+
 if STAGE != "landing":
     st.markdown(APP_CSS, unsafe_allow_html=True)
     st.markdown(f"<style>{CSS_PATH.read_text(encoding='utf-8')}</style>", unsafe_allow_html=True)
+    st.markdown(theme_css(st.session_state["theme_color"]), unsafe_allow_html=True)
 
 try:
     STAGES.get(STAGE, screen_landing)()
