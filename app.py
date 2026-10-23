@@ -13,7 +13,6 @@ import json
 import hashlib
 import re
 import sys
-import time
 import zlib
 from urllib.parse import quote_plus
 from pathlib import Path
@@ -483,9 +482,9 @@ INTRO_HTML = """
 .sr-console-base:after { content:""; position:absolute; left:13%; right:13%; top:38%; height:2px; background:linear-gradient(90deg,transparent,#65e5e9,#b3f5eb,#65e5e9,transparent); opacity:.85; }
 .sr-console-leds { position:absolute; left:50%; bottom:1%; transform:translateX(-50%); color:#84f5ee; font:9px/1 ui-monospace,Consolas,monospace; letter-spacing:.38em; white-space:nowrap; }
 .sr-intro-hint { position:absolute; top:84%; color:rgba(214,241,247,.66); font:600 10px/1.4 ui-monospace,Consolas,monospace; letter-spacing:.22em; text-transform:uppercase; text-align:center; }
-body:has(.sr-intro) [data-testid="stHeader"],body:has(.sr-intro) [data-testid="stToolbar"],body:has(.sr-intro) footer { display:none !important; }
-body:has(.sr-intro) [data-testid="stMainBlockContainer"] { max-width:none !important; padding:0 !important; }
-body:has(.sr-intro) [data-testid="stAppViewContainer"] { overflow:hidden !important; }
+body:has(.sr-intro:not(.sr-intro-zoom)) [data-testid="stHeader"],body:has(.sr-intro:not(.sr-intro-zoom)) [data-testid="stToolbar"],body:has(.sr-intro:not(.sr-intro-zoom)) footer { display:none !important; }
+body:has(.sr-intro:not(.sr-intro-zoom)) [data-testid="stMainBlockContainer"] { max-width:none !important; padding:0 !important; }
+body:has(.sr-intro:not(.sr-intro-zoom)) [data-testid="stAppViewContainer"] { overflow:hidden !important; }
 .st-key-intro_enter { position:fixed !important; z-index:1000000 !important; top:34vh; left:50%; transform:translateX(-50%); width:min(78vw,910px); height:clamp(197px,35.7vh,336px); pointer-events:none; }
 .st-key-intro_enter [data-testid="stButton"],.st-key-intro_enter button { width:100%; height:100%; }
 .st-key-intro_enter button { position:relative; min-height:0; padding:0 !important; border:0 !important; border-radius:16px !important; color:transparent !important; background:transparent !important; box-shadow:none !important; font-size:0 !important; cursor:pointer; pointer-events:auto; }
@@ -504,8 +503,8 @@ body:has(.sr-intro) [data-testid="stAppViewContainer"] { overflow:hidden !import
 
 ENTRY_REVEAL_CSS = """
 <style>
-@keyframes sr-portal-reveal { from { opacity:0; filter:blur(9px); transform:scale(1.025); } to { opacity:1; filter:blur(0); transform:scale(1); } }
-[data-testid="stAppViewContainer"] { animation:sr-portal-reveal .65s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes sr-portal-reveal { from { opacity:0; } to { opacity:1; } }
+[data-testid="stAppViewContainer"] { animation:sr-portal-reveal .45s ease-out both; }
 @media(prefers-reduced-motion:reduce) { [data-testid="stAppViewContainer"] { animation:none !important; } }
 </style>
 """
@@ -534,13 +533,13 @@ LEGACY_INTRO_HTML = """
 ENTRY_TRANSITION_CSS = """
 <style>
 @keyframes sr-entry-scene-fade {
-  0%, 52% { opacity:1; filter:blur(0); }
-  100% { opacity:0; filter:blur(7px); visibility:hidden; }
+  0%, 45% { opacity:1; }
+  100% { opacity:0; visibility:hidden; }
 }
 @keyframes sr-entry-console-push {
-  0% { transform:translateX(-50%) scale(1); filter:blur(0); opacity:1; }
-  66% { transform:translateX(-50%) scale(7.5); filter:blur(0); opacity:1; }
-  100% { transform:translateX(-50%) scale(13); filter:blur(7px); opacity:0; }
+  0% { transform:translateX(-50%) scale(1); opacity:1; }
+  72% { transform:translateX(-50%) scale(5.5); opacity:1; }
+  100% { transform:translateX(-50%) scale(6.2); opacity:0; }
 }
 @keyframes sr-sequence-curtain {
   0%, 27% { opacity:0; visibility:hidden; }
@@ -553,8 +552,10 @@ ENTRY_TRANSITION_CSS = """
   pointer-events:none;
 }
 .sr-intro.sr-intro-zoom .sr-console {
-  animation:sr-entry-console-push 1.2s cubic-bezier(.12,.82,.18,1) forwards;
+  animation:sr-entry-console-push .95s cubic-bezier(.12,.82,.18,1) forwards;
   transform-origin:center center;
+  filter:none;
+  will-change:transform,opacity;
 }
 .sr-intro.sr-intro-zoom .sr-intro-top,
 .sr-intro.sr-intro-zoom .sr-intro-heading,
@@ -1007,12 +1008,11 @@ def play_intro():
         st.session_state["_entry_sequence_done"] = True
         st.session_state["intro_done"] = True
         st.session_state["_intro_reveal_pending"] = True
-        transition = st.empty()
-        transition.markdown(
+        st.markdown(
             INTRO_ZOOM_HTML + ANIM_CSS + LEGACY_INTRO_HTML + ENTRY_TRANSITION_CSS,
             unsafe_allow_html=True,
         )
-        return transition
+        return None
 
     st.markdown(INTRO_HTML, unsafe_allow_html=True)
     if st.button("CLICK TO ENTER", key="intro_enter", type="primary"):
@@ -2392,7 +2392,7 @@ def screen_cc_results() -> None:
 st.set_page_config(page_title="SkillRadar MY", page_icon="📡", layout="wide")
 
 st.session_state.setdefault("lang", "en")
-_ENTRY_TRANSITION = play_intro()
+play_intro()
 
 # Grouped so the list is scannable; the label shown is "GROUP — Field".
 FIELDS: dict[str, list[str]] = {
@@ -2487,9 +2487,3 @@ except Exception as exc:
     st.caption(f"{type(exc).__name__}: {exc}")
     if st.button(_T["back_start"]):
         reset()
-
-if _ENTRY_TRANSITION is not None:
-    # Let the camera push and original curtain animation finish before removing
-    # the overlay. The app is already rendered beneath it and is revealed cleanly.
-    time.sleep(3.4)
-    _ENTRY_TRANSITION.empty()
