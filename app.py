@@ -560,6 +560,12 @@ def render_particle_field() -> None:
             position:relative;
             z-index:1;
           }
+          /* Every element container sits at z-index 1, so paint order falls back to
+             DOM order — the particle layer is rendered after the intro curtain and
+             would cover it. Lift the curtain itself above the field. */
+          [data-testid="stMainBlockContainer"] [data-testid="stElementContainer"]:has(.sr-curtain) {
+            z-index: 4;
+          }
           [data-testid="stHeader"], [data-testid="stSidebar"] {
             position:relative;
             z-index:2;
@@ -672,7 +678,21 @@ def render_particle_field() -> None:
             ctx.fillRect(pointer.x - radius, pointer.y - radius, radius * 2, radius * 2);
           }
 
+          function introRunning() {
+            const curtain = parentDocument.querySelector(".sr-curtain");
+            if (!curtain) return false;
+            const style = parentWindow.getComputedStyle(curtain);
+            return style.visibility !== "hidden" && parseFloat(style.opacity || "1") > 0.02;
+          }
+
           function render(time) {
+            // The intro owns the screen while it is up: stay invisible instead of
+            // drifting under/over its headline, then start once it is gone.
+            if (introRunning()) {
+              ctx.clearRect(0, 0, width, height);
+              raf = requestAnimationFrame(render);
+              return;
+            }
             ctx.clearRect(0, 0, width, height);
             if (pointer.active) {
               drawGlow(pointer.strength);
