@@ -458,14 +458,15 @@ ANIM_CSS = """
 
 INTRO_HTML = """
 <style>
-.sr-intro { position:fixed; inset:0; z-index:999990; overflow:hidden; display:grid; place-items:center; color:#eafaff; isolation:isolate; background:#07111c; }
+.sr-intro { position:fixed; inset:0; z-index:999990; overflow:hidden; display:grid; place-items:center; color:#f4f6ec; isolation:isolate; background:#0f140b; }
 .sr-scene-frame { position:relative; width:min(100vw,177.78vh); height:min(100vh,56.25vw); aspect-ratio:16/9; overflow:hidden; isolation:isolate; transform-origin:50% 42%; transform:translate3d(0,0,0); backface-visibility:hidden; box-shadow:0 30px 90px rgba(0,0,0,.3); }
 .sr-scene-image { position:absolute; inset:0; background-size:cover; background-position:center; transition:opacity 2.8s cubic-bezier(.2,.65,.25,1); }
 .sr-scene-day { background-image:url('/app/static/landing-day.jpg'); opacity:0; }
 .sr-scene-night { background-image:url('/app/static/landing-rain-night.jpg'); opacity:1; }
 .sr-scene-frame[data-time-of-day='day'] .sr-scene-day { opacity:1; }
 .sr-scene-frame[data-time-of-day='day'] .sr-scene-night { opacity:0; }
-.sr-scene-frame:after { content:""; position:absolute; z-index:2; inset:0; pointer-events:none; background:linear-gradient(180deg,rgba(4,12,20,.4),transparent 19%,transparent 75%,rgba(4,12,20,.15)); }
+.sr-scene-frame:before { content:""; position:absolute; z-index:2; inset:0; pointer-events:none; background:radial-gradient(115% 88% at 50% 46%, transparent 52%, rgba(26,34,16,.42) 100%); }
+.sr-scene-frame:after { content:""; position:absolute; z-index:2; inset:0; pointer-events:none; background:linear-gradient(180deg,rgba(10,14,6,.45),transparent 19%,transparent 75%,rgba(10,14,6,.18)); }
 .sr-rain-pane { position:absolute; z-index:3; overflow:hidden; pointer-events:none; opacity:.78; transition:opacity 2s ease; }
 .sr-scene-frame[data-time-of-day='day'] .sr-rain-pane { opacity:.42; }
 .sr-rain-pane canvas { width:100%; height:100%; display:block; }
@@ -473,14 +474,14 @@ INTRO_HTML = """
 .sr-rain-right { left:72%; top:21%; width:28%; height:43%; }
 .sr-intro-top { position:absolute; z-index:4; top:max(12px,calc(50% - min(50vh,28.125vw) + 16px)); left:max(16px,calc(50% - min(50vw,88.89vh) + 24px)); right:max(16px,calc(50% - min(50vw,88.89vh) + 24px)); display:flex; justify-content:space-between; align-items:center; color:rgba(245,250,255,.92); font:600 10px/1.4 ui-monospace,Consolas,monospace; letter-spacing:.15em; text-transform:uppercase; text-shadow:0 2px 12px rgba(0,0,0,.65); pointer-events:none; }
 .sr-intro-brand { display:inline-flex; align-items:center; gap:8px; font:800 13px/1.2 'Helvetica Neue',Arial,sans-serif; letter-spacing:.13em; }
-.sr-intro-logo { width:26px; height:26px; flex:none; filter:drop-shadow(0 1px 8px rgba(93,235,203,.24)); }
+.sr-intro-logo { width:26px; height:26px; flex:none; filter:drop-shadow(0 1px 8px rgba(183,201,143,.30)); }
 .sr-intro-clock { font-variant-numeric:tabular-nums; }
-.sr-intro-heading { position:absolute; z-index:4; top:calc(50% - min(50vh,28.125vw) + 10px); left:50%; transform:translateX(-50%); color:#f1fbff; font-size:clamp(11px,1.2vw,15px); font-weight:600; letter-spacing:.15em; text-transform:uppercase; text-shadow:0 2px 14px rgba(0,0,0,.7); text-align:center; white-space:nowrap; pointer-events:none; }
+.sr-intro-heading { position:absolute; z-index:4; top:calc(50% - min(50vh,28.125vw) + 10px); left:50%; transform:translateX(-50%); color:#f2f5e9; font-size:clamp(11px,1.2vw,15px); font-weight:600; letter-spacing:.15em; text-transform:uppercase; text-shadow:0 2px 14px rgba(0,0,0,.7); text-align:center; white-space:nowrap; pointer-events:none; }
 body:has(.sr-intro:not(.sr-intro-zoom)) [data-testid="stHeader"],body:has(.sr-intro:not(.sr-intro-zoom)) [data-testid="stToolbar"],body:has(.sr-intro:not(.sr-intro-zoom)) footer { display:none !important; }
 body:has(.sr-intro:not(.sr-intro-zoom)) [data-testid="stMainBlockContainer"] { max-width:none !important; padding:0 !important; }
 body:has(.sr-intro:not(.sr-intro-zoom)) [data-testid="stAppViewContainer"] { overflow:hidden !important; }
-.sr-scene-cta { position:absolute; z-index:5; left:50%; top:54%; transform:translate(-50%,-50%); padding:9px 15px; border:1px solid rgba(138,239,244,.82); border-radius:5px; color:#e9ffff; background:rgba(11,35,48,.78); box-shadow:0 0 22px rgba(67,226,235,.2); font:700 10px/1.2 ui-monospace,Consolas,monospace; letter-spacing:.16em; white-space:nowrap; cursor:pointer; transition:opacity .22s ease; }
-.sr-scene-cta:focus-visible { outline:2px solid #b3f5eb; outline-offset:4px; }
+.sr-scene-cta { position:absolute; z-index:5; left:50%; top:54%; transform:translate(-50%,-50%); padding:9px 15px; border:1px solid rgba(183,201,143,.85); border-radius:5px; color:#f3f6e6; background:rgba(18,24,12,.78); box-shadow:0 0 22px rgba(138,154,91,.34); font:700 10px/1.2 ui-monospace,Consolas,monospace; letter-spacing:.16em; white-space:nowrap; cursor:pointer; transition:opacity .22s ease; }
+.sr-scene-cta:focus-visible { outline:2px solid #dbe6c4; outline-offset:4px; }
 .sr-intro.sr-intro-zoom .sr-scene-cta { opacity:0; pointer-events:none; }
 .st-key-intro_zoom_continue { position:fixed !important; z-index:-1 !important; width:1px !important; height:1px !important; overflow:hidden !important; opacity:0 !important; pointer-events:none !important; }
 .st-key-intro_zoom_continue button { width:1px !important; height:1px !important; min-height:0 !important; padding:0 !important; }
@@ -580,7 +581,7 @@ INTRO_SCENE_CONTROLLER = """
           if (!w.matchMedia("(prefers-reduced-motion: reduce)").matches) { p.y += p.speed*dt; p.x += p.drift*dt; }
           if (p.y > height+p.len || p.x < -8) { p.x=Math.random()*width; p.y=-p.len; }
           const g=ctx.createLinearGradient(p.x,p.y-p.len,p.x+2,p.y);
-          g.addColorStop(0,`rgba(205,235,255,0)`); g.addColorStop(1,`rgba(205,235,255,${p.alpha})`);
+          g.addColorStop(0,`rgba(228,238,204,0)`); g.addColorStop(1,`rgba(228,238,204,${p.alpha})`);
           ctx.strokeStyle=g; ctx.lineWidth=.8; ctx.beginPath(); ctx.moveTo(p.x,p.y-p.len); ctx.lineTo(p.x+2,p.y); ctx.stroke();
         }
         if (!w.matchMedia("(prefers-reduced-motion: reduce)").matches) pane.raf=w.requestAnimationFrame(draw);
