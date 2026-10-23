@@ -463,11 +463,11 @@ INTRO_HTML = """
 .sr-scene-image { position:absolute; inset:0; background-size:cover; background-position:center; transition:opacity 2.8s cubic-bezier(.2,.65,.25,1); }
 .sr-scene-day { background-image:url('/app/static/landing-day.jpg'); opacity:0; }
 .sr-scene-night { background-image:url('/app/static/landing-rain-night.jpg'); opacity:1; }
-.sr-intro[data-time-of-day='day'] .sr-scene-day { opacity:1; }
-.sr-intro[data-time-of-day='day'] .sr-scene-night { opacity:0; }
+.sr-scene-frame[data-time-of-day='day'] .sr-scene-day { opacity:1; }
+.sr-scene-frame[data-time-of-day='day'] .sr-scene-night { opacity:0; }
 .sr-scene-frame:after { content:""; position:absolute; z-index:2; inset:0; pointer-events:none; background:linear-gradient(180deg,rgba(4,12,20,.4),transparent 19%,transparent 75%,rgba(4,12,20,.15)); }
 .sr-rain-pane { position:absolute; z-index:3; overflow:hidden; pointer-events:none; opacity:.78; transition:opacity 2s ease; }
-.sr-intro[data-time-of-day='day'] .sr-rain-pane { opacity:.42; }
+.sr-scene-frame[data-time-of-day='day'] .sr-rain-pane { opacity:.42; }
 .sr-rain-pane canvas { width:100%; height:100%; display:block; }
 .sr-rain-top { left:34%; top:0; width:66%; height:21.5%; }
 .sr-rain-right { left:72%; top:21%; width:28%; height:43%; }
