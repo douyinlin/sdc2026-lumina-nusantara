@@ -843,6 +843,10 @@ def theme_css(theme_key: str) -> str:
 
 def render_particle_field() -> None:
     """Render a cursor-reactive particle layer across the app viewport."""
+    palette = THEME_PALETTES.get(st.session_state.get("theme_color", "sage"), THEME_PALETTES["sage"])
+    to_rgb = lambda color: ", ".join(str(int(color[i:i + 2], 16)) for i in (1, 3, 5))
+    particle_colors = [to_rgb(palette["primary"]), "255, 255, 255", to_rgb(palette["secondary"]), to_rgb(palette["primary"])]
+    glow_color = to_rgb(palette["secondary"])
     st.markdown(
         """
         <style>
@@ -865,8 +869,7 @@ def render_particle_field() -> None:
         """,
         unsafe_allow_html=True,
     )
-    st.iframe(
-        """
+    particle_html = """
         <style>
           html, body { width:100%; height:100%; margin:0; overflow:hidden; background:transparent; }
           #particle-scene { position:fixed; inset:0; width:100vw; height:100vh; overflow:hidden; pointer-events:none; }
@@ -884,7 +887,8 @@ def render_particle_field() -> None:
           const frame = window.frameElement;
           const view = parentDocument.querySelector('[data-testid="stAppViewContainer"]');
           const pointer = { x:-1000, y:-1000, active:false, strength:0 };
-          const colors = ["211, 185, 255", "255, 255, 255", "181, 138, 231", "168, 185, 160"];
+          const colors = __SR_PARTICLE_COLORS__;
+          const glowColor = "__SR_GLOW_COLOR__";
           const particles = [];
           const trail = [];
           let width = 1, height = 1, raf = 0;
@@ -963,8 +967,8 @@ def render_particle_field() -> None:
             const glow = ctx.createRadialGradient(pointer.x, pointer.y, 0,
               pointer.x, pointer.y, radius);
             glow.addColorStop(0, `rgba(255,255,255,${.56 * amount})`);
-            glow.addColorStop(.35, `rgba(226,208,255,${.28 * amount})`);
-            glow.addColorStop(1, "rgba(226,208,255,0)");
+            glow.addColorStop(.35, `rgba(${glowColor},${.28 * amount})`);
+            glow.addColorStop(1, `rgba(${glowColor},0)`);
             ctx.fillStyle = glow;
             ctx.fillRect(pointer.x - radius, pointer.y - radius, radius * 2, radius * 2);
           }
@@ -1033,7 +1037,11 @@ def render_particle_field() -> None:
           if (reducedMotion) drawStatic();
           else raf = requestAnimationFrame(render);
         </script>
-        """,
+        """.replace("__SR_PARTICLE_COLORS__", json.dumps(particle_colors)).replace(
+        "__SR_GLOW_COLOR__", glow_color
+    )
+    st.iframe(
+        particle_html,
         width="stretch",
         height=1,
         alt="SkillRadar full-page cursor particle field",
