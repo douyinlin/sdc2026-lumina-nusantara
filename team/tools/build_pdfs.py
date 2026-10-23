@@ -138,468 +138,65 @@ def page_footer(canvas, doc, label: str) -> None:
 # Content
 # --------------------------------------------------------------------------- #
 
-PRELIM_SECTIONS = [
-    (
-        "1. TEAM AND PROJECT OVERVIEW",
-        [
-            kv_table(
-                [
-                    ("Team Name", TEAM),
-                    ("Selected Domain", DOMAIN),
-                    ("Selected SDG Track (1–17)", SDG),
-                    ("Project / Solution Name", PROJECT),
-                    ("Name (Leader)", LEADER),
-                    ("Email &amp; Phone (Leader)", f"{EMAIL} / {PHONE}"),
-                    ("University Affiliation(s)", UNIVERSITY),
-                    ("Number of Team Members", str(MEMBERS)),
-                ]
-            )
-        ],
-    ),
-    (
-        "2. EXECUTIVE SUMMARY &amp; PROBLEM STATEMENT",
-        [
-            Paragraph("2.1 The Problem Context", H3),
-            Paragraph("Malaysia's labour market is being reshaped faster than its training system "
-                      "can respond. 56% of Malaysian professionals already use AI tools at work, yet "
-                      "only 26% have received formal training in them (Hays Asia Salary Guide 2025), "
-                      "and the Ministry of Science, Technology and Innovation expects more than "
-                      "600,000 workers to need reskilling within three to five years.", BODY),
-            Paragraph("The people most exposed are rarely the loudest in this debate: a 34-year-old "
-                      "customer-service supervisor in Klang whose tasks are being automated one by one; "
-                      "a TVET graduate applying for entry roles that no longer exist; an L&amp;D manager "
-                      "in a 200-person SME who must set next year's training budget without evidence of "
-                      "which roles will still be viable.", BODY),
-            Paragraph("Three failures repeat. Workers cannot see which skills are rising, so they buy "
-                      "credentials that are already commoditised. Employers cannot translate AI trends "
-                      "into a training plan, so budgets default to generic soft-skills courses. And career "
-                      "guidance is a snapshot: a one-off skills assessment in a market that keeps moving, "
-                      "so the advice expires before the learner finishes the course.", BODY),
-            Paragraph("The cost is economic and social — wasted tuition, slower wage growth, and widening "
-                      "gaps for older workers, women returning from care work, and rural learners who "
-                      "cannot reach premium bootcamps. Without a system that updates as AI advances and "
-                      "shows how each role connects to the SDGs, reskilling stays an expensive guess "
-                      "rather than a pathway out.", BODY),
-            Spacer(1, 4),
-            Paragraph("2.2 The Proposed AI Solution", H3),
-            Paragraph("<b>Intake.</b> A user answers a short questionnaire on role, years of experience, "
-                      "tools and interests, or uploads a CV that we parse into a normalised skill profile. "
-                      "Every skill maps to a shared taxonomy (O*NET / ESCO identifiers) through an alias "
-                      "dictionary, so \"Zendesk\" and \"crm\" both resolve to CRM administration.", BODY),
-            Paragraph("<b>Trend layer.</b> A scheduled job ingests public signals — WEF Future of Jobs "
-                      "indicators, O*NET skill updates, sampled public job postings and the HRD Corp course "
-                      "catalogue — into a versioned trend snapshot. Each record stores its source URL, "
-                      "retrieval date and metric, and the interface exposes that provenance on every "
-                      "forecast, so anyone can see when the data changed and what moved.", BODY),
-            Paragraph("<b>Matching.</b> For each candidate future role we compute an explainable score from "
-                      "four visible components: skill coverage, transferability of adjacent skills, demand "
-                      "trend and gap cost. The user sees the arithmetic and the exact missing skills, not a "
-                      "black box.", BODY),
-            Paragraph("<b>Pathway and scenarios.</b> Missing skills are ordered cheapest-first into a "
-                      "week-by-week plan built from free or low-cost resources, each with a link and "
-                      "estimated hours. The ranking runs twice — moderate and fast AI disruption — so the "
-                      "user sees how robust a choice is. Every role and skill carries SDG tags (primary "
-                      "4.4 and 8.5, with 8.2 and 9.1 where relevant).", BODY),
-            Paragraph("<b>From the Phase 1 workshops</b> we apply GenAI APIs for CV parsing and "
-                      "plain-language explanations, a relational schema for profiles, trends and courses, "
-                      "and cloud deployment on Replit and Streamlit Community Cloud, so the prototype is "
-                      "genuinely online rather than a slide.", BODY),
-        ],
-    ),
-    (
-        "3. TECHNICAL ARCHITECTURE &amp; IMPLEMENTATION PLAN",
-        [
-            Paragraph("3.1 Conceptual Tech Stack", H3),
-            grid_table(
-                ["Layer", "Technology", "Why"],
-                [
-                    ["UI", "Streamlit (Python)", "Fast iteration, runs unchanged on Replit and Streamlit Cloud"],
-                    ["Service layer", "Python modules (src/utils.py)", "Testable matching / pathway / SDG logic"],
-                    ["Data", "SQLite locally, Postgres on hosted deployment",
-                     "Versioned trend snapshots, profiles, courses"],
-                    ["AI", "No language model at inference time; deterministic rule engine",
-                     "GPU embeddings for CV parsing; LLM only phrases explanations"],
-                    ["Ingestion", "Python scheduled job, JSON snapshots",
-                     "Each snapshot carries source_url + retrieved_at"],
-                    ["Hosting", "Replit; Streamlit Community Cloud", "Public live demo URL for judges"],
-                    ["Tests", "python -m unittest discover tests", "Regression on score and pathway logic"],
-                ],
-                (26 * mm, 60 * mm, 79 * mm),
-            ),
-            Spacer(1, 6),
-            Paragraph("<b>System block diagram</b> — see the appended diagram "
-                      "(<i>docs/architecture.png</i> in the repository).", BODY),
-            Paragraph(
-                "User → Streamlit UI → Matching &amp; pathway engine → SQLite/Postgres; "
-                "Ingestion job → trend_snapshots(source_url, retrieved_at); "
-                "Streamlit UI reads the trend snapshot; all parsing and scoring run locally.", NOTE),
-            Spacer(1, 4),
-            Paragraph("<b>Sponsor-provided GenAI API or Cloud Platform:</b> Replit only. "
-                      "The prototype was developed in a Replit workspace. <b>No RunPod GPU endpoint is "
-                      "called by the application</b> \u2014 CV parsing runs on a local rule-based parser, "
-                      "and every score comes from a deterministic rule set. The public live demo is "
-                      "hosted on Streamlit Community Cloud from the same repository.", BODY),
-            Spacer(1, 4),
-            Paragraph("3.2 Design-Thinking &amp; Deployment Strategy", H3),
-            Paragraph("<b>Empathise and define.</b> Five semi-structured interviews — one HR executive, one "
-                      "TVET lecturer, two working adults considering a switch, one final-year student — "
-                      "plus a review of Malaysian reskilling reports. The recurring sentence was \"I don't "
-                      "know what to learn next, and I don't trust course adverts\". We defined the job to be "
-                      "done as: in under ten minutes, understand which two or three roles are realistic for "
-                      "me and what the first step is.", BODY),
-            Paragraph("<b>Ideate and prototype.</b> Paper flows, then a clickable Streamlit prototype tested "
-                      "with the same five people; we cut features that needed data we could not source "
-                      "honestly.", BODY),
-            Paragraph("<b>Test and de-risk.</b> The score is transparent by construction, every claim links "
-                      "to a dated source, and parsing runs locally with no external AI service so a "
-                      "live demo cannot fail on stage.", BODY),
-            Paragraph("<b>Deploy.</b> Replit is the shared workspace and Streamlit Community Cloud hosts the live demo; a "
-                      "weekly snapshot job keeps trends current. Phase 2 adds the HR view and automatic "
-                      "re-planning.", BODY),
-        ],
-    ),
-    (
-        "4. PRELIMINARY ENVIRONMENTAL &amp; SDG IMPACT FRAMEWORK",
-        [
-            Paragraph(
-                "Baselines are taken from published reports or our own five-person interviews. "
-                "The interview count is stated so judges can weigh the evidence.", NOTE),
-            Spacer(1, 6),
-            grid_table(
-                ["Metric Category", "Your Response"],
-                [
-                    ["Target SDG Sub-Target(s)",
-                     "<b>4.4</b> — substantially increase the number of youth and adults who have "
-                     "relevant skills, including technical and vocational skills, for employment and "
-                     "entrepreneurship.<br/><b>8.5</b> — achieve full and productive employment and decent "
-                     "work for all. Secondary: <b>4.3</b> equal access to affordable technical and "
-                     "vocational training."],
-                    ["Current Problem Baseline",
-                     "56% of Malaysian professionals use AI tools at work but only <b>26%</b> have received "
-                     "formal training (Hays Asia Salary Guide 2025); <b>600,000+</b> workers need reskilling "
-                     "within 3–5 years (MOSTI). A learner currently spends 3–8 weeks (median 4) on "
-                     "self-directed search across job boards and course catalogues before committing to a "
-                     "route (our five interviews)."],
-                    ["Core Measurable KPI",
-                     "(1) <b>Minutes from profile to a ranked, sourced reskilling plan</b> — target ≤5 min, "
-                     "measured in-app.<br/>(2) <b>Top-3 relevance rate</b> — share of pilot users rating at "
-                     "least one of the three recommended roles as realistic (5-point scale ≥4).<br/>"
-                     "(3) <b>Source coverage</b> — share of displayed recommendations carrying a source URL "
-                     "and retrieval date; must be 100%."],
-                    ["Phase 2 Impact Target",
-                     "<b>70%</b> top-3 relevance across ≥30 pilot users; <b>≥40%</b> reduction in "
-                     "time-to-plan versus the 4-week baseline; <b>100%</b> of role and skill cards traceable "
-                     "to a dated public source; <b>≥60%</b> of pilot users complete step 1 of their pathway "
-                     "within 30 days."],
-                ],
-                (42 * mm, 123 * mm),
-            ),
-            Spacer(1, 6),
-            Paragraph(
-                "<b>Sources:</b> Hays Asia Salary Guide 2025; Ministry of Science, Technology and Innovation "
-                "(MOSTI) reskilling estimate as cited in the SDC Domain 1 brief; WEF Future of Jobs Report; "
-                "O*NET database (U.S. Department of Labor); HRD Corp course directory.", NOTE),
-        ],
-    ),
-    (
-        "5. ELIGIBILITY &amp; READINESS CHECKLIST",
-        [
-            Paragraph(
-                "<font color='#8A9A5B'>☑</font> All team members have completed the mandatory GenAI, "
-                "Database, and Cloud Deployment upskilling workshops.", BODY),
-            Paragraph(
-                "<font color='#8A9A5B'>☑</font> The project concept addresses a verified real-world problem "
-                "mapped directly to one or more UN SDGs (SDG 4.4 and 8.5).", BODY),
-            Paragraph(
-                "<font color='#8A9A5B'>☑</font> The proposed solution targets a functional, deployed "
-                f"application rather than a theoretical business case study — live at {LIVE}.", BODY),
-            Paragraph(
-                "<font color='#8A9A5B'>☑</font> All fields in this template have been completed within the "
-                "word limits stated.", BODY),
-        ],
-    ),
-    (
-        "6. IP &amp; ORIGINALITY DECLARATION",
-        [
-            Paragraph("6.1 Pre-Existing / Prior-Owned Work", H3),
-            Paragraph("Does this submission include any code, design, research, or other work that any team "
-                      "member created or owned before the start of this hackathon? <b>No.</b> All code, "
-                      "design and research was created during the SDC 2026 hackathon period.", BODY),
-            Paragraph("6.2 Third-Party Code, Datasets, or Models", H3),
-            Paragraph("Does your project use any third-party code libraries, open-source frameworks, "
-                      "public/private datasets, or pre-trained AI models that your team did not create? "
-                      "<b>Yes</b> — declared below.", BODY),
-            grid_table(
-                ["Name", "Type (code/dataset/model)", "License"],
-                [
-                    ["Streamlit", "code", "Apache 2.0"],
-                    ["pandas", "code", "BSD 3-Clause"],
-                    ["O*NET database (U.S. Dept. of Labor)", "dataset", "CC BY 4.0 (attributed in-app)"],
-                    ["WEF Future of Jobs indicators", "dataset", "Public report, cited"],
-                    ["HRD Corp course directory", "dataset", "Public directory, cited"],
-                    ["O*NET occupation skill lists", "dataset", "CC BY 4.0"],
-                    ["Streamlit", "code", "Apache 2.0"],
-                ],
-                (62 * mm, 43 * mm, 60 * mm),
-            ),
-            Spacer(1, 6),
-            Paragraph("6.3 Employment-Related IP Conflicts", H3),
-            Paragraph("Is any team member currently bound by an employment, internship, or consulting "
-                      "agreement under which their employer could claim ownership of work they create during "
-                      "this hackathon? <b>No.</b>", BODY),
-        ],
-    ),
-    (
-        "7. DECLARATION",
-        [
-            Paragraph(
-                "By submitting this proposal, the team leader confirms that the information provided is "
-                "accurate to the best of the team's knowledge and that the project will be original work "
-                "created during the SDC 2026 hackathon period.", BODY),
-            Spacer(1, 26),
-            Table(
-                [
-                    ["Signature:", "____________________________________"],
-                    ["Name:", LEADER],
-                    ["Date:", "______ / ______ / 2026"],
-                ],
-                colWidths=(32 * mm, 100 * mm),
-                style=TableStyle(
-                    [
-                        ("FONTNAME", (0, 0), (-1, -1), "Helvetica"),
-                        ("FONTSIZE", (0, 0), (-1, -1), 9.5),
-                        ("BOTTOMPADDING", (0, 0), (-1, -1), 12),
-                        ("ALIGN", (1, 0), (1, -1), "LEFT"),
-                    ]
-                ),
-            ),
-        ],
-    ),
-]
+def para(text):
+    return Paragraph(text, BODY)
 
+
+def section(title, *texts):
+    return (title, [para(t) for t in texts])
+
+
+def signature():
+    return KeepTogether([para("Leader signature (after review): __________________________"),
+                         para("Name: DU YULIN"), para("Actual signing date: __________________________")])
+
+
+PRELIM_SECTIONS = [
+    ("1. TEAM AND PROJECT OVERVIEW", [kv_table([
+        ("Team", TEAM), ("Domain", DOMAIN), ("SDG track", SDG), ("Project", PROJECT),
+        ("Leader", LEADER), ("Contact", EMAIL + " / " + PHONE),
+        ("University", UNIVERSITY), ("Members", "5: DU YULIN; GAO TANGLINYUE; ZHENG QUANYING; WU ZHUOLI; ZHANG BORAN")])]),
+    section("2. EXECUTIVE SUMMARY &amp; PROBLEM STATEMENT",
+        "<b>2.1 Problem context</b><br/>Malaysian workers and graduates need to understand how changing demand affects their next learning decision. The official SDC Domain 1 brief cites 56% AI-tool adoption versus 26% formal training and a MOSTI estimate of over 600,000 workers needing reskilling. These are secondary citations from the competition brief, not measurements collected by this team. Static course lists do not explain why a role fits, what skills are missing, or how the recommendation changes under uncertainty. We target workers, graduates, HR teams and career centres who need a transparent starting point for reskilling. The prototype supports guidance rather than predicting employment or making hiring decisions.",
+        "<b>2.2 Proposed solution and current implementation</b><br/>SkillRadar MY accepts a questionnaire or synthetic text CV. A local keyword and alias parser maps skills to a team-curated catalogue; it does not implement a complete O*NET/ESCO identifier mapping. Dated JSON snapshots separate DOSM occupation-level observations, JobStreet/Randstad named-skill signals and WEF global forecasts. Validated manual import supports updating selected snapshots; automatic collection is future work. Five visible scoring components cover skills, role focus, transferability, demand and gap cost. Ordered learning steps link to recorded resources or search routes where coverage is absent. Hours and fees still require verification. Role and skill SDG mappings are team interpretations. Moderate and fast-disruption scenarios expose sensitivity to assumptions. The current application uses Streamlit, Python, JSON and session state. It calls no external model API and requires no GPU. Replit usage screenshots are retained; Streamlit Community Cloud provides the public demo. Automated ingestion, semantic parsing and a database are future options, not implemented features."),
+    section("3. TECHNICAL ARCHITECTURE &amp; IMPLEMENTATION PLAN",
+        "<b>3.1 Architecture</b><br/>Synthetic profile / questionnaire -> Streamlit UI -> local skill extractor -> five-component matching engine -> learning pathway and SDG display. The engine reads team-curated JSON catalogues and dated trend snapshots. A human reviews source material and runs the validation/import command. There is no database or external inference service on the request path. Replit is the documented development workspace; the live URL uses Streamlit Community Cloud. No RunPod endpoint is used.",
+        "<b>3.2 Design thinking and deployment</b><br/>The problem definition draws on the Domain 1 brief and public labour-market reports. This revision does not claim completed interviews or user pilots: evidence for the previous five-person claims has not been supplied. The implemented flows expose missing skills, score components, evidence sources, scenarios and learning steps. Repository tests and development logs document local regression checks; these are not substitutes for independent user validation. Before submission the team should check the deployed flow using synthetic data and restore judge access to the Replit project. A future pilot should observe users completing the same task with and without the prototype and record time, relevance ratings and confusion points. Deployment and human review must be confirmed by the team."),
+    section("4. PRELIMINARY ENVIRONMENTAL &amp; SDG IMPACT FRAMEWORK",
+        "<b>Targets:</b> SDG 4.4 (employment-relevant skills), with 8.5 (decent work). Skill mappings express intended contribution, not measured UN impact.",
+        "<b>Baseline:</b> The brief reports 56% adoption and 26% training, a 30-percentage-point context gap. A product-specific time-to-plan baseline has not yet been measured. The previous 3-8 week / median four-week interview baseline is withdrawn pending evidence.",
+        "<b>KPIs and proposed Phase 2 targets:</b> Measure time to produce a sourced plan and participant-rated top-three relevance. Proposed pilot: at least 10 consenting adult testers using synthetic profiles; target median completion within five minutes and at least 70% rating one top-three role at least 4/5 for relevance. Target 20% lower median task time against an equivalent manual-search task, if a valid baseline is collected before the final. Audit 100% of displayed role/skill recommendations for a source or explicit team-assumption label. These are targets, not results. Longer-term learning completion is outside the final-round evaluation window."),
+    section("5. ELIGIBILITY &amp; READINESS CHECKLIST",
+        "SDG mapping and an implemented prototype are present. Team confirmation remains required for mandatory workshop attendance, official registration eligibility, deployed end-to-end testing, sponsor access, third-party terms and final submission completeness. Video is pending. This unsigned revision does not pre-check those attestations."),
+    section("6. IP &amp; ORIGINALITY DECLARATION",
+        "<b>6.1 Prior-owned work:</b> Previous team declaration: none. Leader must reconfirm before signing; repository history alone cannot establish originality.",
+        "<b>6.2 Third-party materials:</b> Python (PSF), Streamlit (Apache 2.0), pandas / NumPy (BSD 3-Clause), PyArrow (Apache 2.0), Matplotlib (Matplotlib license), ReportLab (BSD) and public-source references are used. The Technical Declaration inventories current data and development tools. Public availability is not a blanket reuse license; source-specific terms require team review.",
+        "<b>6.3 Employment-related IP:</b> Previous team declaration: none. Each member must reconfirm any employment, internship or consulting restrictions."),
+    ("7. DECLARATION", [para("By signing after review, the leader confirms the final submission is accurate and original to the best of the team's knowledge. This revised document has not been signed; the previous signature is not carried over to changed statements."), signature()]),
+]
 
 TECH_SECTIONS = [
-    (
-        "1. TEAM AND PROJECT OVERVIEW",
-        [
-            kv_table(
-                [
-                    ("Team Name", TEAM),
-                    ("Project / Solution Name", PROJECT),
-                    ("Name (Leader)", LEADER),
-                    ("Email &amp; Phone (Leader)", f"{EMAIL} / {PHONE}"),
-                    ("University Affiliation(s)", UNIVERSITY),
-                    ("Live Prototype URL", LIVE),
-                    ("Code Repository URL (public)", REPO),
-                ]
-            )
-        ],
-    ),
-    (
-        "2. ARCHITECTURE &amp; TECHNOLOGY STACK",
-        [
-            Paragraph("2.1 System Architecture Overview", H3),
-            Paragraph(
-                "The Streamlit user interface is the only client judges and users touch. A user either "
-                "uploads a synthetic CV or edits the questionnaire, both of which produce a skill profile "
-                "normalised against a fixed vocabulary (feature #1). The UI reads a versioned trend "
-                "snapshot from the data store; each record carries its source URL and retrieval date, and "
-                "these are displayed alongside every forecast (feature #2). The matching and pathway engine "
-                "consumes the profile plus the snapshot and returns ranked roles with a four-component "
-                "explainable score, the exact skill gap (feature #3), an ordered reskilling plan (feature "
-                "#4), SDG tags on every role (feature #5) and a moderate-versus-fast scenario comparison "
-                "(feature #6). CV parsing and scoring run locally in the app with no external AI service, with a "
-                "local rule-based fallback so the demo degrades gracefully. A scheduled ingestion job "
-                "refreshes trend snapshots from public sources. See the appended block diagram.", BODY),
-            Spacer(1, 4),
-            Paragraph("2.2 Languages, Frameworks &amp; Libraries", H3),
-            grid_table(
-                ["Name &amp; Version", "Purpose in Project", "License"],
-                [
-                    ["Python 3.11+", "Application and engine language", "PSF"],
-                    ["Streamlit 1.66", "Web UI, file upload, tables", "Apache 2.0"],
-                    ["pandas 2.x", "Tabular handling", "BSD 3-Clause"],
-                    ["reportlab", "Build these submission PDFs (offline tool)", "BSD"],
-                    ["None (no ML library loaded at runtime)", "All scoring is a deterministic rule set", "Apache 2.0"],
-                    ["unittest (stdlib)", "Unit tests for the scoring engine", "PSF"],
-                ],
-                (52 * mm, 68 * mm, 45 * mm),
-            ),
-        ],
-    ),
-    (
-        "3. APIs &amp; CLOUD SERVICES",
-        [
-            Paragraph("3.1 External APIs", H3),
-            grid_table(
-                ["API and Provider", "Purpose in Project", "Access Tier"],
-                [
-                    ["None — no external AI API is called", "CV parsing and scoring run locally in the app", "—"],
-                    ["WEF / O*NET / HRD Corp public data feeds", "Trend snapshot ingestion (public data)", "free"],
-                    ["Streamlit Community Cloud", "Hosting the public live demo", "free"],
-                    ["—", "—", "—"],
-                ],
-                (62 * mm, 68 * mm, 35 * mm),
-            ),
-            Spacer(1, 4),
-            Paragraph("No API keys or secrets are included in this document.", NOTE),
-            Spacer(1, 4),
-            Paragraph("3.2 Cloud Platforms &amp; Deployment", H3),
-            grid_table(
-                ["Service &amp; Provider", "Purpose in Project", "Plan / Region"],
-                [
-                    ["Streamlit Community Cloud", "Public live demo (auto-deploy from GitHub main)", "Community / global"],
-                    ["Replit", "Development workspace and alternative hosting", "Free tier"],
-                    ["Streamlit Community Cloud", "Auto-deploy from GitHub main on every push", "Community / global"],
-                    ["GitHub (douyinlin)", "Source control and deployment trigger", "Free"],
-                ],
-                (52 * mm, 68 * mm, 45 * mm),
-            ),
-        ],
-    ),
-    (
-        "4. AI TOOLS, MODELS &amp; DATASETS",
-        [
-            Paragraph("4.1 AI Models Used in the Solution", H3),
-            grid_table(
-                ["Model &amp; Version", "Source / Provider", "Usage", "License / Terms"],
-                [
-                    ["No pre-trained model is loaded at runtime", "—", "—", "—"],
-                    ["Rule-based skill extractor (in-house)", "Team-built", "rules only", "Apache 2.0"],
-                    ["Dictionary-matched taxonomy (O*NET / ESCO inspired)", "Team-curated", "catalogue", "CC BY 4.0 (O*NET)"],
-                ],
-                (48 * mm, 42 * mm, 32 * mm, 43 * mm),
-            ),
-            Spacer(1, 4),
-            Paragraph("4.2 Datasets", H3),
-            grid_table(
-                ["Dataset", "Source / URL", "Type", "License", "Personal data?"],
-                [
-                    ["O*NET skills & occupations", "onetcenter.org", "public", "CC BY 4.0", "No"],
-                    ["WEF Future of Jobs indicators", "weforum.org", "public", "Cited", "No"],
-                    ["HRD Corp course directory", "hrdcorp.gov.my", "public", "Public directory", "No"],
-                    ["Demo profiles & sample CV", "Team-authored", "synthetic", "Apache 2.0", "No"],
-                ],
-                (40 * mm, 40 * mm, 22 * mm, 30 * mm, 33 * mm),
-            ),
-            Spacer(1, 4),
-            Paragraph("4.3 AI-Assisted Development Tools", H3),
-            Paragraph("Did your team use any generative-AI tool to help create code, design, text, or other "
-                      "project material? <b>Yes</b>.", BODY),
-            grid_table(
-                ["Tool &amp; Version", "Used For", "Extent of Use"],
-                [
-                    ["DeepSeek-based coding assistant", "Scaffolding, boilerplate, documentation drafting", "moderate"],
-                    ["GitHub Copilot", "Inline code completion", "minor"],
-                ],
-                (55 * mm, 70 * mm, 40 * mm),
-            ),
-            Spacer(1, 6),
-            Paragraph(
-                "Review statement: Every AI-generated block was read, tested or rewritten by a team member; "
-                "matching logic, SDG tags and all statistics are hand-verified against the cited sources. "
-                "Unit tests cover the scoring and pathway functions, and a reviewer other than the author "
-                "checks each pull request before merge.", BODY),
-        ],
-    ),
-    (
-        "5. SPONSOR-PROVIDED RESOURCES",
-        [
-            Paragraph("Did your project use any official SDC sponsor-provided resource? <b>Yes</b>.", BODY),
-            grid_table(
-                ["Sponsor", "Resource", "How It Was Used in the Project"],
-                [
-                    ["SDC 2026 programme", "Replit workspace",
-                     "Development environment for the prototype during the build phase"],
-                    ["None", "No RunPod endpoint is used",
-                     "CV parsing runs locally; the app makes no GPU or external AI call"],
-                ],
-                (45 * mm, 45 * mm, 75 * mm),
-            ),
-            Spacer(1, 6),
-            Paragraph("Essentiality: The Replit workspace removed local setup so all five members could work on the same running prototype, and the public demo is hosted on Streamlit Community Cloud. Neither is essential to the logic: the app runs on any Python host with no external AI service, so the solution survives if workspace access ends.", BODY),
-        ],
-    ),
-    (
-        "6. SECURITY, PRIVACY &amp; RESPONSIBLE USE",
-        [
-            Paragraph("6.1 Data Handling &amp; Privacy", H3),
-            Paragraph(
-                "The public demo processes no real personal data. Users either pick a synthetic sample "
-                "profile or upload a synthetic CV that the team authored; the interface states this rule "
-                "next to the upload widget. Uploaded text is parsed in memory to extract skill names and is "
-                "never written to disk, logged or stored in a database. No account, login or cookie is used "
-                "beyond the Streamlit session itself. API keys live in platform secrets (Replit Secrets / "
-                "Streamlit Cloud secrets) and never appear in the repository. If a future version accepts "
-                "real CVs, it will require explicit consent, a retention limit and deletion on request.",
-                BODY),
-            Spacer(1, 4),
-            Paragraph("6.2 Known Limitations &amp; Risks", H3),
-            Paragraph(
-                "Main risks: (1) trend data lag and source bias \u2014 the weights are currently simulated and the "
-                "UI labels them as such; (2) rule-based matching can mis-map niche skills \u2014 mitigated by a "
-                "curated alias vocabulary and a visible skill-gap breakdown; (3) hallucinated roles or courses "
-                "\u2014 impossible by construction, because roles and course links come from a fixed catalogue and "
-                "no language model runs at inference time; (4) no GPU acceleration today, so CV parsing is limited "
-                "to text-based PDFs and plain text; (5) small pilot size \u2014 statements are labelled as estimates. "
-                "The tool supports human career decisions and never makes hiring decisions.", BODY),
-
-        ],
-    ),
-    (
-        "7. COMPLIANCE &amp; READINESS",
-        [
-            Paragraph(
-                "<font color='#8A9A5B'>☑</font> All APIs, cloud services, AI tools, models, and datasets used "
-                "in the project are declared in this document.", BODY),
-            Paragraph(
-                "<font color='#8A9A5B'>☑</font> All third-party code, datasets, and models are used in "
-                "accordance with their licenses, and attribution is provided where required.", BODY),
-            Paragraph(
-                "<font color='#8A9A5B'>☑</font> No API keys, passwords, or other credentials are exposed in "
-                "the code repository, prototype, or this document.", BODY),
-            Paragraph(
-                "<font color='#8A9A5B'>☑</font> Any use of generative-AI tools for development has been "
-                "disclosed and reviewed by the team.", BODY),
-            Paragraph(
-                "<font color='#8A9A5B'>☑</font> Any use of official SDC sponsor resources has been declared "
-                "in Section 5.", BODY),
-            Paragraph(
-                "<font color='#8A9A5B'>☑</font> The prototype described here is accessible to judges through "
-                "the links provided in Section 1.", BODY),
-            Paragraph(
-                "<font color='#8A9A5B'>☑</font> All fields in this template have been completed within the "
-                "word limits stated.", BODY),
-        ],
-    ),
-    (
-        "8. DECLARATION",
-        [
-            Paragraph(
-                "By submitting this document, the team leader confirms that the information provided is "
-                "complete and accurate to the best of the team's knowledge, and that every API, cloud "
-                "service, AI tool, dataset, model, and sponsor resource used in the project has been "
-                "declared.", BODY),
-            Spacer(1, 26),
-            Table(
-                [
-                    ["Signature:", "____________________________________"],
-                    ["Name:", LEADER],
-                    ["Date:", "______ / ______ / 2026"],
-                ],
-                colWidths=(32 * mm, 100 * mm),
-                style=TableStyle(
-                    [
-                        ("FONTNAME", (0, 0), (-1, -1), "Helvetica"),
-                        ("FONTSIZE", (0, 0), (-1, -1), 9.5),
-                        ("BOTTOMPADDING", (0, 0), (-1, -1), 12),
-                    ]
-                ),
-            ),
-        ],
-    ),
+    ("1. TEAM AND PROJECT OVERVIEW", [kv_table([("Team / project", TEAM + " / " + PROJECT), ("Leader", LEADER), ("Contact", EMAIL + " / " + PHONE), ("University", UNIVERSITY), ("Live prototype", LIVE), ("Public repository", REPO)])]),
+    section("2. ARCHITECTURE &amp; TECHNOLOGY STACK",
+        "<b>2.1 Architecture</b><br/>Streamlit collects a synthetic profile and calls local Python modules for keyword extraction, five-component matching, learning pathways and SDG interpretation. JSON files supply roles, courses and dated trend snapshots. Session state holds the current interaction. A validated manual import updates trend snapshots after human review. There is no scheduled ingestion, relational database, external LLM or GPU inference. Scenario and scoring coefficients are prototype heuristics, not measured hiring probabilities.",
+        "<b>2.2 Runtime libraries</b><br/>Validated local environment: Python 3.12 (PSF). Direct requirements: Streamlit 1.66.0 (Apache 2.0), pandas 3.0.6 (BSD 3-Clause), NumPy 2.5.4 (BSD 3-Clause), PyArrow 26.0.0 (Apache 2.0), Matplotlib 3.11.2 (Matplotlib license). Development/documentation utilities include unittest, mypy, Playwright, ReportLab, pypdf and pypdfium2. Exact ancillary versions and provider terms require final inventory confirmation. These utilities are not inference models."),
+    section("3. APIs &amp; CLOUD SERVICES",
+        "<b>3.1 External APIs:</b> No external model API is called by the product. Public report pages are source references, not continuously consumed API feeds. Firecrawl was used during development/review for web retrieval, not by the runtime app.",
+        "<b>3.2 Services:</b> Streamlit Community Cloud hosts the demo; GitHub hosts public code; Replit is evidenced as a development workspace. Current account plans, deployment region and deployed commit must be confirmed from account settings; they are not inferred from URLs. Replit project: https://replit.com/@duyulin18/SkillRadar-MY-Streamlit-app. Unauthenticated access on 23 October returned Page not found / owner invitation required."),
+    section("4. AI TOOLS, MODELS &amp; DATASETS",
+        "<b>4.1 Runtime models:</b> None. Skill extraction and matching use team-authored rules. The catalogue is not a verified complete O*NET/ESCO mapping.",
+        "<b>4.2 Data:</b> DOSM Q1/Q2 2026 occupation observations; WEF Future of Jobs 2025 global forecast; JobStreet/Randstad 2025 reported skill signals; role-level Malaysian references including PIKOM; team-curated role/skill and SDG catalogues; 36 course-link records; synthetic profiles and sample CV. See the source inventory appendix for URLs. Course costs/durations and source-specific reuse terms require verification. Team-authored code is Apache 2.0; this does not relicense third-party reports. No real personal CV data is intended for use.",
+        "<b>4.3 Development AI:</b> OpenAI Codex was used extensively for code review, implementation, debugging, tests and documentation. ChatGPT assisted project planning and written guidance. DeepSeek-based assistant and GitHub Copilot were declared in the earlier team document (scaffolding/documentation and inline completion respectively); the team must confirm their actual usage and model versions. Product subscription names are not exact model identifiers. No unsupported model version is asserted.",
+        "<b>Review statement:</b> Automated checks and local browser checks are recorded in team/DEVELOPMENT_LOG.md. These do not prove all facts, courses or AI output were manually verified. Team review of code, data, assertions and final documents remains required. No claim is made that every change received independent pull-request review."),
+    section("5. SPONSOR-PROVIDED RESOURCES",
+        "Replit was used as evidenced by the appended historical workspace screenshots. Those screenshots do not establish that the latest GitHub commit runs there. Restore judge access to project history or provide an acceptable live Replit deployment URL before submission. No RunPod endpoint or GPU is used by the current app. Replit is replaceable as a Python development environment; the current public demo runs on Streamlit Community Cloud. Account plan and sponsor credit usage require owner confirmation."),
+    section("6. SECURITY, PRIVACY &amp; RESPONSIBLE USE",
+        "<b>6.1 Privacy:</b> Use only synthetic CVs and public or synthetic data. Uploaded text is parsed in memory; the application does not intentionally persist CVs in a database. Hosting provider/session behavior remains subject to provider terms. The app requires no inference API secret. Repository secret review and provider settings remain team responsibilities.",
+        "<b>6.2 Limitations:</b> Source lag, selection bias and incomplete course coverage affect recommendations. Keyword parsing supports plain text and limited text PDFs, not OCR or semantic understanding. Fixed catalogues can still contain incorrect roles, links or metadata. Prices and durations are not fully verified. Scenario coefficients and skill-to-SDG links are team interpretations. Fairness and user impact have not been established. The tool assists career exploration and must not make hiring decisions."),
+    section("7. COMPLIANCE &amp; READINESS",
+        "Before signing: confirm actual tools and versions, source terms, team review, workshop attendance, no exposed credentials, committee collaborator access, Replit proof accessibility and the deployed user flow. Add the YouTube video separately. Unresolved items are tracked in submission/OWNER_ACTIONS.md; they are not marked completed in this revision."),
+    ("8. DECLARATION", [para("The leader must review and sign the final accurate declaration. The old signature and future date have not been reused on revised content."), signature()]),
 ]
-
 
 def build(path: Path, doc_title: str, headline: str, subtitle: str, sections,
           footer: str, intro: list) -> None:
@@ -625,7 +222,7 @@ def build(path: Path, doc_title: str, headline: str, subtitle: str, sections,
         Paragraph(f"Live prototype: {LIVE}", SMALL),
         Paragraph(f"Code repository: {REPO}", SMALL),
         Spacer(1, 14),
-        Paragraph("Submission deadline: 25 October 2026", ParagraphStyle(
+        Paragraph("Submission deadline: 25 October 2026, 07:59:59 UTC+8", ParagraphStyle(
             "dl", parent=BODY, textColor=OLIVE, fontName="Helvetica-Bold")),
         Spacer(1, 10),
     ]
@@ -647,11 +244,39 @@ def build(path: Path, doc_title: str, headline: str, subtitle: str, sections,
     print(f"wrote {path}")
 
 
+def append_evidence():
+    import json
+    from xml.sax.saxutils import escape
+    from pypdf import PdfReader, PdfWriter
+    urls = set()
+    def collect(value):
+        if isinstance(value, dict):
+            for item in value.values(): collect(item)
+        elif isinstance(value, list):
+            for item in value: collect(item)
+        elif isinstance(value, str) and value.startswith("https://"):
+            urls.add(value)
+    for path in (ROOT / "data").rglob("*.json"):
+        collect(json.loads(path.read_text(encoding="utf-8")))
+    import tempfile
+    with tempfile.TemporaryDirectory(dir=ROOT) as temp:
+        appendix = Path(temp) / "appendix.pdf"
+        content = [para("Appendix A: Public source and resource inventory"), para("URLs recorded in the current JSON catalogue. Inclusion does not certify accuracy, licensing, fees or durations; these remain subject to team review.")]
+        content += [Paragraph(escape(url), SMALL) for url in sorted(urls)]
+        content += [PageBreak(), para("Appendix B: Historical Replit evidence"), para("The following three pages are preserved historical screenshots. Their original captions refer to the version captured at that time, not the latest GitHub commit. They do not establish current judge access or current deployment equivalence. Project: https://replit.com/@duyulin18/SkillRadar-MY-Streamlit-app. Owner must restore access and verify the current version before signing.")]
+        SimpleDocTemplate(str(appendix), pagesize=A4, leftMargin=20*mm, rightMargin=20*mm).build(content)
+        target = OUT / "SDC2026_LuminaNusantara_TechDeclaration.pdf"
+        writer = PdfWriter()
+        for source in [target, appendix, OUT / "REPLIT PROOF OF USE.pdf"]:
+            writer.append(PdfReader(source))
+        writer.write(str(target))
+
+
 def main() -> None:
     prelim_intro = [
         Paragraph(
             "Phase 1 — Preliminary Project Proposal. Answers below follow the official template order "
-            "and the stated word limits (2.1 ≤ 250 words, 2.2 ≤ 300 words, 3.2 ≤ 200 words).", NOTE),
+            "and the stated word limits. Revised unsigned copy: leader review required.", NOTE),
     ]
     build(
         OUT / "SDC2026_LuminaNusantara_Preliminary.pdf",
@@ -665,8 +290,8 @@ def main() -> None:
 
     tech_intro = [
         Paragraph(
-            "Technical Tools Declaration. Complete every section; where a category does not apply we "
-            "ticked \"No\" or wrote \"None\" rather than leaving it blank.", NOTE),
+            "Technical Tools Declaration. Revised unsigned copy; "
+            "recorded the actual status. Leader review and signature remain required.", NOTE),
     ]
     build(
         OUT / "SDC2026_LuminaNusantara_TechDeclaration.pdf",
@@ -681,3 +306,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+    append_evidence()

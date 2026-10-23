@@ -1,3 +1,5 @@
+> Submission revision: the two PDFs have been corrected locally and require leader review and new signatures. See [owner actions](submission/OWNER_ACTIONS.md). Historical validation notes below do not establish current Replit access.
+
 # SkillRadar MY — AI Skills & Career Radar for Malaysia
 
 > **Lumina Nusantara · SDC 2026 Hackathon · Domain 1 — The Aiversecity Future-Ready Workforce Domain · SDG 4**
@@ -235,7 +237,7 @@ table records access, not identity.
 - [ ] Demo video link added
 - [x] Replit used, with proof of use in `submission/`
 - [ ] RunPod — **not used**; CV parsing and scoring run locally in the app
-- [x] Submission template completed in `submission/`
+- [ ] Revised submission PDFs require leader review and signatures
 - [x] "How to Run" steps verified
 - [x] No API keys or secrets committed to the repository
 
