@@ -661,6 +661,23 @@ ENTRY_TRANSITION_CSS = """
 </style>
 """
 
+INTRO_ZOOM_END_TRIGGER = """
+<script>
+(() => {
+  const parentWindow = window.parent;
+  const deadline = Date.now() + 12000;
+  function finishZoom() {
+    const button = parentWindow.document.querySelector(
+      '.st-key-intro_zoom_continue button'
+    );
+    if (button) button.click();
+    else if (Date.now() < deadline) parentWindow.setTimeout(finishZoom, 50);
+  }
+  parentWindow.setTimeout(finishZoom, 3350);
+})();
+</script>
+"""
+
 # --------------------------------------------------------------------------- #
 # Landing look — animated gradient sky, floating orbs, glass cards.
 # --------------------------------------------------------------------------- #
@@ -1083,20 +1100,32 @@ p, li, label, .stMarkdown { color: #4c5540; }
 
 
 def play_intro():
-    """Show the console, then zoom into it and replay the original curtain."""
+    """Sequence the console push-in first, then play the original web intro."""
+    if st.session_state.pop("_entry_web_intro_pending", False):
+        st.markdown(ANIM_CSS + LEGACY_INTRO_HTML, unsafe_allow_html=True)
+        return None
+
     if st.session_state.get("_entry_sequence_done"):
         return None
 
     if st.session_state.pop("_entry_transition_pending", False):
-        st.session_state["_entry_sequence_done"] = True
-        st.session_state["intro_done"] = True
-        st.session_state["_intro_reveal_pending"] = True
+        st.session_state["_entry_zoom_active"] = True
+
+    if st.session_state.get("_entry_zoom_active"):
         st.markdown(
-            INTRO_ZOOM_HTML + ANIM_CSS + LEGACY_INTRO_HTML + ENTRY_TRANSITION_CSS,
+            INTRO_ZOOM_HTML + ENTRY_TRANSITION_CSS,
             unsafe_allow_html=True,
         )
         st.iframe(INTRO_SCENE_CONTROLLER, height=1, width=1, tab_index=-1, alt="Local time and rain animation")
-        return None
+        if st.button("Continue to SkillRadar", key="intro_zoom_continue"):
+            st.session_state["_entry_zoom_active"] = False
+            st.session_state["_entry_sequence_done"] = True
+            st.session_state["intro_done"] = True
+            st.session_state["_intro_reveal_pending"] = True
+            st.session_state["_entry_web_intro_pending"] = True
+            st.rerun()
+        st.iframe(INTRO_ZOOM_END_TRIGGER, height=1, width=1, tab_index=-1, alt="Continue after computer camera move")
+        st.stop()
 
     st.markdown(INTRO_HTML, unsafe_allow_html=True)
     st.iframe(INTRO_SCENE_CONTROLLER, height=1, width=1, tab_index=-1, alt="Local time and rain animation")
