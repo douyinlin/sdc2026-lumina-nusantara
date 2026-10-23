@@ -457,59 +457,106 @@ ANIM_CSS = """
 
 INTRO_HTML = """
 <style>
-@keyframes sr-portal-reveal { from { opacity:0; filter:blur(9px); transform:scale(1.025); } to { opacity:1; filter:blur(0); transform:scale(1); } }
-.sr-intro { position:fixed; inset:0; z-index:999990; overflow:hidden; display:flex; justify-content:center; align-items:flex-start; color:#eafaff; isolation:isolate;
-  background:radial-gradient(ellipse at 50% 48%,rgba(27,100,132,.34),transparent 43%),radial-gradient(ellipse at 50% 110%,rgba(28,77,97,.35),transparent 55%),linear-gradient(145deg,#06111d,#0b1e2b 48%,#101b2c); }
-.sr-room-window { position:absolute; top:19%; right:8%; width:22vw; max-width:300px; height:31vh; border:8px solid rgba(28,51,65,.9); border-radius:5px; background:linear-gradient(180deg,rgba(11,29,49,.48),rgba(20,77,103,.28)),radial-gradient(ellipse at 68% 62%,#8deaff 0 1px,transparent 2px),radial-gradient(ellipse at 28% 35%,#f4d28a 0 1px,transparent 2px),linear-gradient(180deg,#101f37,#244c63); background-size:auto,38px 34px,47px 42px,auto; box-shadow:0 0 0 1px rgba(130,204,221,.18),0 18px 45px rgba(0,0,0,.24),inset 0 0 35px rgba(31,122,149,.22); }
-.sr-room-window:before,.sr-room-window:after { content:""; position:absolute; background:rgba(43,72,87,.9); }
-.sr-room-window:before { top:0; bottom:0; left:50%; width:5px; }
-.sr-room-window:after { left:0; right:0; top:54%; height:5px; }
-.sr-room-shelf { position:absolute; left:5%; top:39%; width:17vw; max-width:220px; height:13vh; border-bottom:8px solid #273b45; background:linear-gradient(90deg,transparent 9%,#bc7d43 9% 15%,transparent 15% 21%,#547784 21% 29%,transparent 29% 36%,#b18454 36% 43%,transparent 43% 52%,#426474 52% 60%,transparent 60%); opacity:.78; filter:drop-shadow(0 10px 13px rgba(0,0,0,.22)); }
-.sr-room-desk { position:absolute; z-index:0; left:-5%; right:-5%; bottom:-3%; height:27%; transform:perspective(900px) rotateX(4deg); transform-origin:bottom; border-top:1px solid rgba(146,204,211,.25); background:linear-gradient(180deg,rgba(64,88,92,.86),rgba(22,37,45,.98) 18%,#101b24); box-shadow:0 -22px 65px rgba(0,0,0,.23); }
-.sr-room-desk:before { content:""; position:absolute; left:50%; top:12%; width:clamp(180px,27vw,360px); height:15px; transform:translateX(-50%); border-radius:50%; background:linear-gradient(90deg,transparent,rgba(119,231,229,.52),transparent); filter:blur(7px); }
-.sr-room-lamp { position:absolute; left:23%; top:48%; width:clamp(55px,7vw,90px); height:16vh; opacity:.78; }
-.sr-room-lamp:before { content:""; position:absolute; left:28%; top:0; width:48%; height:43%; border-radius:50% 50% 8% 8%; background:linear-gradient(120deg,#d5a969,#785938); clip-path:polygon(28% 0,72% 0,100% 100%,0 100%); box-shadow:0 0 52px 18px rgba(237,183,103,.16); }
-.sr-room-lamp:after { content:""; position:absolute; left:49%; top:39%; width:3px; height:58%; background:linear-gradient(#a8875d,#4a5150); box-shadow:0 0 0 18px rgba(236,187,112,.025); }
-.sr-intro:before { content:""; position:absolute; inset:0; opacity:.18; pointer-events:none; background-image:radial-gradient(#8deaff 1px,transparent 1px); background-size:34px 34px; mask-image:linear-gradient(transparent 3%,#000 45%,transparent); }
-.sr-intro:after { content:""; position:absolute; left:-10%; right:-10%; bottom:-36%; height:62%; transform:perspective(430px) rotateX(67deg); transform-origin:top center; background-image:linear-gradient(rgba(65,205,230,.17) 1px,transparent 1px),linear-gradient(90deg,rgba(65,205,230,.17) 1px,transparent 1px); background-size:52px 42px; mask-image:linear-gradient(#000,transparent 78%); pointer-events:none; }
-.sr-intro-top { position:absolute; top:28px; left:clamp(20px,5vw,72px); right:clamp(20px,5vw,72px); display:flex; justify-content:space-between; align-items:center; color:rgba(219,247,255,.7); font:600 11px/1.4 ui-monospace,Consolas,monospace; letter-spacing:.16em; text-transform:uppercase; }
-.sr-intro-brand { color:#e9fcff; font:800 15px/1.2 'Helvetica Neue',Arial,sans-serif; letter-spacing:.13em; }
-.sr-intro-heading { position:absolute; top:12%; width:min(92vw,900px); text-align:center; }
-.sr-intro-kicker { color:#79dfed; font:600 11px/1.4 ui-monospace,Consolas,monospace; letter-spacing:.26em; text-transform:uppercase; }
-.sr-intro-title { margin:10px 0 0; color:#f1fbff; font-size:clamp(23px,3.4vw,40px); font-weight:720; letter-spacing:-.035em; }
-.sr-intro-subtitle { margin-top:8px; color:rgba(217,239,246,.67); font-size:clamp(12px,1.35vw,15px); }
-.sr-console { position:absolute; top:34%; left:50%; width:min(78vw,910px); height:clamp(270px,49vh,460px); transform:translateX(-50%); filter:drop-shadow(0 32px 54px rgba(0,0,0,.5)); }
-.sr-console-screen { position:absolute; inset:0 0 27% 0; padding:clamp(10px,2vw,22px); border:1px solid rgba(141,231,247,.56); border-radius:24px; background:linear-gradient(145deg,rgba(35,67,82,.96),rgba(8,20,31,.98) 48%,rgba(20,47,61,.97)); box-shadow:inset 0 1px 0 rgba(255,255,255,.19),inset 0 0 36px rgba(80,214,237,.12),0 0 0 5px rgba(135,210,225,.07),0 0 50px rgba(50,195,221,.12); }
-.sr-console-glass { position:relative; height:100%; overflow:hidden; border:1px solid rgba(91,219,237,.4); border-radius:14px; background:linear-gradient(rgba(71,188,210,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(71,188,210,.09) 1px,transparent 1px),radial-gradient(ellipse at 50% 40%,rgba(32,147,165,.27),transparent 72%),#071a27; background-size:32px 28px,32px 28px,auto,auto; box-shadow:inset 0 0 45px rgba(31,177,195,.13); display:flex; align-items:center; justify-content:center; text-align:center; }
-.sr-console-glass:before,.sr-console-glass:after { content:""; position:absolute; width:28px; height:28px; border-color:#68d7e7; opacity:.75; }
-.sr-console-glass:before { top:12px; left:12px; border-top:1px solid; border-left:1px solid; }
-.sr-console-glass:after { right:12px; bottom:12px; border-right:1px solid; border-bottom:1px solid; }
-.sr-console-status { color:#67d5e7; font:600 10px/1.5 ui-monospace,Consolas,monospace; letter-spacing:.2em; }
-.sr-console-wordmark { margin:7px 0 0; color:#f2fdff; font:750 clamp(17px,2.6vw,28px)/1.1 'Helvetica Neue',Arial,sans-serif; letter-spacing:.16em; }
-.sr-console-metrics { margin-top:9px; color:rgba(180,221,232,.62); font:10px/1.4 ui-monospace,Consolas,monospace; letter-spacing:.12em; }
-.sr-console-neck { position:absolute; left:42%; right:42%; bottom:15%; height:12%; background:linear-gradient(90deg,#1a2f3b,#536b75 48%,#1b303b); clip-path:polygon(18% 0,82% 0,100% 100%,0 100%); }
-.sr-console-base { position:absolute; left:20%; right:20%; bottom:7%; height:10%; border-radius:50% 50% 12px 12px; border:1px solid rgba(139,224,239,.42); background:linear-gradient(180deg,#49616d,#172c38 56%,#0a1823); box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 8px 16px rgba(0,0,0,.35); }
-.sr-console-base:after { content:""; position:absolute; left:13%; right:13%; top:38%; height:2px; background:linear-gradient(90deg,transparent,#65e5e9,#b3f5eb,#65e5e9,transparent); opacity:.85; }
-.sr-console-leds { position:absolute; left:50%; bottom:1%; transform:translateX(-50%); color:#84f5ee; font:9px/1 ui-monospace,Consolas,monospace; letter-spacing:.38em; white-space:nowrap; }
-.sr-intro-hint { position:absolute; top:84%; color:rgba(214,241,247,.66); font:600 10px/1.4 ui-monospace,Consolas,monospace; letter-spacing:.22em; text-transform:uppercase; text-align:center; }
+.sr-intro { position:fixed; inset:0; z-index:999990; overflow:hidden; display:grid; place-items:center; color:#eafaff; isolation:isolate; background:#07111c; }
+.sr-scene-frame { position:relative; width:min(100vw,177.78vh); height:min(100vh,56.25vw); aspect-ratio:16/9; overflow:hidden; isolation:isolate; transform-origin:50% 42%; box-shadow:0 30px 90px rgba(0,0,0,.3); }
+.sr-scene-image { position:absolute; inset:0; background-size:cover; background-position:center; transition:opacity 2.8s cubic-bezier(.2,.65,.25,1); }
+.sr-scene-day { background-image:url('/app/static/landing-day.jpg'); opacity:0; }
+.sr-scene-night { background-image:url('/app/static/landing-rain-night.jpg'); opacity:1; }
+.sr-intro[data-time-of-day='day'] .sr-scene-day { opacity:1; }
+.sr-intro[data-time-of-day='day'] .sr-scene-night { opacity:0; }
+.sr-scene-frame:after { content:""; position:absolute; z-index:2; inset:0; pointer-events:none; background:linear-gradient(180deg,rgba(4,12,20,.4),transparent 19%,transparent 75%,rgba(4,12,20,.15)); }
+.sr-rain-pane { position:absolute; z-index:3; overflow:hidden; pointer-events:none; opacity:.78; transition:opacity 2s ease; }
+.sr-intro[data-time-of-day='day'] .sr-rain-pane { opacity:.42; }
+.sr-rain-pane canvas { width:100%; height:100%; display:block; }
+.sr-rain-top { left:34%; top:0; width:66%; height:21.5%; }
+.sr-rain-right { left:72%; top:21%; width:28%; height:43%; }
+.sr-intro-top { position:absolute; z-index:4; top:max(12px,calc(50% - min(50vh,28.125vw) + 16px)); left:max(16px,calc(50% - min(50vw,88.89vh) + 24px)); right:max(16px,calc(50% - min(50vw,88.89vh) + 24px)); display:flex; justify-content:space-between; align-items:center; color:rgba(245,250,255,.92); font:600 10px/1.4 ui-monospace,Consolas,monospace; letter-spacing:.15em; text-transform:uppercase; text-shadow:0 2px 12px rgba(0,0,0,.65); pointer-events:none; }
+.sr-intro-brand { font:800 13px/1.2 'Helvetica Neue',Arial,sans-serif; letter-spacing:.13em; }
+.sr-intro-clock { font-variant-numeric:tabular-nums; }
+.sr-intro-heading { position:absolute; z-index:4; top:calc(50% - min(50vh,28.125vw) + 10px); left:50%; transform:translateX(-50%); color:#f1fbff; font-size:clamp(11px,1.2vw,15px); font-weight:600; letter-spacing:.15em; text-transform:uppercase; text-shadow:0 2px 14px rgba(0,0,0,.7); text-align:center; white-space:nowrap; pointer-events:none; }
 body:has(.sr-intro:not(.sr-intro-zoom)) [data-testid="stHeader"],body:has(.sr-intro:not(.sr-intro-zoom)) [data-testid="stToolbar"],body:has(.sr-intro:not(.sr-intro-zoom)) footer { display:none !important; }
 body:has(.sr-intro:not(.sr-intro-zoom)) [data-testid="stMainBlockContainer"] { max-width:none !important; padding:0 !important; }
 body:has(.sr-intro:not(.sr-intro-zoom)) [data-testid="stAppViewContainer"] { overflow:hidden !important; }
-.st-key-intro_enter { position:fixed !important; z-index:1000000 !important; top:34vh; left:50%; transform:translateX(-50%); width:min(78vw,910px); height:clamp(197px,35.7vh,336px); pointer-events:none; }
+.st-key-intro_enter { position:fixed !important; z-index:1000000 !important; top:calc(50% - min(8.3vh,4.67vw)); left:50%; transform:translate(-50%,-50%); width:min(42.5vw,75.55vh); height:min(38vh,21.38vw); pointer-events:none; }
 .st-key-intro_enter [data-testid="stButton"],.st-key-intro_enter button { width:100%; height:100%; }
-.st-key-intro_enter button { position:relative; min-height:0; padding:0 !important; border:0 !important; border-radius:16px !important; color:transparent !important; background:transparent !important; box-shadow:none !important; font-size:0 !important; cursor:pointer; pointer-events:auto; }
-.st-key-intro_enter button:after { content:"CLICK TO ENTER"; position:absolute; left:50%; top:76%; transform:translate(-50%,-50%); padding:10px 18px; border:1px solid rgba(138,239,244,.85); border-radius:5px; color:#e9ffff; background:rgba(11,45,57,.84); box-shadow:0 0 22px rgba(67,226,235,.18); font:700 11px/1.2 ui-monospace,Consolas,monospace; letter-spacing:.18em; white-space:nowrap; }
+.st-key-intro_enter button { position:relative; min-height:0; padding:0 !important; border:0 !important; border-radius:12px !important; color:transparent !important; background:transparent !important; box-shadow:none !important; font-size:0 !important; cursor:pointer; pointer-events:auto; }
+.st-key-intro_enter button:after { content:"CLICK TO ENTER"; position:absolute; left:50%; top:82%; transform:translate(-50%,-50%); padding:9px 15px; border:1px solid rgba(138,239,244,.82); border-radius:5px; color:#e9ffff; background:rgba(11,35,48,.78); box-shadow:0 0 22px rgba(67,226,235,.2); font:700 10px/1.2 ui-monospace,Consolas,monospace; letter-spacing:.16em; white-space:nowrap; }
 .st-key-intro_enter button:focus-visible { outline:2px solid #b3f5eb !important; outline-offset:4px; }
-@media(max-width:640px) { .sr-intro-top { top:18px; } .sr-intro-heading { top:13%; } .sr-console { top:39%; width:90vw; height:clamp(250px,43vh,360px); } .sr-console-screen { border-radius:17px; } .sr-room-window { top:24%; right:4%; width:35vw; height:23vh; } .sr-room-shelf { left:2%; top:43%; width:22vw; height:11vh; } .sr-room-lamp { left:23%; top:52%; } .st-key-intro_enter { top:39vh; width:90vw; height:clamp(183px,31.4vh,263px); } .sr-intro-hint { top:83%; width:90%; } }
-@media(prefers-reduced-motion:reduce) { .sr-portal-reveal { animation:none !important; } }
+@media(max-width:640px) { .sr-intro-top { font-size:8px; top:calc(50% - min(50vh,28.125vw) + 8px); left:12px; right:12px; } .sr-intro-brand { font-size:10px; } .sr-intro-heading { top:calc(50% - min(50vh,28.125vw) + 28px); font-size:9px; } .st-key-intro_enter { width:min(42.5vw,75.55vh); height:min(38vh,21.38vw); } .st-key-intro_enter button:after { font-size:8px; padding:7px 10px; } }
+@media(prefers-reduced-motion:reduce) { .sr-scene-image,.sr-rain-pane { transition:none !important; } }
 </style>
 <div class="sr-intro" aria-label="SkillRadar MY entry screen">
-  <div class="sr-intro-top"><span class="sr-intro-brand">SKILLRADAR MY</span><span>WORKFORCE INTELLIGENCE · 2026</span></div>
-  <div class="sr-intro-heading"><div class="sr-intro-kicker">SDC 2026 · DOMAIN 1 · SDG 4</div><div class="sr-intro-title">The Future-Ready Workforce</div><div class="sr-intro-subtitle">Skills signals, career pathways, and a clearer view of what comes next.</div></div>
-  <div class="sr-room-window" aria-hidden="true"></div><div class="sr-room-shelf" aria-hidden="true"></div><div class="sr-room-lamp" aria-hidden="true"></div><div class="sr-room-desk" aria-hidden="true"></div>
-  <div class="sr-console" aria-hidden="true"><div class="sr-console-screen"><div class="sr-console-glass"><div><div class="sr-console-status">SYSTEM READY · CAREER INTELLIGENCE</div><div class="sr-console-wordmark">SKILLRADAR</div><div class="sr-console-metrics">SKILLS → FUTURE ROLES → LEARNING PATHWAYS</div></div></div></div><div class="sr-console-neck"></div><div class="sr-console-base"></div><div class="sr-console-leds">● &nbsp; ● &nbsp; ●</div></div>
-  <div class="sr-intro-hint">Select the console to enter the experience</div>
+  <div class="sr-scene-frame" data-time-of-day="night" aria-hidden="true">
+    <div class="sr-scene-image sr-scene-day"></div><div class="sr-scene-image sr-scene-night"></div>
+    <div class="sr-rain-pane sr-rain-top"><canvas></canvas></div><div class="sr-rain-pane sr-rain-right"><canvas></canvas></div>
+  </div>
+  <div class="sr-intro-top"><span class="sr-intro-brand">SKILLRADAR MY</span><span class="sr-intro-clock">LOCAL TIME · --:--</span></div>
+  <div class="sr-intro-heading">A clearer path to your next role</div>
 </div>
+"""
+
+INTRO_SCENE_CONTROLLER = """
+<script>
+(() => {
+  const w = window.parent, d = w.document;
+  const hostFrame = window.frameElement;
+  if (hostFrame) {
+    Object.assign(hostFrame.style, {position:"fixed",width:"0",height:"0",left:"0",top:"0",border:"0",visibility:"hidden",pointerEvents:"none"});
+    const wrapper = hostFrame.closest('[data-testid="stElementContainer"]');
+    if (wrapper) Object.assign(wrapper.style, {position:"fixed",width:"0",height:"0",margin:"0",padding:"0",overflow:"hidden",pointerEvents:"none",zIndex:"-1"});
+  }
+  let attempts = 0;
+  function mount() {
+    const intro = d.querySelector(".sr-intro");
+    if (!intro) { if (++attempts < 80) w.setTimeout(mount, 40); return; }
+    const frame = intro.querySelector(".sr-scene-frame");
+    const clock = intro.querySelector(".sr-intro-clock");
+    function syncLocalTime() {
+      const now = new Date();
+      const hour = now.getHours();
+      const mode = hour >= 6 && hour < 18 ? "day" : "night";
+      frame.dataset.timeOfDay = mode;
+      if (clock) clock.textContent = `LOCAL TIME · ${now.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})} · ${mode.toUpperCase()}`;
+    }
+    syncLocalTime();
+    const timer = w.setInterval(syncLocalTime, 60000);
+    const panes = [...intro.querySelectorAll(".sr-rain-pane")].map((pane, index) => {
+      const canvas = pane.querySelector("canvas");
+      const ctx = canvas.getContext("2d");
+      let width = 1, height = 1, drops = [], last = 0;
+      function resize() {
+        const rect = pane.getBoundingClientRect();
+        const ratio = Math.min(w.devicePixelRatio || 1, 1.5);
+        width = Math.max(1, rect.width); height = Math.max(1, rect.height);
+        canvas.width = Math.round(width * ratio); canvas.height = Math.round(height * ratio);
+        ctx.setTransform(ratio,0,0,ratio,0,0);
+        const count = index === 0 ? Math.max(10, Math.round(width / 20)) : Math.max(12, Math.round(height / 11));
+        drops = Array.from({length:count}, () => ({x:Math.random()*width,y:Math.random()*height,len:8+Math.random()*20,speed:180+Math.random()*300,drift:-24-Math.random()*35,alpha:.15+Math.random()*.42}));
+      }
+      function draw(time) {
+        const dt = Math.min(.04, Math.max(0, (time-last)/1000 || .016)); last = time;
+        ctx.clearRect(0,0,width,height);
+        for (const p of drops) {
+          if (!w.matchMedia("(prefers-reduced-motion: reduce)").matches) { p.y += p.speed*dt; p.x += p.drift*dt; }
+          if (p.y > height+p.len || p.x < -8) { p.x=Math.random()*width; p.y=-p.len; }
+          const g=ctx.createLinearGradient(p.x,p.y-p.len,p.x+2,p.y);
+          g.addColorStop(0,`rgba(205,235,255,0)`); g.addColorStop(1,`rgba(205,235,255,${p.alpha})`);
+          ctx.strokeStyle=g; ctx.lineWidth=.8; ctx.beginPath(); ctx.moveTo(p.x,p.y-p.len); ctx.lineTo(p.x+2,p.y); ctx.stroke();
+        }
+        if (!w.matchMedia("(prefers-reduced-motion: reduce)").matches) pane.raf=w.requestAnimationFrame(draw);
+      }
+      resize(); pane.onresize=resize; draw(0);
+      return pane;
+    });
+    const resizeAll = () => panes.forEach(pane => pane.onresize && pane.onresize());
+    const cleanup = () => { w.clearInterval(timer); w.removeEventListener("resize",resizeAll); for (const pane of panes) w.cancelAnimationFrame(pane.raf); };
+    if (w.__skillRadarIntroCleanup) w.__skillRadarIntroCleanup();
+    w.__skillRadarIntroCleanup = cleanup;
+    w.addEventListener("resize", resizeAll);
+  }
+  mount();
+})();
+</script>
 """
 
 ENTRY_REVEAL_CSS = """
@@ -544,55 +591,55 @@ LEGACY_INTRO_HTML = """
 ENTRY_TRANSITION_CSS = """
 <style>
 @keyframes sr-entry-scene-fade {
-  0%, 88% { opacity:1; }
+  0%, 82% { opacity:1; }
   100% { opacity:0; visibility:hidden; }
 }
-@keyframes sr-entry-console-push {
-  0% { transform:translateX(-50%) scale(1); opacity:1; }
-  78% { transform:translateX(-50%) scale(1.12); opacity:1; }
-  100% { transform:translateX(-50%) scale(1.16); opacity:0; }
+@keyframes sr-entry-camera-push {
+  0% { transform:scale(1); opacity:1; }
+  24% { transform:scale(1.12); opacity:1; }
+  52% { transform:scale(1.28); opacity:1; }
+  78% { transform:scale(1.48); opacity:1; }
+  92% { transform:scale(1.58); opacity:1; }
+  100% { transform:scale(1.62); opacity:0; }
 }
 @keyframes sr-sequence-curtain {
-  0%, 39% { opacity:0; visibility:hidden; }
-  40% { opacity:0; visibility:visible; }
-  48%, 84% { opacity:1; visibility:visible; }
+  0%, 8% { opacity:0; visibility:hidden; }
+  12% { opacity:0; visibility:visible; }
+  26%, 82% { opacity:1; visibility:visible; }
   100% { opacity:0; visibility:hidden; }
 }
 .sr-intro.sr-intro-zoom {
-  animation:sr-entry-scene-fade 2.7s cubic-bezier(.4,0,.2,1) forwards;
+  animation:sr-entry-scene-fade 3.3s cubic-bezier(.4,0,.2,1) forwards;
   pointer-events:none;
 }
-.sr-intro.sr-intro-zoom .sr-console {
-  animation:sr-entry-console-push 2.7s cubic-bezier(.4,0,.2,1) forwards;
-  transform-origin:center center;
-  filter:none;
+.sr-intro.sr-intro-zoom .sr-scene-frame {
+  animation:sr-entry-camera-push 3.3s cubic-bezier(.4,0,.2,1) forwards;
   will-change:transform,opacity;
 }
 .sr-intro.sr-intro-zoom .sr-intro-top,
-.sr-intro.sr-intro-zoom .sr-intro-heading,
-.sr-intro.sr-intro-zoom .sr-intro-hint {
-  animation:sr-entry-scene-fade .8s ease forwards;
+.sr-intro.sr-intro-zoom .sr-intro-heading {
+  animation:sr-entry-scene-fade .75s ease forwards;
+}
+.sr-intro.sr-intro-zoom .sr-rain-pane {
+  opacity:0;
+  transition:opacity .25s ease;
+}
+.sr-intro.sr-intro-zoom .sr-intro-clock {
+  animation:sr-entry-scene-fade .35s ease forwards;
 }
 .sr-curtain {
-  animation:sr-sequence-curtain 4.8s ease both;
+  animation:sr-sequence-curtain 2.2s ease 3.15s both;
   pointer-events:auto;
 }
-.sr-curtain-inner { animation:sr-curtain-out 4.8s ease both; }
-.sr-eyebrow { animation-delay:1.95s; }
-.sr-mark { animation-delay:2.05s; }
-.sr-tagline { animation-delay:2.45s; }
-.sr-brand { animation-delay:2.8s; }
-.sr-bar { animation:sr-sweep 2.2s ease .9s both; }
-@media(max-width:640px) {
-  @keyframes sr-entry-console-push-mobile {
-    0% { transform:translateX(-50%) scale(1); opacity:1; }
-    78% { transform:translateX(-50%) scale(1.02); opacity:1; }
-    100% { transform:translateX(-50%) scale(1.04); opacity:0; }
-  }
-  .sr-intro.sr-intro-zoom .sr-console { animation-name:sr-entry-console-push-mobile; }
-}
+.sr-curtain-inner { animation:sr-curtain-out 2.2s ease 3.15s both; }
+.sr-eyebrow { animation-delay:3.3s; }
+.sr-mark { animation-delay:3.42s; }
+.sr-tagline { animation-delay:3.85s; }
+.sr-brand { animation-delay:4.3s; }
+.sr-bar { animation:sr-sweep 2.2s ease 3.15s both; }
 @media(prefers-reduced-motion:reduce) {
-  .sr-intro.sr-intro-zoom,.sr-curtain,.sr-curtain-inner { animation-duration:.001ms !important; }
+  .sr-intro.sr-intro-zoom,.sr-intro.sr-intro-zoom .sr-scene-frame,.sr-curtain,.sr-curtain-inner { animation-duration:.001ms !important; animation-delay:0s !important; }
+  .sr-eyebrow,.sr-mark,.sr-tagline,.sr-brand,.sr-bar { animation-duration:.001ms !important; animation-delay:0s !important; }
 }
 </style>
 """
@@ -1031,9 +1078,11 @@ def play_intro():
             INTRO_ZOOM_HTML + ANIM_CSS + LEGACY_INTRO_HTML + ENTRY_TRANSITION_CSS,
             unsafe_allow_html=True,
         )
+        st.iframe(INTRO_SCENE_CONTROLLER, height=1, width=1, tab_index=-1, alt="Local time and rain animation")
         return None
 
     st.markdown(INTRO_HTML, unsafe_allow_html=True)
+    st.iframe(INTRO_SCENE_CONTROLLER, height=1, width=1, tab_index=-1, alt="Local time and rain animation")
     if st.button("CLICK TO ENTER", key="intro_enter", type="primary"):
         st.session_state["_entry_transition_pending"] = True
         st.rerun()
