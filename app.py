@@ -13,6 +13,7 @@ import json
 import hashlib
 import re
 import sys
+import time
 import zlib
 from urllib.parse import quote_plus
 from pathlib import Path
@@ -509,6 +510,73 @@ ENTRY_REVEAL_CSS = """
 </style>
 """
 
+INTRO_ZOOM_HTML = INTRO_HTML.replace(
+    'class="sr-intro" aria-label=',
+    'class="sr-intro sr-intro-zoom" aria-label=',
+)
+
+LEGACY_INTRO_HTML = """
+<div class="sr-curtain">
+  <div class="sr-curtain-inner">
+    <div class="sr-eyebrow">SDC 2026 · Domain 1 · SDG 4</div>
+    <div class="sr-mark">The Future-Ready Workforce</div>
+    <div class="sr-tagline">
+      Tracking AI's advance · forecasting rising and declining skills ·
+      matching people to future roles · personalised reskilling ·
+      every role mapped to the UN SDGs
+    </div>
+    <div class="sr-brand">📡 SkillRadar MY</div>
+  </div>
+  <div class="sr-bar"></div>
+</div>
+"""
+
+ENTRY_TRANSITION_CSS = """
+<style>
+@keyframes sr-entry-scene-fade {
+  0%, 52% { opacity:1; filter:blur(0); }
+  100% { opacity:0; filter:blur(7px); visibility:hidden; }
+}
+@keyframes sr-entry-console-push {
+  0% { transform:translateX(-50%) scale(1); filter:blur(0); opacity:1; }
+  66% { transform:translateX(-50%) scale(7.5); filter:blur(0); opacity:1; }
+  100% { transform:translateX(-50%) scale(13); filter:blur(7px); opacity:0; }
+}
+@keyframes sr-sequence-curtain {
+  0%, 27% { opacity:0; visibility:hidden; }
+  28% { opacity:0; visibility:visible; }
+  39%, 83% { opacity:1; visibility:visible; }
+  100% { opacity:0; visibility:hidden; }
+}
+.sr-intro.sr-intro-zoom {
+  animation:sr-entry-scene-fade 1.2s cubic-bezier(.2,.7,.2,1) forwards;
+  pointer-events:none;
+}
+.sr-intro.sr-intro-zoom .sr-console {
+  animation:sr-entry-console-push 1.2s cubic-bezier(.12,.82,.18,1) forwards;
+  transform-origin:center center;
+}
+.sr-intro.sr-intro-zoom .sr-intro-top,
+.sr-intro.sr-intro-zoom .sr-intro-heading,
+.sr-intro.sr-intro-zoom .sr-intro-hint {
+  animation:sr-entry-scene-fade .45s ease forwards;
+}
+.sr-curtain {
+  animation:sr-sequence-curtain 3.35s ease both;
+  pointer-events:auto;
+}
+.sr-curtain-inner { animation:sr-curtain-out 3.35s ease both; }
+.sr-eyebrow { animation-delay:.98s; }
+.sr-mark { animation-delay:1.08s; }
+.sr-tagline { animation-delay:1.48s; }
+.sr-brand { animation-delay:1.85s; }
+.sr-bar { animation:sr-sweep 2.2s ease .9s both; }
+@media(prefers-reduced-motion:reduce) {
+  .sr-intro.sr-intro-zoom,.sr-curtain { animation-duration:.001ms !important; }
+}
+</style>
+"""
+
 # --------------------------------------------------------------------------- #
 # Landing look — animated gradient sky, floating orbs, glass cards.
 # --------------------------------------------------------------------------- #
@@ -930,18 +998,27 @@ p, li, label, .stMarkdown { color: #4c5540; }
 """
 
 
-def play_intro() -> None:
-    """Show a one-time, click-to-enter console before rendering the original app."""
-    if st.session_state.get("intro_done"):
-        return
-    st.markdown(INTRO_HTML, unsafe_allow_html=True)
-    if st.button("CLICK TO ENTER", key="intro_enter", type="primary"):
+def play_intro():
+    """Show the console, then zoom into it and replay the original curtain."""
+    if st.session_state.get("_entry_sequence_done"):
+        return None
+
+    if st.session_state.pop("_entry_transition_pending", False):
+        st.session_state["_entry_sequence_done"] = True
         st.session_state["intro_done"] = True
         st.session_state["_intro_reveal_pending"] = True
+        transition = st.empty()
+        transition.markdown(
+            INTRO_ZOOM_HTML + ANIM_CSS + LEGACY_INTRO_HTML + ENTRY_TRANSITION_CSS,
+            unsafe_allow_html=True,
+        )
+        return transition
+
+    st.markdown(INTRO_HTML, unsafe_allow_html=True)
+    if st.button("CLICK TO ENTER", key="intro_enter", type="primary"):
+        st.session_state["_entry_transition_pending"] = True
         st.rerun()
-    # Stop this Streamlit run here so none of the app, particle field, or
-    # landing-page widgets are rendered beneath the entry screen. Clicking
-    # the console reruns the script with intro_done=True and continues below.
+    # Keep the underlying app and particle field out of the initial scene.
     st.stop()
 
 
@@ -1000,7 +1077,7 @@ def go(stage: str) -> None:
 
 def reset() -> None:
     """Clear the answers but keep the language the user picked."""
-    keep = {"intro_done", "lang"}
+    keep = {"intro_done", "_entry_sequence_done", "lang"}
     for k in list(st.session_state):
         if k not in keep:
             del st.session_state[k]
@@ -2315,7 +2392,7 @@ def screen_cc_results() -> None:
 st.set_page_config(page_title="SkillRadar MY", page_icon="📡", layout="wide")
 
 st.session_state.setdefault("lang", "en")
-play_intro()
+_ENTRY_TRANSITION = play_intro()
 
 # Grouped so the list is scannable; the label shown is "GROUP — Field".
 FIELDS: dict[str, list[str]] = {
@@ -2410,3 +2487,9 @@ except Exception as exc:
     st.caption(f"{type(exc).__name__}: {exc}")
     if st.button(_T["back_start"]):
         reset()
+
+if _ENTRY_TRANSITION is not None:
+    # Let the camera push and original curtain animation finish before removing
+    # the overlay. The app is already rendered beneath it and is revealed cleanly.
+    time.sleep(3.4)
+    _ENTRY_TRANSITION.empty()
