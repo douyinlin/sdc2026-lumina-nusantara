@@ -931,7 +931,7 @@ p, li, label, .stMarkdown { color: #4c5540; }
 
 
 def play_intro() -> None:
-    """Show a one-time, click-to-enter console in front of the original app."""
+    """Show a one-time, click-to-enter console before rendering the original app."""
     if st.session_state.get("intro_done"):
         return
     st.markdown(INTRO_HTML, unsafe_allow_html=True)
@@ -939,6 +939,10 @@ def play_intro() -> None:
         st.session_state["intro_done"] = True
         st.session_state["_intro_reveal_pending"] = True
         st.rerun()
+    # Stop this Streamlit run here so none of the app, particle field, or
+    # landing-page widgets are rendered beneath the entry screen. Clicking
+    # the console reruns the script with intro_done=True and continues below.
+    st.stop()
 
 
 def transition_into(stage: str) -> None:
