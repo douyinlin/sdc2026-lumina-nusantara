@@ -28,7 +28,8 @@ from utils import normalize_skills, GAP_COST, TRANSFERABILITY, Role, pathway, ra
 from i18n import CATEGORY_LABELS, ROLE_PARENTHETICAL, SKILL_PARENTHETICAL, STRINGS, T, cat, role_label, skill_label  # noqa: E402
 from src.cv import cv_to_skills
 from src.planning import filter_roles, learning_duration
-from src.trends import read_snapshot, update_status, apply_trend, _signal_strength, snapshot_signals, signal_key
+from src import trends as trends_mod  # noqa: E402
+from src.trends import read_snapshot, apply_trend, _signal_strength, snapshot_signals, signal_key
 from functools import partial
 from typing import cast
 from labels import field_label, group_label, skill_option_label  # noqa: E402
@@ -359,7 +360,7 @@ def _wef_skill_snapshot() -> dict:
 
 def load_snapshot(kind: str = "wef") -> dict:
     """One skill-evidence source; DOSM occupation counts stay a separate panel."""
-    status = update_status(DATA / "trends", kind)
+    status = trends_mod.update_status(DATA / "trends", kind)
     t = T(st.session_state.get("lang", "en"))
     st.caption(t["snapshot_note"])
     if status.get("ok") is False:
@@ -2588,7 +2589,13 @@ st.set_page_config(page_title="SkillRadar MY", page_icon="📡", layout="wide")
 
 st.session_state.setdefault("lang", "en")
 st.session_state.setdefault("theme_color", "sage")
-play_intro()
+_on_landing = st.session_state.get("stage") in (None, "", "landing")
+if _on_landing:
+    play_intro()
+else:
+    # A deep link into the product skips the entry scene instead of st.stop()ing.
+    st.session_state.setdefault("intro_done", True)
+    st.session_state.setdefault("_entry_sequence_done", True)
 
 # Grouped so the list is scannable; the label shown is "GROUP — Field".
 FIELDS: dict[str, list[str]] = {
