@@ -10,6 +10,7 @@ Run:  streamlit run app.py
 from __future__ import annotations
 
 import json
+import hashlib
 import re
 import sys
 import zlib
@@ -1343,6 +1344,44 @@ def screen_landing() -> None:
 # Screen: jobseeker intake — two personas
 # --------------------------------------------------------------------------- #
 
+def clear_skill_draft() -> None:
+    """Called before widgets render or as a callback; keep upload digest consumed."""
+    st.session_state["skill_draft_labels"] = []
+    st.session_state["skill_draft_dirty"] = False
+    st.session_state["skill_query"] = ""
+    st.session_state["skill_search_pick"] = []
+    for group in TAXONOMY:
+        st.session_state[f"ms_{group}"] = []
+
+
+def clear_current_skills() -> None:
+    clear_skill_draft()
+    st.session_state["skills"] = []
+
+
+def update_skill_draft(widget_key: str, visible_labels: list[str]) -> None:
+    previous = set(st.session_state.get("skill_draft_labels", []))
+    selected = set(st.session_state.get(widget_key, []))
+    st.session_state["skill_draft_labels"] = sorted((previous - set(visible_labels)) | selected)
+    st.session_state["skill_draft_dirty"] = True
+    draft = st.session_state["skill_draft_labels"]
+    for group, items in TAXONOMY.items():
+        key = f"ms_{group}"
+        if key != widget_key:
+            st.session_state[key] = [x for x in draft if x in items]
+    if widget_key != "skill_search_pick":
+        sync_search_draft()
+
+
+def sync_search_draft() -> None:
+    lang = st.session_state.get("lang", "en")
+    query = st.session_state.get("skill_query", "").strip().casefold()
+    st.session_state["skill_search_pick"] = [
+        x for x in st.session_state.get("skill_draft_labels", [])
+        if query and query in (x + " " + skill_option_label(lang, x)).casefold()
+    ]
+
+
 def screen_js_intake() -> None:
     t = T(st.session_state.get("lang", "en"))
     screen_wrap()
@@ -1422,33 +1461,40 @@ def screen_js_intake() -> None:
     st.markdown(f'<div class="sr-pill">{t["opt_a"]}</div>', unsafe_allow_html=True)
     up = st.file_uploader(t["uploader"], type=["txt", "md", "pdf"])
     if up is not None:
-        found = cv_to_skills(up)
-        st.session_state["skills"] = found
-        if found:
-            st.success(t["detected"].format(len(found), ", ".join(found)))
-        else:
-            st.warning(t["not_detected"])
+        # getvalue does not consume the upload stream on subsequent reruns.
+        digest = hashlib.sha256(up.getvalue()).hexdigest()
+        if digest != st.session_state.get("processed_upload_digest"):
+            up.seek(0)
+            found = normalize_skills(cv_to_skills(up))
+            st.session_state["upload_parsed_skills"] = found
+            st.session_state["processed_upload_digest"] = digest
+            st.session_state["skills"] = list(found)
+            clear_skill_draft()
+            if found:
+                st.success(t["detected"].format(len(found), ", ".join(found)))
+            else:
+                st.warning(t["not_detected"])
     st.caption(t["uploader_hint"])
+    st.caption(t["upload_state_note"])
 
     st.markdown(f'<div class="sr-pill">{t["opt_b"]}</div>', unsafe_allow_html=True)
-    picked: list[str] = []
     lang = st.session_state.get("lang", "en")
     st.caption(copy_for(lang)["skills_note"])
 
     # A single searchable list across every category: type a word, pick the skill.
     _all_labels = [label for group_items in TAXONOMY.values() for label in group_items]
-    _query = st.text_input(t["skill_search"], placeholder=t["skill_search_ph"], key="skill_query")
+    _query = st.text_input(t["skill_search"], placeholder=t["skill_search_ph"], key="skill_query", on_change=sync_search_draft)
     if _query.strip():
         _hits = [x for x in _all_labels if _query.strip().casefold() in
                  (x + " " + skill_option_label(lang, x)).casefold()]
         if _hits:
-            _picked_search = st.multiselect(
+            st.session_state.setdefault("skill_search_pick", [x for x in st.session_state.get("skill_draft_labels", []) if x in _hits])
+            st.multiselect(
                 t["skill_search_results"], options=_hits, key="skill_search_pick",
+                on_change=update_skill_draft, args=("skill_search_pick", _hits),
                 format_func=lambda x: skill_option_label(lang, x),
                 placeholder=t["ms_placeholder"],
             )
-            for label in _picked_search:
-                picked += LABEL_TO_KEYS[label]
         else:
             st.caption(t["skill_search_none"].format(_query))
     groups = list(TAXONOMY.items())
@@ -1457,21 +1503,21 @@ def screen_js_intake() -> None:
         for column, (group, items) in zip(columns, groups[offset:offset + 2]):
             with column:
                 st.markdown(f"**{cat(lang, group)}**")
-                labels = st.multiselect(
-                    group, options=list(items), key=f"ms_{group}",
+                widget_key = f"ms_{group}"
+                st.session_state.setdefault(widget_key, [x for x in st.session_state.get("skill_draft_labels", []) if x in items])
+                st.multiselect(
+                    group, options=list(items), key=widget_key,
+                    on_change=update_skill_draft, args=(widget_key, list(items)),
                     label_visibility="collapsed", placeholder=t["ms_placeholder"],
-                    max_selections=6,
                     format_func=partial(skill_option_label, lang),
                 )
-                for label in labels:
-                    picked += LABEL_TO_KEYS[label]
-    if st.button(t["use_skills"], width="stretch"):
-        # Only overwrite when something was actually ticked: a CV upload already
-        # filled the profile, and an empty click must not wipe it.
-        if picked:
-            st.session_state["skills"] = picked
-        elif not st.session_state.get("skills"):
-            st.warning(t["not_detected"])
+    st.caption(t["draft_note"])
+    if st.button(t["use_skills"], width="stretch", disabled=not st.session_state.get("skill_draft_dirty", False)):
+        st.session_state["skills"] = normalize_skills([
+            skill for label in st.session_state.get("skill_draft_labels", []) for skill in LABEL_TO_KEYS[label]
+        ])
+        st.session_state["skill_draft_dirty"] = False
+    st.button(t["clear_skills"], width="stretch", on_click=clear_current_skills)
 
     current = st.session_state.get("skills") or []
     if current:
@@ -1489,7 +1535,7 @@ def screen_js_intake() -> None:
             reset()
     with c2:
         if not current:
-            st.caption(t["pick_first"])
+            st.caption(t["empty_skills"])
         if st.button(t["continue"], type="primary", width="stretch", disabled=not current):
             go("js_results")
 

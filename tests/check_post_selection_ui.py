@@ -6,6 +6,7 @@ deployed; testing it is not proof that an unmerged PR is deployed.
 """
 import argparse
 import json
+import re
 from pathlib import Path
 import shutil
 import sys
@@ -69,12 +70,45 @@ with sync_playwright() as playwright:
     app.locator('input[type="file"]').set_input_files(ROOT / "data/sample_cv.txt")
     expect(app.get_by_role("button", name=t["continue"], exact=True)).to_be_enabled()
     settle(app)
-    app.locator('input[type="file"]').set_input_files({"name": "synthetic-edit.txt", "mimeType": "text/plain", "buffer": b"Fictional profile: SQL, Python, Excel."})
+    def synthetic_upload(contents):
+        app.locator('input[type="file"]').set_input_files({"name": "same-name.txt", "mimeType": "text/plain", "buffer": contents})
+        settle(app)
+
+    def choose_excel():
+        app.get_by_role("textbox", name=t["skill_search"], exact=True).fill("Excel")
+        app.get_by_role("textbox", name=t["skill_search"], exact=True).press("Enter")
+        settle(app)
+        app.get_by_role("combobox", name=t["skill_search_results"], exact=True).click()
+        app.get_by_role("combobox", name=t["skill_search_results"], exact=True).press("ArrowDown")
+        app.get_by_role("listbox").get_by_text("Excel / spreadsheets", exact=True).click()
+        app.get_by_text(t["draft_note"], exact=True).click()
+        settle(app)
+        app.get_by_role("button", name=t["use_skills"], exact=True).click()
+        settle(app)
+        expect(app.locator(".srui-chips").first.locator(".srui-chip")).to_have_text([re.compile("excel", re.I)])
+
+    synthetic_upload(b"Fictional profile: SQL")
+    choose_excel()
+    app.get_by_role("spinbutton", name=t["q_hours"], exact=True).fill("12")
+    app.get_by_role("spinbutton", name=t["q_hours"], exact=True).press("Enter")
     settle(app)
+    expect(app.locator(".srui-chips").first.locator(".srui-chip")).to_have_text([re.compile("excel", re.I)])
+    app.get_by_role("button", name=t["clear_skills"], exact=True).click()
+    settle(app)
+    expect(app.get_by_role("button", name=t["continue"], exact=True)).to_be_disabled()
+    app.get_by_role("spinbutton", name=t["q_hours"], exact=True).fill("10")
+    app.get_by_role("spinbutton", name=t["q_hours"], exact=True).press("Enter")
+    settle(app)
+    expect(app.get_by_role("button", name=t["continue"], exact=True)).to_be_disabled()
+    synthetic_upload(b"Fictional profile: Python")
+    expect(app.locator(".srui-chips").first.locator(".srui-chip")).to_have_text([re.compile("python", re.I)])
+    synthetic_upload(b"Fictional profile: SQL")
+    choose_excel()
     app.get_by_role("button", name=t["continue"], exact=True).click()
     expect(app.get_by_role("heading", name=t["p3"], exact=True)).to_be_visible(timeout=45000)
     settle(app)
     healthy(app, t)
+    expect(app.locator(".srui-chips").first.locator(".srui-chip")).to_have_text([re.compile("excel", re.I)])
     # A missing matplotlib dependency previously hid this chart silently.
     expect(app.locator('[data-testid="stImage"] img').first).to_be_visible()
     page.screenshot(path=str(args.output / "results.png"), full_page=True)
@@ -94,5 +128,5 @@ with sync_playwright() as playwright:
     assert not errors, errors
     print(json.dumps({"tested_url": args.url, "flow": "worker",
                       "checks": ["empty profile", "synthetic CV", "results",
-                                 "target field", "weekly hours", "edited synthetic skills", "source switch", "scenario switch", "SDG toggle", "particle iframe", "DOSM chart", "mobile capture"],
+                                 "target field", "weekly hours", "edited synthetic skills", "manual override after upload", "clear with upload retained", "same filename new content", "source switch", "scenario switch", "SDG toggle", "particle iframe", "DOSM chart", "mobile capture"],
                       "page_errors": errors, "output": str(args.output)}))

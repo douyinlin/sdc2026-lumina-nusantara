@@ -3,8 +3,11 @@ import copy
 import json
 from pathlib import Path
 import tempfile
+import sys
+import subprocess
+from unittest.mock import patch
 import unittest
-from src.trends import validate_snapshot, snapshot_signals, apply_trend, import_snapshot, read_snapshot, update_status
+from src.trends import validate_snapshot, snapshot_signals, apply_trend, import_snapshot, read_snapshot, update_status, check_import, main
 from src.utils import Role, evaluate
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -81,3 +84,36 @@ class TestTrendKeys(unittest.TestCase):
         d["skill_signals"][0]["mapping_kind"] = "unmapped"
         with self.assertRaises(ValueError):
             validate_snapshot(d)
+
+    def test_preflight_and_import_reject_wrong_source(self):
+        for kind, filename in [("wef", "jobstreet_skills_2025.json"), ("jobstreet", "wef_future_jobs_2025.json")]:
+            incoming = ROOT / "data" / "trends" / filename
+            with tempfile.TemporaryDirectory() as temp:
+                folder = Path(temp)
+                target = folder / ("wef_future_jobs_2025.json" if kind == "wef" else "jobstreet_skills_2025.json")
+                target.write_bytes((ROOT / "data" / "trends" / target.name).read_bytes())
+                before = target.read_bytes()
+                with self.assertRaises(ValueError):
+                    check_import(kind, incoming)
+                with self.assertRaises(ValueError):
+                    import_snapshot(kind, incoming, folder)
+                self.assertEqual(target.read_bytes(), before)
+                self.assertFalse(update_status(folder, kind)["ok"])
+                self.assertEqual(len(list(folder.glob("*.bak"))), 0)
+
+    def test_cli_preflight_is_read_only(self):
+        for kind, filename in [("wef", "wef_future_jobs_2025.json"), ("jobstreet", "jobstreet_skills_2025.json")]:
+            with tempfile.TemporaryDirectory() as temp:
+                folder = Path(temp)
+                incoming = folder / filename
+                incoming.write_bytes((ROOT / "data" / "trends" / filename).read_bytes())
+                original = incoming.read_bytes()
+                with patch("sys.argv", ["trends", kind, str(incoming), "--check"]), patch("src.trends._atomic_json", side_effect=AssertionError("Preflight wrote data")):
+                    main()
+                self.assertEqual(list(folder.iterdir()), [incoming])
+                self.assertEqual(incoming.read_bytes(), original)
+                wrong = "jobstreet" if kind == "wef" else "wef"
+                result = subprocess.run([sys.executable, "-B", "-m", "src.trends", wrong, str(incoming), "--check"], cwd=ROOT, capture_output=True, text=True)
+                self.assertEqual(result.returncode, 1)
+                self.assertIn("does not match", result.stderr)
+                self.assertEqual(list(folder.iterdir()), [incoming])
