@@ -551,7 +551,7 @@ INTRO_SCENE_CONTROLLER = """
           if (button) button.click();
           else if (Date.now() < deadline) w.setTimeout(continueToWebIntro, 50);
         }
-        w.setTimeout(continueToWebIntro, reducedMotion ? 40 : 3350);
+        w.setTimeout(continueToWebIntro, reducedMotion ? 40 : 4250);
       }, {once:true});
     }
     const panes = [...intro.querySelectorAll(".sr-rain-pane")].map((pane, index) => {
@@ -621,22 +621,31 @@ LEGACY_INTRO_HTML = """
 ENTRY_TRANSITION_CSS = """
 <style>
 @keyframes sr-entry-scene-fade {
-  0%, 82% { opacity:1; }
+  0%, 87% { opacity:1; }
   100% { opacity:0; visibility:hidden; }
 }
 @keyframes sr-entry-camera-push {
+  /* Dense samples of a smooth ease-in/ease-out curve keep the camera motion continuous. */
   0% { transform:translate3d(0,0,0) scale(1); opacity:1; }
-  32% { transform:translate3d(0,0,0) scale(1.18); opacity:1; }
-  72% { transform:translate3d(0,0,0) scale(1.46); opacity:1; }
-  94% { transform:translate3d(0,0,0) scale(1.62); opacity:1; }
-  100% { transform:translate3d(0,0,0) scale(1.66); opacity:0; }
+  10% { transform:translate3d(0,0,0) scale(1.023); opacity:1; }
+  20% { transform:translate3d(0,0,0) scale(1.085); opacity:1; }
+  30% { transform:translate3d(0,0,0) scale(1.174); opacity:1; }
+  40% { transform:translate3d(0,0,0) scale(1.279); opacity:1; }
+  50% { transform:translate3d(0,0,0) scale(1.39); opacity:1; }
+  60% { transform:translate3d(0,0,0) scale(1.501); opacity:1; }
+  70% { transform:translate3d(0,0,0) scale(1.606); opacity:1; }
+  80% { transform:translate3d(0,0,0) scale(1.695); opacity:1; }
+  90% { transform:translate3d(0,0,0) scale(1.757); opacity:1; }
+  97% { transform:translate3d(0,0,0) scale(1.78); opacity:1; }
+  100% { transform:translate3d(0,0,0) scale(1.79); opacity:0; }
 }
 .sr-intro.sr-intro-zoom {
-  animation:sr-entry-scene-fade 3.3s cubic-bezier(.22,.61,.36,1) forwards;
+  animation:sr-entry-scene-fade 4.2s cubic-bezier(.4,0,.2,1) forwards;
   pointer-events:none;
+  will-change:opacity;
 }
 .sr-intro.sr-intro-zoom .sr-scene-frame {
-  animation:sr-entry-camera-push 3.3s cubic-bezier(.22,.61,.36,1) forwards;
+  animation:sr-entry-camera-push 4.2s linear forwards;
   will-change:transform,opacity; transform:translate3d(0,0,0); backface-visibility:hidden;
 }
 .sr-intro.sr-intro-zoom .sr-intro-top,
