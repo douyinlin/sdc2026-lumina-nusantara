@@ -210,6 +210,21 @@ when validation fails. Source claims have not been reverified during this repair
 | ZHENG QUANYING | UI design & bug testing |
 | WU ZHUOLI | Core development (matching & pathway engine) |
 | ZHANG BORAN | Core development & documentation |
+### Repository access
+
+The code lives at <https://github.com/douyinlin/sdc2026-lumina-nusantara>. Accounts with
+access, checked through the GitHub API on 23 October 2026:
+
+| GitHub account | Repository role |
+| --- | --- |
+| `douyinlin` | Admin (team leader) |
+| `Lover-Leo` | Write |
+| `bojunzw` | Write |
+| `Lynnyue826` | Write |
+| `ZHENGQUANYING` | Write — invitation sent, not yet accepted |
+
+The team keeps the mapping between these accounts and the five registered members; this
+table records access, not identity.
 
 ---
 
