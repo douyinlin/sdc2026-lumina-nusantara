@@ -369,8 +369,15 @@ ANIM_CSS = """
 <style>
 @keyframes sr-curtain {
   0%   { opacity: 1; }
-  84%  { opacity: 1; }
+  88%  { opacity: 1; }
   100% { opacity: 0; visibility: hidden; }
+}
+/* The panel fades out before the backdrop does, so the intro headline never
+   sits on top of the landing headline during the cross-fade. */
+@keyframes sr-curtain-out {
+  0%, 68% { opacity: 1; }
+  82%     { opacity: 0; }
+  100%    { opacity: 0; }
 }
 @keyframes sr-eyebrow {
   0%   { opacity: 0; transform: translateY(6px); letter-spacing: .05em; }
@@ -404,7 +411,10 @@ ANIM_CSS = """
   animation: sr-curtain 2.2s ease forwards;
   pointer-events: none;
 }
-.sr-curtain-inner { max-width: 860px; padding: 0 28px; }
+.sr-curtain-inner {
+  max-width: 860px; padding: 0 28px;
+  animation: sr-curtain-out 2.2s ease forwards;
+}
 .sr-eyebrow {
   font-size: 12px; font-weight: 600; color: #7a8663; text-transform: uppercase;
   letter-spacing: .22em; margin-bottom: 16px;
