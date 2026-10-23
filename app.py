@@ -460,6 +460,16 @@ INTRO_HTML = """
 @keyframes sr-portal-reveal { from { opacity:0; filter:blur(9px); transform:scale(1.025); } to { opacity:1; filter:blur(0); transform:scale(1); } }
 .sr-intro { position:fixed; inset:0; z-index:999990; overflow:hidden; display:flex; justify-content:center; align-items:flex-start; color:#eafaff; isolation:isolate;
   background:radial-gradient(ellipse at 50% 48%,rgba(27,100,132,.34),transparent 43%),radial-gradient(ellipse at 50% 110%,rgba(28,77,97,.35),transparent 55%),linear-gradient(145deg,#06111d,#0b1e2b 48%,#101b2c); }
+.sr-room-window { position:absolute; top:19%; right:8%; width:22vw; max-width:300px; height:31vh; border:8px solid rgba(28,51,65,.9); border-radius:5px; background:linear-gradient(180deg,rgba(11,29,49,.48),rgba(20,77,103,.28)),radial-gradient(ellipse at 68% 62%,#8deaff 0 1px,transparent 2px),radial-gradient(ellipse at 28% 35%,#f4d28a 0 1px,transparent 2px),linear-gradient(180deg,#101f37,#244c63); background-size:auto,38px 34px,47px 42px,auto; box-shadow:0 0 0 1px rgba(130,204,221,.18),0 18px 45px rgba(0,0,0,.24),inset 0 0 35px rgba(31,122,149,.22); }
+.sr-room-window:before,.sr-room-window:after { content:""; position:absolute; background:rgba(43,72,87,.9); }
+.sr-room-window:before { top:0; bottom:0; left:50%; width:5px; }
+.sr-room-window:after { left:0; right:0; top:54%; height:5px; }
+.sr-room-shelf { position:absolute; left:5%; top:39%; width:17vw; max-width:220px; height:13vh; border-bottom:8px solid #273b45; background:linear-gradient(90deg,transparent 9%,#bc7d43 9% 15%,transparent 15% 21%,#547784 21% 29%,transparent 29% 36%,#b18454 36% 43%,transparent 43% 52%,#426474 52% 60%,transparent 60%); opacity:.78; filter:drop-shadow(0 10px 13px rgba(0,0,0,.22)); }
+.sr-room-desk { position:absolute; z-index:0; left:-5%; right:-5%; bottom:-3%; height:27%; transform:perspective(900px) rotateX(4deg); transform-origin:bottom; border-top:1px solid rgba(146,204,211,.25); background:linear-gradient(180deg,rgba(64,88,92,.86),rgba(22,37,45,.98) 18%,#101b24); box-shadow:0 -22px 65px rgba(0,0,0,.23); }
+.sr-room-desk:before { content:""; position:absolute; left:50%; top:12%; width:clamp(180px,27vw,360px); height:15px; transform:translateX(-50%); border-radius:50%; background:linear-gradient(90deg,transparent,rgba(119,231,229,.52),transparent); filter:blur(7px); }
+.sr-room-lamp { position:absolute; left:23%; top:48%; width:clamp(55px,7vw,90px); height:16vh; opacity:.78; }
+.sr-room-lamp:before { content:""; position:absolute; left:28%; top:0; width:48%; height:43%; border-radius:50% 50% 8% 8%; background:linear-gradient(120deg,#d5a969,#785938); clip-path:polygon(28% 0,72% 0,100% 100%,0 100%); box-shadow:0 0 52px 18px rgba(237,183,103,.16); }
+.sr-room-lamp:after { content:""; position:absolute; left:49%; top:39%; width:3px; height:58%; background:linear-gradient(#a8875d,#4a5150); box-shadow:0 0 0 18px rgba(236,187,112,.025); }
 .sr-intro:before { content:""; position:absolute; inset:0; opacity:.18; pointer-events:none; background-image:radial-gradient(#8deaff 1px,transparent 1px); background-size:34px 34px; mask-image:linear-gradient(transparent 3%,#000 45%,transparent); }
 .sr-intro:after { content:""; position:absolute; left:-10%; right:-10%; bottom:-36%; height:62%; transform:perspective(430px) rotateX(67deg); transform-origin:top center; background-image:linear-gradient(rgba(65,205,230,.17) 1px,transparent 1px),linear-gradient(90deg,rgba(65,205,230,.17) 1px,transparent 1px); background-size:52px 42px; mask-image:linear-gradient(#000,transparent 78%); pointer-events:none; }
 .sr-intro-top { position:absolute; top:28px; left:clamp(20px,5vw,72px); right:clamp(20px,5vw,72px); display:flex; justify-content:space-between; align-items:center; color:rgba(219,247,255,.7); font:600 11px/1.4 ui-monospace,Consolas,monospace; letter-spacing:.16em; text-transform:uppercase; }
@@ -490,12 +500,13 @@ body:has(.sr-intro:not(.sr-intro-zoom)) [data-testid="stAppViewContainer"] { ove
 .st-key-intro_enter button { position:relative; min-height:0; padding:0 !important; border:0 !important; border-radius:16px !important; color:transparent !important; background:transparent !important; box-shadow:none !important; font-size:0 !important; cursor:pointer; pointer-events:auto; }
 .st-key-intro_enter button:after { content:"CLICK TO ENTER"; position:absolute; left:50%; top:76%; transform:translate(-50%,-50%); padding:10px 18px; border:1px solid rgba(138,239,244,.85); border-radius:5px; color:#e9ffff; background:rgba(11,45,57,.84); box-shadow:0 0 22px rgba(67,226,235,.18); font:700 11px/1.2 ui-monospace,Consolas,monospace; letter-spacing:.18em; white-space:nowrap; }
 .st-key-intro_enter button:focus-visible { outline:2px solid #b3f5eb !important; outline-offset:4px; }
-@media(max-width:640px) { .sr-intro-top { top:18px; } .sr-intro-heading { top:13%; } .sr-console { top:39%; width:90vw; height:clamp(250px,43vh,360px); } .sr-console-screen { border-radius:17px; } .st-key-intro_enter { top:39vh; width:90vw; height:clamp(183px,31.4vh,263px); } .sr-intro-hint { top:83%; width:90%; } }
+@media(max-width:640px) { .sr-intro-top { top:18px; } .sr-intro-heading { top:13%; } .sr-console { top:39%; width:90vw; height:clamp(250px,43vh,360px); } .sr-console-screen { border-radius:17px; } .sr-room-window { top:24%; right:4%; width:35vw; height:23vh; } .sr-room-shelf { left:2%; top:43%; width:22vw; height:11vh; } .sr-room-lamp { left:23%; top:52%; } .st-key-intro_enter { top:39vh; width:90vw; height:clamp(183px,31.4vh,263px); } .sr-intro-hint { top:83%; width:90%; } }
 @media(prefers-reduced-motion:reduce) { .sr-portal-reveal { animation:none !important; } }
 </style>
 <div class="sr-intro" aria-label="SkillRadar MY entry screen">
   <div class="sr-intro-top"><span class="sr-intro-brand">SKILLRADAR MY</span><span>WORKFORCE INTELLIGENCE · 2026</span></div>
   <div class="sr-intro-heading"><div class="sr-intro-kicker">SDC 2026 · DOMAIN 1 · SDG 4</div><div class="sr-intro-title">The Future-Ready Workforce</div><div class="sr-intro-subtitle">Skills signals, career pathways, and a clearer view of what comes next.</div></div>
+  <div class="sr-room-window" aria-hidden="true"></div><div class="sr-room-shelf" aria-hidden="true"></div><div class="sr-room-lamp" aria-hidden="true"></div><div class="sr-room-desk" aria-hidden="true"></div>
   <div class="sr-console" aria-hidden="true"><div class="sr-console-screen"><div class="sr-console-glass"><div><div class="sr-console-status">SYSTEM READY · CAREER INTELLIGENCE</div><div class="sr-console-wordmark">SKILLRADAR</div><div class="sr-console-metrics">SKILLS → FUTURE ROLES → LEARNING PATHWAYS</div></div></div></div><div class="sr-console-neck"></div><div class="sr-console-base"></div><div class="sr-console-leds">● &nbsp; ● &nbsp; ●</div></div>
   <div class="sr-intro-hint">Select the console to enter the experience</div>
 </div>
@@ -533,26 +544,26 @@ LEGACY_INTRO_HTML = """
 ENTRY_TRANSITION_CSS = """
 <style>
 @keyframes sr-entry-scene-fade {
-  0%, 45% { opacity:1; }
+  0%, 88% { opacity:1; }
   100% { opacity:0; visibility:hidden; }
 }
 @keyframes sr-entry-console-push {
   0% { transform:translateX(-50%) scale(1); opacity:1; }
-  72% { transform:translateX(-50%) scale(5.5); opacity:1; }
-  100% { transform:translateX(-50%) scale(6.2); opacity:0; }
+  78% { transform:translateX(-50%) scale(1.12); opacity:1; }
+  100% { transform:translateX(-50%) scale(1.16); opacity:0; }
 }
 @keyframes sr-sequence-curtain {
-  0%, 27% { opacity:0; visibility:hidden; }
-  28% { opacity:0; visibility:visible; }
-  39%, 83% { opacity:1; visibility:visible; }
+  0%, 39% { opacity:0; visibility:hidden; }
+  40% { opacity:0; visibility:visible; }
+  48%, 84% { opacity:1; visibility:visible; }
   100% { opacity:0; visibility:hidden; }
 }
 .sr-intro.sr-intro-zoom {
-  animation:sr-entry-scene-fade 1.2s cubic-bezier(.2,.7,.2,1) forwards;
+  animation:sr-entry-scene-fade 2.7s cubic-bezier(.4,0,.2,1) forwards;
   pointer-events:none;
 }
 .sr-intro.sr-intro-zoom .sr-console {
-  animation:sr-entry-console-push .95s cubic-bezier(.12,.82,.18,1) forwards;
+  animation:sr-entry-console-push 2.7s cubic-bezier(.4,0,.2,1) forwards;
   transform-origin:center center;
   filter:none;
   will-change:transform,opacity;
@@ -560,20 +571,28 @@ ENTRY_TRANSITION_CSS = """
 .sr-intro.sr-intro-zoom .sr-intro-top,
 .sr-intro.sr-intro-zoom .sr-intro-heading,
 .sr-intro.sr-intro-zoom .sr-intro-hint {
-  animation:sr-entry-scene-fade .45s ease forwards;
+  animation:sr-entry-scene-fade .8s ease forwards;
 }
 .sr-curtain {
-  animation:sr-sequence-curtain 3.35s ease both;
+  animation:sr-sequence-curtain 4.8s ease both;
   pointer-events:auto;
 }
-.sr-curtain-inner { animation:sr-curtain-out 3.35s ease both; }
-.sr-eyebrow { animation-delay:.98s; }
-.sr-mark { animation-delay:1.08s; }
-.sr-tagline { animation-delay:1.48s; }
-.sr-brand { animation-delay:1.85s; }
+.sr-curtain-inner { animation:sr-curtain-out 4.8s ease both; }
+.sr-eyebrow { animation-delay:1.95s; }
+.sr-mark { animation-delay:2.05s; }
+.sr-tagline { animation-delay:2.45s; }
+.sr-brand { animation-delay:2.8s; }
 .sr-bar { animation:sr-sweep 2.2s ease .9s both; }
+@media(max-width:640px) {
+  @keyframes sr-entry-console-push-mobile {
+    0% { transform:translateX(-50%) scale(1); opacity:1; }
+    78% { transform:translateX(-50%) scale(1.02); opacity:1; }
+    100% { transform:translateX(-50%) scale(1.04); opacity:0; }
+  }
+  .sr-intro.sr-intro-zoom .sr-console { animation-name:sr-entry-console-push-mobile; }
+}
 @media(prefers-reduced-motion:reduce) {
-  .sr-intro.sr-intro-zoom,.sr-curtain { animation-duration:.001ms !important; }
+  .sr-intro.sr-intro-zoom,.sr-curtain,.sr-curtain-inner { animation-duration:.001ms !important; }
 }
 </style>
 """
