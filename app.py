@@ -361,8 +361,8 @@ def load_snapshot(kind: str = "wef") -> dict:
 
 
 # --------------------------------------------------------------------------- #
-# Motion — 1s intro curtain on load, and a 0.7s transition on stage changes.
-# Pure CSS: no rerun, no server work, works on Streamlit Cloud.
+# Motion — one-time portal entry and a 0.7s transition on stage changes.
+# The entry gate does not own or alter the app's later routes.
 # --------------------------------------------------------------------------- #
 
 ANIM_CSS = """
@@ -434,19 +434,57 @@ ANIM_CSS = """
 """
 
 INTRO_HTML = """
-<div class="sr-curtain">
-  <div class="sr-curtain-inner">
-    <div class="sr-eyebrow">SDC 2026 · Domain 1 · SDG 4</div>
-    <div class="sr-mark">The Future-Ready Workforce</div>
-    <div class="sr-tagline">
-      Tracking AI's advance · forecasting rising and declining skills ·
-      matching people to future roles · personalised reskilling ·
-      every role mapped to the UN SDGs
-    </div>
-    <div class="sr-brand">📡 SkillRadar MY</div>
-  </div>
-  <div class="sr-bar"></div>
+<style>
+@keyframes sr-portal-reveal { from { opacity:0; filter:blur(9px); transform:scale(1.025); } to { opacity:1; filter:blur(0); transform:scale(1); } }
+.sr-intro { position:fixed; inset:0; z-index:999990; overflow:hidden; display:flex; justify-content:center; align-items:flex-start; color:#eafaff; isolation:isolate;
+  background:radial-gradient(ellipse at 50% 48%,rgba(27,100,132,.34),transparent 43%),radial-gradient(ellipse at 50% 110%,rgba(28,77,97,.35),transparent 55%),linear-gradient(145deg,#06111d,#0b1e2b 48%,#101b2c); }
+.sr-intro:before { content:""; position:absolute; inset:0; opacity:.18; pointer-events:none; background-image:radial-gradient(#8deaff 1px,transparent 1px); background-size:34px 34px; mask-image:linear-gradient(transparent 3%,#000 45%,transparent); }
+.sr-intro:after { content:""; position:absolute; left:-10%; right:-10%; bottom:-36%; height:62%; transform:perspective(430px) rotateX(67deg); transform-origin:top center; background-image:linear-gradient(rgba(65,205,230,.17) 1px,transparent 1px),linear-gradient(90deg,rgba(65,205,230,.17) 1px,transparent 1px); background-size:52px 42px; mask-image:linear-gradient(#000,transparent 78%); pointer-events:none; }
+.sr-intro-top { position:absolute; top:28px; left:clamp(20px,5vw,72px); right:clamp(20px,5vw,72px); display:flex; justify-content:space-between; align-items:center; color:rgba(219,247,255,.7); font:600 11px/1.4 ui-monospace,Consolas,monospace; letter-spacing:.16em; text-transform:uppercase; }
+.sr-intro-brand { color:#e9fcff; font:800 15px/1.2 'Helvetica Neue',Arial,sans-serif; letter-spacing:.13em; }
+.sr-intro-heading { position:absolute; top:12%; width:min(92vw,900px); text-align:center; }
+.sr-intro-kicker { color:#79dfed; font:600 11px/1.4 ui-monospace,Consolas,monospace; letter-spacing:.26em; text-transform:uppercase; }
+.sr-intro-title { margin:10px 0 0; color:#f1fbff; font-size:clamp(23px,3.4vw,40px); font-weight:720; letter-spacing:-.035em; }
+.sr-intro-subtitle { margin-top:8px; color:rgba(217,239,246,.67); font-size:clamp(12px,1.35vw,15px); }
+.sr-console { position:absolute; top:34%; left:50%; width:min(78vw,910px); height:clamp(270px,49vh,460px); transform:translateX(-50%); filter:drop-shadow(0 32px 54px rgba(0,0,0,.5)); }
+.sr-console-screen { position:absolute; inset:0 0 27% 0; padding:clamp(10px,2vw,22px); border:1px solid rgba(141,231,247,.56); border-radius:24px; background:linear-gradient(145deg,rgba(35,67,82,.96),rgba(8,20,31,.98) 48%,rgba(20,47,61,.97)); box-shadow:inset 0 1px 0 rgba(255,255,255,.19),inset 0 0 36px rgba(80,214,237,.12),0 0 0 5px rgba(135,210,225,.07),0 0 50px rgba(50,195,221,.12); }
+.sr-console-glass { position:relative; height:100%; overflow:hidden; border:1px solid rgba(91,219,237,.4); border-radius:14px; background:linear-gradient(rgba(71,188,210,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(71,188,210,.09) 1px,transparent 1px),radial-gradient(ellipse at 50% 40%,rgba(32,147,165,.27),transparent 72%),#071a27; background-size:32px 28px,32px 28px,auto,auto; box-shadow:inset 0 0 45px rgba(31,177,195,.13); display:flex; align-items:center; justify-content:center; text-align:center; }
+.sr-console-glass:before,.sr-console-glass:after { content:""; position:absolute; width:28px; height:28px; border-color:#68d7e7; opacity:.75; }
+.sr-console-glass:before { top:12px; left:12px; border-top:1px solid; border-left:1px solid; }
+.sr-console-glass:after { right:12px; bottom:12px; border-right:1px solid; border-bottom:1px solid; }
+.sr-console-status { color:#67d5e7; font:600 10px/1.5 ui-monospace,Consolas,monospace; letter-spacing:.2em; }
+.sr-console-wordmark { margin:7px 0 0; color:#f2fdff; font:750 clamp(17px,2.6vw,28px)/1.1 'Helvetica Neue',Arial,sans-serif; letter-spacing:.16em; }
+.sr-console-metrics { margin-top:9px; color:rgba(180,221,232,.62); font:10px/1.4 ui-monospace,Consolas,monospace; letter-spacing:.12em; }
+.sr-console-neck { position:absolute; left:42%; right:42%; bottom:15%; height:12%; background:linear-gradient(90deg,#1a2f3b,#536b75 48%,#1b303b); clip-path:polygon(18% 0,82% 0,100% 100%,0 100%); }
+.sr-console-base { position:absolute; left:20%; right:20%; bottom:7%; height:10%; border-radius:50% 50% 12px 12px; border:1px solid rgba(139,224,239,.42); background:linear-gradient(180deg,#49616d,#172c38 56%,#0a1823); box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 8px 16px rgba(0,0,0,.35); }
+.sr-console-base:after { content:""; position:absolute; left:13%; right:13%; top:38%; height:2px; background:linear-gradient(90deg,transparent,#65e5e9,#b3f5eb,#65e5e9,transparent); opacity:.85; }
+.sr-console-leds { position:absolute; left:50%; bottom:1%; transform:translateX(-50%); color:#84f5ee; font:9px/1 ui-monospace,Consolas,monospace; letter-spacing:.38em; white-space:nowrap; }
+.sr-intro-hint { position:absolute; top:84%; color:rgba(214,241,247,.66); font:600 10px/1.4 ui-monospace,Consolas,monospace; letter-spacing:.22em; text-transform:uppercase; text-align:center; }
+body:has(.sr-intro) [data-testid="stHeader"],body:has(.sr-intro) [data-testid="stToolbar"],body:has(.sr-intro) footer { display:none !important; }
+body:has(.sr-intro) [data-testid="stMainBlockContainer"] { max-width:none !important; padding:0 !important; }
+body:has(.sr-intro) [data-testid="stAppViewContainer"] { overflow:hidden !important; }
+.st-key-intro_enter { position:fixed !important; z-index:1000000 !important; top:34vh; left:50%; transform:translateX(-50%); width:min(78vw,910px); height:clamp(197px,35.7vh,336px); pointer-events:none; }
+.st-key-intro_enter [data-testid="stButton"],.st-key-intro_enter button { width:100%; height:100%; }
+.st-key-intro_enter button { position:relative; min-height:0; padding:0 !important; border:0 !important; border-radius:16px !important; color:transparent !important; background:transparent !important; box-shadow:none !important; font-size:0 !important; cursor:pointer; pointer-events:auto; }
+.st-key-intro_enter button:after { content:"CLICK TO ENTER"; position:absolute; left:50%; top:76%; transform:translate(-50%,-50%); padding:10px 18px; border:1px solid rgba(138,239,244,.85); border-radius:5px; color:#e9ffff; background:rgba(11,45,57,.84); box-shadow:0 0 22px rgba(67,226,235,.18); font:700 11px/1.2 ui-monospace,Consolas,monospace; letter-spacing:.18em; white-space:nowrap; }
+.st-key-intro_enter button:focus-visible { outline:2px solid #b3f5eb !important; outline-offset:4px; }
+@media(max-width:640px) { .sr-intro-top { top:18px; } .sr-intro-heading { top:13%; } .sr-console { top:39%; width:90vw; height:clamp(250px,43vh,360px); } .sr-console-screen { border-radius:17px; } .st-key-intro_enter { top:39vh; width:90vw; height:clamp(183px,31.4vh,263px); } .sr-intro-hint { top:83%; width:90%; } }
+@media(prefers-reduced-motion:reduce) { .sr-portal-reveal { animation:none !important; } }
+</style>
+<div class="sr-intro" aria-label="SkillRadar MY entry screen">
+  <div class="sr-intro-top"><span class="sr-intro-brand">SKILLRADAR MY</span><span>WORKFORCE INTELLIGENCE · 2026</span></div>
+  <div class="sr-intro-heading"><div class="sr-intro-kicker">SDC 2026 · DOMAIN 1 · SDG 4</div><div class="sr-intro-title">The Future-Ready Workforce</div><div class="sr-intro-subtitle">Skills signals, career pathways, and a clearer view of what comes next.</div></div>
+  <div class="sr-console" aria-hidden="true"><div class="sr-console-screen"><div class="sr-console-glass"><div><div class="sr-console-status">SYSTEM READY · CAREER INTELLIGENCE</div><div class="sr-console-wordmark">SKILLRADAR</div><div class="sr-console-metrics">SKILLS → FUTURE ROLES → LEARNING PATHWAYS</div></div></div></div><div class="sr-console-neck"></div><div class="sr-console-base"></div><div class="sr-console-leds">● &nbsp; ● &nbsp; ●</div></div>
+  <div class="sr-intro-hint">Select the console to enter the experience</div>
 </div>
+"""
+
+ENTRY_REVEAL_CSS = """
+<style>
+@keyframes sr-portal-reveal { from { opacity:0; filter:blur(9px); transform:scale(1.025); } to { opacity:1; filter:blur(0); transform:scale(1); } }
+[data-testid="stAppViewContainer"] { animation:sr-portal-reveal .65s cubic-bezier(.2,.8,.2,1) both; }
+@media(prefers-reduced-motion:reduce) { [data-testid="stAppViewContainer"] { animation:none !important; } }
+</style>
 """
 
 # --------------------------------------------------------------------------- #
@@ -851,11 +889,14 @@ p, li, label, .stMarkdown { color: #4c5540; }
 
 
 def play_intro() -> None:
-    """Show the 1-second curtain once per browser session."""
+    """Show a one-time, click-to-enter console in front of the original app."""
     if st.session_state.get("intro_done"):
         return
-    st.session_state["intro_done"] = True
-    st.markdown(ANIM_CSS + INTRO_HTML, unsafe_allow_html=True)
+    st.markdown(INTRO_HTML, unsafe_allow_html=True)
+    if st.button("CLICK TO ENTER", key="intro_enter", type="primary"):
+        st.session_state["intro_done"] = True
+        st.session_state["_intro_reveal_pending"] = True
+        st.rerun()
 
 
 def transition_into(stage: str) -> None:
@@ -894,6 +935,9 @@ def screen_wrap() -> None:
     # Keep the particle backdrop mounted for every app stage, including long
     # intake and results screens that scroll well below the initial viewport.
     render_particle_field()
+
+    if st.session_state.pop("_intro_reveal_pending", False):
+        st.markdown(ENTRY_REVEAL_CSS, unsafe_allow_html=True)
 
     stage = st.session_state.get("stage", "landing")
     if st.session_state.get("_scrolled_stage") != stage:
