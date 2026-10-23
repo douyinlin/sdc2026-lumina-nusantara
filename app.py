@@ -557,7 +557,7 @@ INTRO_SCENE_CONTROLLER = """
           if (button) button.click();
           else if (Date.now() < deadline) w.setTimeout(continueToWebIntro, 50);
         }
-        w.setTimeout(continueToWebIntro, reducedMotion ? 40 : 3050);
+        w.setTimeout(continueToWebIntro, reducedMotion ? 40 : 1550);
       }, {once:true});
     }
     const panes = [...intro.querySelectorAll(".sr-rain-pane")].map((pane, index) => {
@@ -646,12 +646,12 @@ ENTRY_TRANSITION_CSS = """
   100% { transform:translate3d(0,0,0) scale(1.79); opacity:0; }
 }
 .sr-intro.sr-intro-zoom {
-  animation:sr-entry-scene-fade 3s cubic-bezier(.4,0,.2,1) forwards;
+  animation:sr-entry-scene-fade 1.5s cubic-bezier(.4,0,.2,1) forwards;
   pointer-events:none;
   will-change:opacity;
 }
 .sr-intro.sr-intro-zoom .sr-scene-frame {
-  animation:sr-entry-camera-push 3s linear forwards;
+  animation:sr-entry-camera-push 1.5s linear forwards;
   will-change:transform,opacity; transform:translate3d(0,0,0); backface-visibility:hidden;
 }
 .sr-intro.sr-intro-zoom .sr-intro-top,
