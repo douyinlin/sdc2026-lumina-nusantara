@@ -1,0 +1,446 @@
+{
+  "note": "Team-curated crosswalk from a skill to the SDG targets it supports. It is our own reading of the 2030 Agenda, not an official UN or DOSM mapping, and it is deliberately coarse: one family, two targets.",
+  "targets_used": [
+    "10.2",
+    "4.4",
+    "4.c",
+    "8.2",
+    "8.5",
+    "9.5",
+    "9.c"
+  ],
+  "skills": {
+    "basic statistics": {
+      "family": "digital",
+      "targets": [
+        "4.4",
+        "9.c"
+      ],
+      "why": "Digital and data skills: 4.4 (employable skills) and 9.c (access to ICT)."
+    },
+    "bookkeeping": {
+      "family": "finance",
+      "targets": [
+        "4.4",
+        "8.5"
+      ],
+      "why": "Finance, legal and administrative skills: 4.4 and 8.5 (fair, formal work)."
+    },
+    "cad": {
+      "family": "engineering",
+      "targets": [
+        "4.4",
+        "9.5"
+      ],
+      "why": "Built-environment and production skills: 4.4 and 9.5 (industrial upgrading)."
+    },
+    "clinic admin": {
+      "family": "care",
+      "targets": [
+        "4.4",
+        "10.2"
+      ],
+      "why": "Care work: 4.4 and 10.2 (inclusion of people who are usually left out)."
+    },
+    "cloud": {
+      "family": "digital",
+      "targets": [
+        "4.4",
+        "9.c"
+      ],
+      "why": "Digital and data skills: 4.4 (employable skills) and 9.c (access to ICT)."
+    },
+    "coaching": {
+      "family": "people",
+      "targets": [
+        "4.4",
+        "8.5"
+      ],
+      "why": "People and management skills: 4.4 and 8.5 (decent work, equal opportunity)."
+    },
+    "communication": {
+      "family": "people",
+      "targets": [
+        "4.4",
+        "8.5"
+      ],
+      "why": "People and management skills: 4.4 and 8.5 (decent work, equal opportunity)."
+    },
+    "compliance": {
+      "family": "finance",
+      "targets": [
+        "4.4",
+        "8.5"
+      ],
+      "why": "Finance, legal and administrative skills: 4.4 and 8.5 (fair, formal work)."
+    },
+    "content": {
+      "family": "market",
+      "targets": [
+        "4.4",
+        "8.2"
+      ],
+      "why": "Customer, sales and design skills: 4.4 and 8.2 (enterprise and job creation)."
+    },
+    "contract review": {
+      "family": "finance",
+      "targets": [
+        "4.4",
+        "8.5"
+      ],
+      "why": "Finance, legal and administrative skills: 4.4 and 8.5 (fair, formal work)."
+    },
+    "copywriting": {
+      "family": "market",
+      "targets": [
+        "4.4",
+        "8.2"
+      ],
+      "why": "Customer, sales and design skills: 4.4 and 8.2 (enterprise and job creation)."
+    },
+    "counselling": {
+      "family": "care",
+      "targets": [
+        "4.4",
+        "10.2"
+      ],
+      "why": "Care work: 4.4 and 10.2 (inclusion of people who are usually left out)."
+    },
+    "crm administration": {
+      "family": "market",
+      "targets": [
+        "4.4",
+        "8.2"
+      ],
+      "why": "Customer, sales and design skills: 4.4 and 8.2 (enterprise and job creation)."
+    },
+    "customer support": {
+      "family": "market",
+      "targets": [
+        "4.4",
+        "8.2"
+      ],
+      "why": "Customer, sales and design skills: 4.4 and 8.2 (enterprise and job creation)."
+    },
+    "cybersecurity": {
+      "family": "digital",
+      "targets": [
+        "4.4",
+        "9.c"
+      ],
+      "why": "Digital and data skills: 4.4 (employable skills) and 9.c (access to ICT)."
+    },
+    "data entry": {
+      "family": "digital",
+      "targets": [
+        "4.4",
+        "9.c"
+      ],
+      "why": "Digital and data skills: 4.4 (employable skills) and 9.c (access to ICT)."
+    },
+    "data visualisation": {
+      "family": "digital",
+      "targets": [
+        "4.4",
+        "9.c"
+      ],
+      "why": "Digital and data skills: 4.4 (employable skills) and 9.c (access to ICT)."
+    },
+    "digital marketing": {
+      "family": "market",
+      "targets": [
+        "4.4",
+        "8.2"
+      ],
+      "why": "Customer, sales and design skills: 4.4 and 8.2 (enterprise and job creation)."
+    },
+    "documentation": {
+      "family": "finance",
+      "targets": [
+        "4.4",
+        "8.5"
+      ],
+      "why": "Finance, legal and administrative skills: 4.4 and 8.5 (fair, formal work)."
+    },
+    "electrical systems": {
+      "family": "engineering",
+      "targets": [
+        "4.4",
+        "9.5"
+      ],
+      "why": "Built-environment and production skills: 4.4 and 9.5 (industrial upgrading)."
+    },
+    "excel": {
+      "family": "digital",
+      "targets": [
+        "4.4",
+        "9.c"
+      ],
+      "why": "Digital and data skills: 4.4 (employable skills) and 9.c (access to ICT)."
+    },
+    "financial modelling": {
+      "family": "finance",
+      "targets": [
+        "4.4",
+        "8.5"
+      ],
+      "why": "Finance, legal and administrative skills: 4.4 and 8.5 (fair, formal work)."
+    },
+    "financial reporting": {
+      "family": "finance",
+      "targets": [
+        "4.4",
+        "8.5"
+      ],
+      "why": "Finance, legal and administrative skills: 4.4 and 8.5 (fair, formal work)."
+    },
+    "graphic design": {
+      "family": "market",
+      "targets": [
+        "4.4",
+        "8.2"
+      ],
+      "why": "Customer, sales and design skills: 4.4 and 8.2 (enterprise and job creation)."
+    },
+    "hr operations": {
+      "family": "people",
+      "targets": [
+        "4.4",
+        "8.5"
+      ],
+      "why": "People and management skills: 4.4 and 8.5 (decent work, equal opportunity)."
+    },
+    "inventory": {
+      "family": "operations",
+      "targets": [
+        "4.4",
+        "8.2"
+      ],
+      "why": "Operations skills: 4.4 and 8.2 (productivity through upgrading)."
+    },
+    "it support": {
+      "family": "digital",
+      "targets": [
+        "4.4",
+        "9.c"
+      ],
+      "why": "Digital and data skills: 4.4 (employable skills) and 9.c (access to ICT)."
+    },
+    "lean": {
+      "family": "engineering",
+      "targets": [
+        "4.4",
+        "9.5"
+      ],
+      "why": "Built-environment and production skills: 4.4 and 9.5 (industrial upgrading)."
+    },
+    "logistics": {
+      "family": "operations",
+      "targets": [
+        "4.4",
+        "8.2"
+      ],
+      "why": "Operations skills: 4.4 and 8.2 (productivity through upgrading)."
+    },
+    "machine learning": {
+      "family": "digital",
+      "targets": [
+        "4.4",
+        "9.c"
+      ],
+      "why": "Digital and data skills: 4.4 (employable skills) and 9.c (access to ICT)."
+    },
+    "machine operation": {
+      "family": "engineering",
+      "targets": [
+        "4.4",
+        "9.5"
+      ],
+      "why": "Built-environment and production skills: 4.4 and 9.5 (industrial upgrading)."
+    },
+    "negotiation": {
+      "family": "people",
+      "targets": [
+        "4.4",
+        "8.5"
+      ],
+      "why": "People and management skills: 4.4 and 8.5 (decent work, equal opportunity)."
+    },
+    "osh": {
+      "family": "operations",
+      "targets": [
+        "4.4",
+        "8.2"
+      ],
+      "why": "Operations skills: 4.4 and 8.2 (productivity through upgrading)."
+    },
+    "patient care": {
+      "family": "care",
+      "targets": [
+        "4.4",
+        "10.2"
+      ],
+      "why": "Care work: 4.4 and 10.2 (inclusion of people who are usually left out)."
+    },
+    "presentation": {
+      "family": "people",
+      "targets": [
+        "4.4",
+        "8.5"
+      ],
+      "why": "People and management skills: 4.4 and 8.5 (decent work, equal opportunity)."
+    },
+    "process improvement": {
+      "family": "operations",
+      "targets": [
+        "4.4",
+        "8.2"
+      ],
+      "why": "Operations skills: 4.4 and 8.2 (productivity through upgrading)."
+    },
+    "product management": {
+      "family": "people",
+      "targets": [
+        "4.4",
+        "8.5"
+      ],
+      "why": "People and management skills: 4.4 and 8.5 (decent work, equal opportunity)."
+    },
+    "project management": {
+      "family": "people",
+      "targets": [
+        "4.4",
+        "8.5"
+      ],
+      "why": "People and management skills: 4.4 and 8.5 (decent work, equal opportunity)."
+    },
+    "prompt engineering": {
+      "family": "digital",
+      "targets": [
+        "4.4",
+        "9.c"
+      ],
+      "why": "Digital and data skills: 4.4 (employable skills) and 9.c (access to ICT)."
+    },
+    "python": {
+      "family": "digital",
+      "targets": [
+        "4.4",
+        "9.c"
+      ],
+      "why": "Digital and data skills: 4.4 (employable skills) and 9.c (access to ICT)."
+    },
+    "quality assurance": {
+      "family": "operations",
+      "targets": [
+        "4.4",
+        "8.2"
+      ],
+      "why": "Operations skills: 4.4 and 8.2 (productivity through upgrading)."
+    },
+    "quantity surveying": {
+      "family": "engineering",
+      "targets": [
+        "4.4",
+        "9.5"
+      ],
+      "why": "Built-environment and production skills: 4.4 and 9.5 (industrial upgrading)."
+    },
+    "recruitment": {
+      "family": "people",
+      "targets": [
+        "4.4",
+        "8.5"
+      ],
+      "why": "People and management skills: 4.4 and 8.5 (decent work, equal opportunity)."
+    },
+    "reporting": {
+      "family": "digital",
+      "targets": [
+        "4.4",
+        "9.c"
+      ],
+      "why": "Digital and data skills: 4.4 (employable skills) and 9.c (access to ICT)."
+    },
+    "research": {
+      "family": "digital",
+      "targets": [
+        "4.4",
+        "9.c"
+      ],
+      "why": "Digital and data skills: 4.4 (employable skills) and 9.c (access to ICT)."
+    },
+    "site supervision": {
+      "family": "engineering",
+      "targets": [
+        "4.4",
+        "9.5"
+      ],
+      "why": "Built-environment and production skills: 4.4 and 9.5 (industrial upgrading)."
+    },
+    "sql": {
+      "family": "digital",
+      "targets": [
+        "4.4",
+        "9.c"
+      ],
+      "why": "Digital and data skills: 4.4 (employable skills) and 9.c (access to ICT)."
+    },
+    "stakeholder management": {
+      "family": "people",
+      "targets": [
+        "4.4",
+        "8.5"
+      ],
+      "why": "People and management skills: 4.4 and 8.5 (decent work, equal opportunity)."
+    },
+    "structural analysis": {
+      "family": "engineering",
+      "targets": [
+        "4.4",
+        "9.5"
+      ],
+      "why": "Built-environment and production skills: 4.4 and 9.5 (industrial upgrading)."
+    },
+    "teaching": {
+      "family": "education",
+      "targets": [
+        "4.4",
+        "4.c"
+      ],
+      "why": "Teaching and training: 4.4 and 4.c (supply of qualified educators)."
+    },
+    "team lead": {
+      "family": "people",
+      "targets": [
+        "4.4",
+        "8.5"
+      ],
+      "why": "People and management skills: 4.4 and 8.5 (decent work, equal opportunity)."
+    },
+    "ui ux": {
+      "family": "market",
+      "targets": [
+        "4.4",
+        "8.2"
+      ],
+      "why": "Customer, sales and design skills: 4.4 and 8.2 (enterprise and job creation)."
+    },
+    "video editing": {
+      "family": "market",
+      "targets": [
+        "4.4",
+        "8.2"
+      ],
+      "why": "Customer, sales and design skills: 4.4 and 8.2 (enterprise and job creation)."
+    },
+    "web development": {
+      "family": "digital",
+      "targets": [
+        "4.4",
+        "9.c"
+      ],
+      "why": "Digital and data skills: 4.4 (employable skills) and 9.c (access to ICT)."
+    }
+  }
+}

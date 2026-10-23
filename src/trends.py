@@ -138,15 +138,23 @@ def update_status(folder: Path, kind: str) -> dict:
     except (ValueError, OSError):
         return {"ok": False}
 
+def check_import(kind: str, incoming: Path) -> dict:
+    """Read-only validation shared by CLI preflight and the actual importer."""
+    if kind not in FILES:
+        raise ValueError("Unknown source")
+    data = read_snapshot(incoming)
+    expected_host = "www.weforum.org" if kind == "wef" else "theedgemalaysia.com"
+    if urlparse(data["source_url"]).hostname != expected_host:
+        raise ValueError("Source URL does not match selected source")
+    return data
+
+
 def import_snapshot(kind: str, incoming: Path, folder: Path) -> None:
     if kind not in FILES:
         raise ValueError("Unknown source")
     status = {"attempted_at": datetime.now(timezone.utc).isoformat(), "method": "manual reviewed JSON import"}
     try:
-        data = read_snapshot(incoming)
-        expected_host = "www.weforum.org" if kind == "wef" else "theedgemalaysia.com"
-        if urlparse(data["source_url"]).hostname != expected_host:
-            raise ValueError("Source URL does not match selected source")
+        data = check_import(kind, incoming)
         target = folder / FILES[kind]
         if target.exists():
             try:
@@ -169,12 +177,12 @@ def main() -> None:
     args = parser.parse_args()
     try:
         if args.check:
-            read_snapshot(args.input)
+            check_import(args.source, args.input)
         else:
             import_snapshot(args.source, args.input, Path(__file__).resolve().parents[1] / "data" / "trends")
     except (ValueError, OSError, TypeError) as exc:
         parser.exit(1, "Import rejected; existing snapshot preserved: " + str(exc) + "\n")
-    print("Validation passed" if args.check else "Snapshot imported; review git diff before committing")
+    print("Data and source identity validation passed; external facts and write permissions are not verified" if args.check else "Snapshot imported; review git diff before committing")
 
 if __name__ == "__main__":
     main()

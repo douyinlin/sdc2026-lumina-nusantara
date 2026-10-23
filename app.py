@@ -10,9 +10,11 @@ Run:  streamlit run app.py
 from __future__ import annotations
 
 import json
+import hashlib
 import re
 import sys
 import zlib
+from urllib.parse import quote_plus
 from pathlib import Path
 
 import streamlit as st
@@ -230,6 +232,16 @@ def roles_for_field(roles: list[Role], field: str) -> tuple[list[Role], list[Rol
     return same, adjacent
 
 
+SKILL_SDG_FILE = DATA / "skills_sdg.json"
+
+
+def load_skill_sdg() -> dict:
+    """Team-curated skill -> SDG targets; see the note inside the file."""
+    try:
+        return json.loads(SKILL_SDG_FILE.read_text(encoding="utf-8")).get("skills", {})
+    except Exception:
+        return {}
+
 def load_courses() -> dict[str, dict]:
     """Existing course records; durations remain unverified unless documented."""
     path = DATA / "courses.json"
@@ -369,8 +381,15 @@ ANIM_CSS = """
 <style>
 @keyframes sr-curtain {
   0%   { opacity: 1; }
-  84%  { opacity: 1; }
+  88%  { opacity: 1; }
   100% { opacity: 0; visibility: hidden; }
+}
+/* The panel fades out before the backdrop does, so the intro headline never
+   sits on top of the landing headline during the cross-fade. */
+@keyframes sr-curtain-out {
+  0%, 68% { opacity: 1; }
+  82%     { opacity: 0; }
+  100%    { opacity: 0; }
 }
 @keyframes sr-eyebrow {
   0%   { opacity: 0; transform: translateY(6px); letter-spacing: .05em; }
@@ -404,7 +423,10 @@ ANIM_CSS = """
   animation: sr-curtain 2.2s ease forwards;
   pointer-events: none;
 }
-.sr-curtain-inner { max-width: 860px; padding: 0 28px; }
+.sr-curtain-inner {
+  max-width: 860px; padding: 0 28px;
+  animation: sr-curtain-out 2.2s ease forwards;
+}
 .sr-eyebrow {
   font-size: 12px; font-weight: 600; color: #7a8663; text-transform: uppercase;
   letter-spacing: .22em; margin-bottom: 16px;
@@ -588,6 +610,12 @@ def render_particle_field() -> None:
             position:relative;
             z-index:1;
           }
+          /* Every element container sits at z-index 1, so paint order falls back to
+             DOM order — the particle layer is rendered after the intro curtain and
+             would cover it. Lift the curtain itself above the field. */
+          [data-testid="stMainBlockContainer"] [data-testid="stElementContainer"]:has(.sr-curtain) {
+            z-index: 4;
+          }
           [data-testid="stHeader"], [data-testid="stSidebar"] {
             position:relative;
             z-index:2;
@@ -700,7 +728,21 @@ def render_particle_field() -> None:
             ctx.fillRect(pointer.x - radius, pointer.y - radius, radius * 2, radius * 2);
           }
 
+          function introRunning() {
+            const curtain = parentDocument.querySelector(".sr-curtain");
+            if (!curtain) return false;
+            const style = parentWindow.getComputedStyle(curtain);
+            return style.visibility !== "hidden" && parseFloat(style.opacity || "1") > 0.02;
+          }
+
           function render(time) {
+            // The intro owns the screen while it is up: stay invisible instead of
+            // drifting under/over its headline, then start once it is gone.
+            if (introRunning()) {
+              ctx.clearRect(0, 0, width, height);
+              raf = requestAnimationFrame(render);
+              return;
+            }
             ctx.clearRect(0, 0, width, height);
             if (pointer.active) {
               drawGlow(pointer.strength);
@@ -1445,6 +1487,44 @@ def screen_landing() -> None:
 # Screen: jobseeker intake — two personas
 # --------------------------------------------------------------------------- #
 
+def clear_skill_draft() -> None:
+    """Called before widgets render or as a callback; keep upload digest consumed."""
+    st.session_state["skill_draft_labels"] = []
+    st.session_state["skill_draft_dirty"] = False
+    st.session_state["skill_query"] = ""
+    st.session_state["skill_search_pick"] = []
+    for group in TAXONOMY:
+        st.session_state[f"ms_{group}"] = []
+
+
+def clear_current_skills() -> None:
+    clear_skill_draft()
+    st.session_state["skills"] = []
+
+
+def update_skill_draft(widget_key: str, visible_labels: list[str]) -> None:
+    previous = set(st.session_state.get("skill_draft_labels", []))
+    selected = set(st.session_state.get(widget_key, []))
+    st.session_state["skill_draft_labels"] = sorted((previous - set(visible_labels)) | selected)
+    st.session_state["skill_draft_dirty"] = True
+    draft = st.session_state["skill_draft_labels"]
+    for group, items in TAXONOMY.items():
+        key = f"ms_{group}"
+        if key != widget_key:
+            st.session_state[key] = [x for x in draft if x in items]
+    if widget_key != "skill_search_pick":
+        sync_search_draft()
+
+
+def sync_search_draft() -> None:
+    lang = st.session_state.get("lang", "en")
+    query = st.session_state.get("skill_query", "").strip().casefold()
+    st.session_state["skill_search_pick"] = [
+        x for x in st.session_state.get("skill_draft_labels", [])
+        if query and query in (x + " " + skill_option_label(lang, x)).casefold()
+    ]
+
+
 def screen_js_intake() -> None:
     t = T(st.session_state.get("lang", "en"))
     screen_wrap()
@@ -1524,33 +1604,40 @@ def screen_js_intake() -> None:
     st.markdown(f'<div class="sr-pill">{t["opt_a"]}</div>', unsafe_allow_html=True)
     up = st.file_uploader(t["uploader"], type=["txt", "md", "pdf"])
     if up is not None:
-        found = cv_to_skills(up)
-        st.session_state["skills"] = found
-        if found:
-            st.success(t["detected"].format(len(found), ", ".join(found)))
-        else:
-            st.warning(t["not_detected"])
+        # getvalue does not consume the upload stream on subsequent reruns.
+        digest = hashlib.sha256(up.getvalue()).hexdigest()
+        if digest != st.session_state.get("processed_upload_digest"):
+            up.seek(0)
+            found = normalize_skills(cv_to_skills(up))
+            st.session_state["upload_parsed_skills"] = found
+            st.session_state["processed_upload_digest"] = digest
+            st.session_state["skills"] = list(found)
+            clear_skill_draft()
+            if found:
+                st.success(t["detected"].format(len(found), ", ".join(found)))
+            else:
+                st.warning(t["not_detected"])
     st.caption(t["uploader_hint"])
+    st.caption(t["upload_state_note"])
 
     st.markdown(f'<div class="sr-pill">{t["opt_b"]}</div>', unsafe_allow_html=True)
-    picked: list[str] = []
     lang = st.session_state.get("lang", "en")
     st.caption(copy_for(lang)["skills_note"])
 
     # A single searchable list across every category: type a word, pick the skill.
     _all_labels = [label for group_items in TAXONOMY.values() for label in group_items]
-    _query = st.text_input(t["skill_search"], placeholder=t["skill_search_ph"], key="skill_query")
+    _query = st.text_input(t["skill_search"], placeholder=t["skill_search_ph"], key="skill_query", on_change=sync_search_draft)
     if _query.strip():
         _hits = [x for x in _all_labels if _query.strip().casefold() in
                  (x + " " + skill_option_label(lang, x)).casefold()]
         if _hits:
-            _picked_search = st.multiselect(
+            st.session_state.setdefault("skill_search_pick", [x for x in st.session_state.get("skill_draft_labels", []) if x in _hits])
+            st.multiselect(
                 t["skill_search_results"], options=_hits, key="skill_search_pick",
+                on_change=update_skill_draft, args=("skill_search_pick", _hits),
                 format_func=lambda x: skill_option_label(lang, x),
                 placeholder=t["ms_placeholder"],
             )
-            for label in _picked_search:
-                picked += LABEL_TO_KEYS[label]
         else:
             st.caption(t["skill_search_none"].format(_query))
     groups = list(TAXONOMY.items())
@@ -1559,21 +1646,21 @@ def screen_js_intake() -> None:
         for column, (group, items) in zip(columns, groups[offset:offset + 2]):
             with column:
                 st.markdown(f"**{cat(lang, group)}**")
-                labels = st.multiselect(
-                    group, options=list(items), key=f"ms_{group}",
+                widget_key = f"ms_{group}"
+                st.session_state.setdefault(widget_key, [x for x in st.session_state.get("skill_draft_labels", []) if x in items])
+                st.multiselect(
+                    group, options=list(items), key=widget_key,
+                    on_change=update_skill_draft, args=(widget_key, list(items)),
                     label_visibility="collapsed", placeholder=t["ms_placeholder"],
-                    max_selections=6,
                     format_func=partial(skill_option_label, lang),
                 )
-                for label in labels:
-                    picked += LABEL_TO_KEYS[label]
-    if st.button(t["use_skills"], width="stretch"):
-        # Only overwrite when something was actually ticked: a CV upload already
-        # filled the profile, and an empty click must not wipe it.
-        if picked:
-            st.session_state["skills"] = picked
-        elif not st.session_state.get("skills"):
-            st.warning(t["not_detected"])
+    st.caption(t["draft_note"])
+    if st.button(t["use_skills"], width="stretch", disabled=not st.session_state.get("skill_draft_dirty", False)):
+        st.session_state["skills"] = normalize_skills([
+            skill for label in st.session_state.get("skill_draft_labels", []) for skill in LABEL_TO_KEYS[label]
+        ])
+        st.session_state["skill_draft_dirty"] = False
+    st.button(t["clear_skills"], width="stretch", on_click=clear_current_skills)
 
     current = st.session_state.get("skills") or []
     if current:
@@ -1591,7 +1678,7 @@ def screen_js_intake() -> None:
             reset()
     with c2:
         if not current:
-            st.caption(t["pick_first"])
+            st.caption(t["empty_skills"])
         if st.button(t["continue"], type="primary", width="stretch", disabled=not current):
             go("js_results")
 
@@ -1940,8 +2027,19 @@ def screen_js_results() -> None:
             )
             st.caption(t["courses_note"])
         else:
+            # No verified course for these skills: give a search route instead of
+            # pretending a resource exists.
             st.caption(t["search_caption"].format(
                 ", ".join(skill_label(lang_now, x) for x in top["missing"])))
+            links = []
+            for x in top["missing"]:
+                if x in courses:
+                    continue
+                query = quote_plus(x)
+                links.append(f"[{t['course_search_link']} · {skill_plain(lang_now, x)}]"
+                             f"(https://www.coursera.org/search?query={query})")
+            if links:
+                st.markdown(" · ".join(links))
     else:
         st.success(t["covered_all"])
 
@@ -1981,6 +2079,22 @@ def screen_js_results() -> None:
         )
     if chips:
         st.markdown("".join(chips), unsafe_allow_html=True)
+
+    # Skill level: which targets the skills on this pathway actually serve.
+    skill_sdg = load_skill_sdg()
+    step_skills = [p["skill"] for p in pathway(top)] if top["missing"] else list(top["covered"][:3])
+    mapped = [(s_, skill_sdg[s_]) for s_ in step_skills if s_ in skill_sdg]
+    if mapped:
+        st.markdown(f"**{t['skill_sdg_title']}**")
+        rows = "".join(
+            f'<span style="display:inline-block;background:#eef3e6;color:#3f4a26;'
+            f'padding:3px 10px;border-radius:999px;font-size:12px;margin:0 6px 6px 0">'
+            f'{skill_plain(lang_now, s_)} · {" / ".join(info["targets"])}</span>'
+            for s_, info in mapped
+        )
+        st.markdown(rows, unsafe_allow_html=True)
+        reached = sorted({t_ for _, info in mapped for t_ in info["targets"]})
+        st.caption(t["skill_sdg_note"].format(n=len(mapped), targets=", ".join(reached)))
 
     st.caption(t["sdg_note"])
 

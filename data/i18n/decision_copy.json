@@ -92,7 +92,14 @@
     "adv_worker": "Recorded experience: {} years; it does not change ranking.",
     "courses_note": "Course links point to the providers recorded in the catalogue. Current access, fees and catalogue hours have not been reverified. Documented durations require a source; other catalogue hours are unverified estimates, and missing hours use labelled team estimates.",
     "courses_title": "Learning resource catalogue (verification pending)",
-    "search_caption": "No course is mapped for: {}. Find a provider and verify the link, duration and fees before using it."
+    "search_caption": "No course is mapped for: {}. Find a provider and verify the link, duration and fees before using it.",
+    "upload_state_note": "A file with new content replaces confirmed skills and clears draft choices. The same content does not overwrite manual edits or cleared skills. Removing the file alone does not clear confirmed skills. Use fictional files only.",
+    "draft_note": "Search and categories share draft choices. Apply replaces confirmed skills with the draft, including an empty draft. Continue uses only the confirmed skills shown below.",
+    "clear_skills": "Clear current skills",
+    "empty_skills": "No confirmed skills. Select and apply skills, or upload different fictional content to continue.",
+    "skill_sdg_title": "What these skills contribute to (SDG)",
+    "skill_sdg_note": "{n} pathway skill(s) map to {targets}. The skill-to-target crosswalk is our own reading of the 2030 Agenda, not an official UN mapping.",
+    "course_search_link": "Search courses"
   },
   "zh": {
     "summary_full": "匹配很强：**{0}**，加权覆盖 {1}%——这个岗位的要求你已经全部具备。下面的路径是加深，不是补缺口。",
@@ -187,7 +194,14 @@
     "adv_worker": "记录的工作经验为 {} 年，目前不影响排序。",
     "courses_note": "课程链接指向目录记录的提供方。本次未重新核实可访问性、费用或目录小时数。有来源的已核实时长须有明确记录；其他目录时长待核实，缺少时长时使用标明的团队估算。",
     "courses_title": "学习资源目录（待核实）",
-    "search_caption": "以下技能尚未关联课程：{}。请寻找提供方并核实链接、时长和费用。"
+    "search_caption": "以下技能尚未关联课程：{}。请寻找提供方并核实链接、时长和费用。",
+    "upload_state_note": "上传新内容会替换已确认技能并清空选择草稿；相同内容不会覆盖手动修改或清空结果。仅移除文件不会清空已确认技能。请只用虚构文件。",
+    "draft_note": "搜索与分类共用选择草稿。应用后会以草稿替换已确认技能，包括主动清空的草稿；继续时只使用下方显示的已确认技能。",
+    "clear_skills": "清空当前技能",
+    "empty_skills": "当前没有已确认技能。请选择并应用技能，或上传不同内容的虚构文件后继续。",
+    "skill_sdg_title": "这些技能对应的 SDG",
+    "skill_sdg_note": "{n} 项路径技能对应 {targets}。技能到 SDG 的对应关系是我们自己的解读，不是联合国官方映射。",
+    "course_search_link": "搜索课程"
   },
   "ms": {
     "summary_full": "Padanan kukuh: **{0}**, liputan berwajaran {1}% — semua keperluan sudah dipenuhi. Laluan di bawah ialah pendalaman, bukan jurang.",
@@ -282,6 +296,13 @@
     "adv_worker": "Pengalaman direkodkan: {} tahun; tidak mengubah kedudukan.",
     "courses_note": "Pautan kursus merujuk penyedia dalam katalog. Akses semasa, yuran dan jam katalog belum disahkan semula. Tempoh disahkan memerlukan sumber; jam katalog lain belum disahkan, dan jam yang tiada menggunakan anggaran pasukan berlabel.",
     "courses_title": "Katalog sumber pembelajaran (pengesahan tertunda)",
-    "search_caption": "Tiada kursus dipadankan untuk: {}. Cari penyedia dan sahkan pautan, tempoh dan yuran sebelum digunakan."
+    "search_caption": "Tiada kursus dipadankan untuk: {}. Cari penyedia dan sahkan pautan, tempoh dan yuran sebelum digunakan.",
+    "upload_state_note": "Kandungan fail baharu menggantikan kemahiran disahkan dan mengosongkan pilihan draf. Kandungan sama tidak menimpa suntingan manual atau kemahiran dikosongkan. Membuang fail sahaja tidak mengosongkan kemahiran disahkan. Gunakan fail rekaan sahaja.",
+    "draft_note": "Carian dan kategori berkongsi draf. Terapkan menggantikan kemahiran disahkan dengan draf, termasuk draf kosong. Teruskan menggunakan kemahiran disahkan yang dipaparkan di bawah sahaja.",
+    "clear_skills": "Kosongkan kemahiran semasa",
+    "empty_skills": "Tiada kemahiran disahkan. Pilih dan terapkan kemahiran, atau muat naik kandungan rekaan berbeza untuk meneruskan.",
+    "skill_sdg_title": "Sumbangan kemahiran ini (SDG)",
+    "skill_sdg_note": "{n} kemahiran dalam laluan ini memetakan kepada {targets}. Pemetaan ini tafsiran kami sendiri terhadap Agenda 2030, bukan pemetaan rasmi PBB.",
+    "course_search_link": "Cari kursus"
   }
 }

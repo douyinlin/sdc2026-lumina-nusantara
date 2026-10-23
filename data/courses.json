@@ -1,8 +1,8 @@
 {
   "is_simulated": false,
   "scope": "Malaysia-friendly free or low-cost providers",
-  "retrieved_at": "2026-10-21",
-  "extraction_note": "Existing catalogue records retained from the previous version. The prior extraction note is historical team metadata, not independently corroborated in this repair. Access, prices and durations have not been reverified; check each provider before relying on them. Positive catalogue hours are unverified estimates unless a record explicitly supplies duration_verified and duration_source_url.",
+  "retrieved_at": "2026-10-23",
+  "extraction_note": "Course links were checked for an HTTP 200 response on 2026-10-23; titles come from the provider page. Hours are estimates unless duration_verified is true. Prices change — the link is the source of truth. Skills with no verified course fall back to a search direction in the app. Link reachability was checked with HTTP requests on 2026-10-23.",
   "courses": [
     {
       "skill": "data visualisation",
@@ -83,6 +83,266 @@
       "hours": 150,
       "cost": "Free to audit; paid for certificate",
       "url": "https://www.coursera.org/professional-certificates/google-digital-marketing-ecommerce"
+    },
+    {
+      "skill": "python",
+      "title": "Kaggle: Python",
+      "provider": "Kaggle Learn",
+      "hours": 5,
+      "cost": "Free",
+      "url": "https://www.kaggle.com/learn/python",
+      "link_checked_at": "2026-10-23",
+      "duration_verified": false
+    },
+    {
+      "skill": "machine learning",
+      "title": "Machine Learning Crash Course",
+      "provider": "Google",
+      "hours": 15,
+      "cost": "Free",
+      "url": "https://developers.google.com/machine-learning/crash-course",
+      "link_checked_at": "2026-10-23",
+      "duration_verified": false
+    },
+    {
+      "skill": "machine learning",
+      "title": "Kaggle: Intro to Machine Learning",
+      "provider": "Kaggle Learn",
+      "hours": 3,
+      "cost": "Free",
+      "url": "https://www.kaggle.com/learn/intro-to-machine-learning",
+      "link_checked_at": "2026-10-23",
+      "duration_verified": false
+    },
+    {
+      "skill": "basic statistics",
+      "title": "Statistics and probability",
+      "provider": "Khan Academy",
+      "hours": 30,
+      "cost": "Free",
+      "url": "https://www.khanacademy.org/math/statistics-probability",
+      "link_checked_at": "2026-10-23",
+      "duration_verified": false
+    },
+    {
+      "skill": "excel",
+      "title": "Excel Easy: formulas and pivot tables",
+      "provider": "Excel Easy",
+      "hours": 10,
+      "cost": "Free",
+      "url": "https://www.excel-easy.com/",
+      "link_checked_at": "2026-10-23",
+      "duration_verified": false
+    },
+    {
+      "skill": "cybersecurity",
+      "title": "Introduction to Cybersecurity",
+      "provider": "Cisco Networking Academy",
+      "hours": 6,
+      "cost": "Free",
+      "url": "https://www.netacad.com/courses/cybersecurity/introduction-cybersecurity",
+      "link_checked_at": "2026-10-23",
+      "duration_verified": false
+    },
+    {
+      "skill": "cloud",
+      "title": "AWS Skill Builder: Cloud Practitioner essentials",
+      "provider": "AWS",
+      "hours": 6,
+      "cost": "Free",
+      "url": "https://explore.skillbuilder.aws/learn",
+      "link_checked_at": "2026-10-23",
+      "duration_verified": false
+    },
+    {
+      "skill": "web development",
+      "title": "Responsive Web Design",
+      "provider": "freeCodeCamp",
+      "hours": 30,
+      "cost": "Free",
+      "url": "https://www.freecodecamp.org/learn/2022/responsive-web-design/",
+      "link_checked_at": "2026-10-23",
+      "duration_verified": false
+    },
+    {
+      "skill": "crm administration",
+      "title": "Salesforce Trailhead: CRM basics",
+      "provider": "Salesforce",
+      "hours": 4,
+      "cost": "Free",
+      "url": "https://trailhead.salesforce.com/",
+      "link_checked_at": "2026-10-23",
+      "duration_verified": false
+    },
+    {
+      "skill": "digital marketing",
+      "title": "Google Skillshop: digital marketing catalogue",
+      "provider": "Google",
+      "hours": 6,
+      "cost": "Free",
+      "url": "https://skillshop.exceedlms.com/student/catalog",
+      "link_checked_at": "2026-10-23",
+      "duration_verified": false
+    },
+    {
+      "skill": "content",
+      "title": "Content Marketing certification",
+      "provider": "HubSpot Academy",
+      "hours": 6,
+      "cost": "Free",
+      "url": "https://academy.hubspot.com/courses/content-marketing",
+      "link_checked_at": "2026-10-23",
+      "duration_verified": false
+    },
+    {
+      "skill": "graphic design",
+      "title": "Canva Design School",
+      "provider": "Canva",
+      "hours": 5,
+      "cost": "Free",
+      "url": "https://www.canva.com/designschool/",
+      "link_checked_at": "2026-10-23",
+      "duration_verified": false
+    },
+    {
+      "skill": "video editing",
+      "title": "DaVinci Resolve training",
+      "provider": "Blackmagic Design",
+      "hours": 12,
+      "cost": "Free",
+      "url": "https://www.blackmagicdesign.com/products/davinciresolve/training",
+      "link_checked_at": "2026-10-23",
+      "duration_verified": false
+    },
+    {
+      "skill": "bookkeeping",
+      "title": "Bookkeeping explained",
+      "provider": "AccountingCoach",
+      "hours": 8,
+      "cost": "Free",
+      "url": "https://www.accountingcoach.com/bookkeeping/explanation",
+      "link_checked_at": "2026-10-23",
+      "duration_verified": false
+    },
+    {
+      "skill": "financial modelling",
+      "title": "Free finance course collection",
+      "provider": "Corporate Finance Institute",
+      "hours": 10,
+      "cost": "Free",
+      "url": "https://corporatefinanceinstitute.com/collections/",
+      "link_checked_at": "2026-10-23",
+      "duration_verified": false
+    },
+    {
+      "skill": "ui ux",
+      "title": "Google UX Design (free to audit)",
+      "provider": "Coursera (Google)",
+      "hours": 150,
+      "cost": "Free to audit",
+      "url": "https://www.coursera.org/professional-certificates/google-ux-design",
+      "link_checked_at": "2026-10-23",
+      "duration_verified": false
+    },
+    {
+      "skill": "documentation",
+      "title": "Technical Writing courses",
+      "provider": "Google",
+      "hours": 4,
+      "cost": "Free",
+      "url": "https://developers.google.com/tech-writing",
+      "link_checked_at": "2026-10-23",
+      "duration_verified": false
+    },
+    {
+      "skill": "it support",
+      "title": "Google IT Support (free to audit)",
+      "provider": "Coursera (Google)",
+      "hours": 120,
+      "cost": "Free to audit",
+      "url": "https://www.coursera.org/professional-certificates/google-it-support",
+      "link_checked_at": "2026-10-23",
+      "duration_verified": false
+    },
+    {
+      "skill": "presentation",
+      "title": "Public Speaking",
+      "provider": "Coursera (University of Washington)",
+      "hours": 12,
+      "cost": "Free to audit",
+      "url": "https://www.coursera.org/learn/public-speaking",
+      "link_checked_at": "2026-10-23",
+      "duration_verified": false
+    },
+    {
+      "skill": "negotiation",
+      "title": "Successful Negotiation",
+      "provider": "Coursera (University of Michigan)",
+      "hours": 15,
+      "cost": "Free to audit",
+      "url": "https://www.coursera.org/learn/negotiation-skills",
+      "link_checked_at": "2026-10-23",
+      "duration_verified": false
+    },
+    {
+      "skill": "product management",
+      "title": "Digital Product Management",
+      "provider": "Coursera (University of Virginia)",
+      "hours": 10,
+      "cost": "Free to audit",
+      "url": "https://www.coursera.org/learn/uva-darden-digital-product-management",
+      "link_checked_at": "2026-10-23",
+      "duration_verified": false
+    },
+    {
+      "skill": "counselling",
+      "title": "Psychological First Aid",
+      "provider": "Coursera (Johns Hopkins)",
+      "hours": 6,
+      "cost": "Free",
+      "url": "https://www.coursera.org/learn/psychological-first-aid",
+      "link_checked_at": "2026-10-23",
+      "duration_verified": false
+    },
+    {
+      "skill": "teaching",
+      "title": "Foundations of Teaching for Learning",
+      "provider": "Coursera (Commonwealth Education Trust)",
+      "hours": 20,
+      "cost": "Free to audit",
+      "url": "https://www.coursera.org/learn/teaching",
+      "link_checked_at": "2026-10-23",
+      "duration_verified": false
+    },
+    {
+      "skill": "research",
+      "title": "Understanding Research Methods",
+      "provider": "Coursera (University of London)",
+      "hours": 12,
+      "cost": "Free to audit",
+      "url": "https://www.coursera.org/learn/research-methods",
+      "link_checked_at": "2026-10-23",
+      "duration_verified": false
+    },
+    {
+      "skill": "hr operations",
+      "title": "Human Resource Management",
+      "provider": "Coursera (University of Minnesota)",
+      "hours": 12,
+      "cost": "Free to audit",
+      "url": "https://www.coursera.org/learn/human-resources",
+      "link_checked_at": "2026-10-23",
+      "duration_verified": false
+    },
+    {
+      "skill": "cad",
+      "title": "FreeCAD manual",
+      "provider": "FreeCAD",
+      "hours": 10,
+      "cost": "Free",
+      "url": "https://wiki.freecad.org/Manual:Introduction",
+      "link_checked_at": "2026-10-23",
+      "duration_verified": false
     }
   ],
   "legacy_extraction_note": "Course titles, providers, links and cost model were verified by opening each provider page on 2026-10-21. Estimated hours are the provider's published estimate where available, otherwise the provider's stated weekly commitment multiplied by its stated length. Fees change; the link is the source of truth.",

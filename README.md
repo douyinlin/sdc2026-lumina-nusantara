@@ -59,7 +59,7 @@ expected to need reskilling within three to five years (MOSTI).
 SkillRadar MY turns public AI and labour-market signals into a personal, auditable
 career plan: a normalised skills profile, a versioned trend layer that always shows
 its source and retrieval date, an explainable role-match score, an ordered reskilling
-pathway built from free or low-cost resources, role-level SDG tags (skill-level reasons remain incomplete),
+pathway built from free or low-cost resources, SDG tags at both role and skill level,
 and two disruption scenarios so the user sees how robust each choice is.
 
 ### Key Features
@@ -69,8 +69,8 @@ and two disruption scenarios so the user sees how robust each choice is.
 | 1 | Skills profile intake | Questionnaire + synthetic CV parsing into a shared skill taxonomy |
 | 2 | AI-trend signal layer | Separate Malaysia job-offering observations, reported named-skill signals and global WEF forecasts; each source shows its date and link |
 | 3 | Future-role matching | Explainable score decomposed into skill coverage, role focus, transferability, demand trend and gap cost |
-| 4 | Personalised reskilling pathway | Sequential learning plan with linked course records; duration provenance and missing resources are explicit |
-| 5 | SDG mapping | Role-level SDG tags and explanatory context; per-skill mapping remains incomplete |
+| 4 | Personalised reskilling pathway | Sequential learning plan with linked course records (36 links, 30 of 54 catalogue skills); skills without a verified course get a search route instead of an invented one |
+| 5 | SDG mapping | Role-level SDG tags, plus a skill-to-target crosswalk (`data/skills_sdg.json`) shown on the results page; clearly labelled as the team's own reading of the 2030 Agenda |
 | 6 | Handling uncertainty | Moderate vs fast AI-disruption scenarios, explicitly labelled as estimates |
 
 ### Tech Stack
@@ -336,7 +336,7 @@ Only repository-authored static scripts are passed to this iframe; evidence and
 uploaded content are not embedded in it. Browser checks include the particle
 canvas, source/scenario controls, study plan, SDG image and mobile capture.
 
-Current local validation: **43 tests passed**, including normalization/import
+Previous validation (baseline 68559e5): **43 tests passed**, including normalization/import
 failure protection, copy consistency, and intake/results regression across three
 languages. The separate CV check, mypy (11 files), pinned dependency installation,
 `pip check` and the real Chrome workflow passed. Artifacts are ignored under
@@ -348,3 +348,35 @@ No Linux runtime test was performed. Once the owner grants access, sync the revi
 commit, install `requirements.txt`, run the configured app, and verify the same
 flows in Preview. Collect a project/Preview link and screenshot that identifies
 the actual tested commit. Do not assume old usage evidence covers this repair.
+
+
+### Input state and import preflight repair — baseline b6c0837
+
+Uploads are identified by a SHA-256 digest of their contents, not their filename.
+Changed contents are parsed once and replace confirmed skills, resetting the
+manual draft. Identical contents do not overwrite manual edits or cleared skills
+on reruns. Removing an upload alone does not clear the confirmed profile.
+Only fictional CVs should be used; this change adds no upload persistence.
+
+Search and category selectors share a manual draft. Editing enables Apply, which
+replaces confirmed skills (including an intentionally emptied draft). Before any
+manual edit, Apply is disabled so it cannot accidentally erase uploaded skills.
+Clear current skills clears the confirmed profile, draft and selectors while
+retaining the consumed upload digest. Continue is disabled for an empty profile
+and otherwise uses the displayed confirmed skills, never an unapplied draft.
+
+Trend `--check` and import now share metadata/date, source-host identity, mapping
+and canonical-key validation. Preflight writes no snapshots, backups or import
+status. Passing means structural/source-identity validation only, not external
+fact verification or guaranteed write access. Failed imports retain the last
+valid snapshot and record failure status. Original source wording is preserved.
+
+Final local verification on 2026-10-23: **49 unit/page tests passed**, 2 standalone
+CV checks passed, configured mypy passed (11 source files), and `pip check` passed.
+Chrome verified synthetic upload → manual Excel override → hours change → results,
+clear with the old upload retained, same-name/new-content uploads, field/source/
+scenario controls, learning route and SDG display. Browser artifacts are ignored
+under `test-results/input-state-browser/`. Three-language and worker/graduate/HR/
+career-centre coverage uses Streamlit page tests; the Chrome flow is English worker.
+These are local Windows results for the uncommitted repair based on b6c0837;
+Replit/Linux execution and team human review remain unverified.
