@@ -10,6 +10,7 @@ Run:  streamlit run app.py
 from __future__ import annotations
 
 import json
+import base64
 import hashlib
 import re
 import sys
@@ -494,6 +495,22 @@ body:has(.sr-intro:not(.sr-intro-zoom)) [data-testid="stAppViewContainer"] { ove
   <div class="sr-intro-heading">A clearer path to your next role</div>
 </div>
 """
+
+
+def _scene_data_uri(filename: str) -> str:
+    """Inline the intro artwork so the landing scene does not depend on a static route."""
+    image_path = ROOT / "static" / filename
+    encoded = base64.b64encode(image_path.read_bytes()).decode("ascii")
+    return f"data:image/jpeg;base64,{encoded}"
+
+
+INTRO_HTML = INTRO_HTML.replace(
+    "url('/app/static/landing-day.jpg')",
+    f"url('{_scene_data_uri('landing-day.jpg')}')",
+).replace(
+    "url('/app/static/landing-rain-night.jpg')",
+    f"url('{_scene_data_uri('landing-rain-night.jpg')}')",
+)
 
 INTRO_SCENE_CONTROLLER = """
 <script>
