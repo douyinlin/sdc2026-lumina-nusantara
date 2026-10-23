@@ -836,7 +836,7 @@ def theme_css(theme_key: str) -> str:
 .srui-chip {{ color:var(--sr-theme-ink) !important; border-color:var(--sr-theme-border) !important; background:var(--sr-theme-soft) !important; }}
 .srui-meter > span {{ background:linear-gradient(90deg,var(--sr-theme-primary),var(--sr-theme-secondary)) !important; }}
 .srui-path-step > div:hover {{ border-color:var(--sr-theme-secondary) !important; }}
-.st-key-theme_picker {{ position:fixed !important; top:12px !important; right:72px !important; z-index:999980 !important; width:30px !important; }}
+.st-key-theme_picker {{ width:32px !important; padding-top:5px !important; }}
 .st-key-theme_picker button {{ width:27px !important; min-width:27px !important; height:27px !important; min-height:27px !important; padding:0 !important; border-radius:50% !important; border:3px solid var(--sr-theme-soft) !important; background:var(--sr-theme-primary) !important; color:transparent !important; font-size:0 !important; box-shadow:0 1px 8px color-mix(in srgb,var(--sr-theme-primary) 42%,transparent) !important; }}
 .st-key-theme_picker button:hover {{ transform:scale(1.08) !important; filter:brightness(1.08); }}
 </style>"""
@@ -1228,13 +1228,6 @@ def screen_wrap() -> None:
     # Keep the particle backdrop mounted for every app stage, including long
     # intake and results screens that scroll well below the initial viewport.
     render_particle_field()
-    with st.popover("●", help="主题色 / Theme color", key="theme_picker"):
-        st.selectbox(
-            "选择主题色 / Choose a theme",
-            options=tuple(THEME_PALETTES),
-            key="theme_color",
-            format_func=lambda key: THEME_PALETTES[key]["label"],
-        )
 
     if st.session_state.pop("_intro_reveal_pending", False):
         st.markdown(ENTRY_REVEAL_CSS, unsafe_allow_html=True)
@@ -1284,6 +1277,16 @@ def lang_selector(compact: bool = False) -> None:
         st.rerun()
 
 
+def theme_picker() -> None:
+    with st.popover("●", help="主题色 / Theme color", key="theme_picker"):
+        st.selectbox(
+            "选择主题色 / Choose a theme",
+            options=tuple(THEME_PALETTES),
+            key="theme_color",
+            format_func=lambda key: THEME_PALETTES[key]["label"],
+        )
+
+
 STEP_ORDER = {"js_intake": 1, "js_results": 2, "hr_intake": 1, "hr_results": 2,
               "cc_intake": 1, "cc_results": 2}
 
@@ -1311,7 +1314,11 @@ def top_bar(t: dict) -> None:
         if st.button(t["reeval"], width="stretch", help=t["reeval_help"]):
             reset()
     with far:
-        lang_selector(compact=True)
+        lang_col, theme_col = st.columns([1, .22], vertical_alignment="center")
+        with lang_col:
+            lang_selector(compact=True)
+        with theme_col:
+            theme_picker()
 
 
 #: Official UN SDG colours for goals 1-17.
@@ -1681,9 +1688,11 @@ def screen_landing() -> None:
     st.markdown(LANDING_CSS + ORBS_HTML, unsafe_allow_html=True)
     st.markdown(theme_css(st.session_state.get("theme_color", "sage")), unsafe_allow_html=True)
 
-    _, lang_col = st.columns([5, 1])
+    _, lang_col, theme_col = st.columns([5, 1, .26], vertical_alignment="center")
     with lang_col:
         lang_selector(compact=True)
+    with theme_col:
+        theme_picker()
 
     t = T(st.session_state.get("lang", "en"))
 
