@@ -32,7 +32,7 @@ from src.trends import read_snapshot, update_status, apply_trend, _signal_streng
 from functools import partial
 from typing import cast
 from labels import field_label, group_label, skill_option_label  # noqa: E402
-from presentation import CSS_PATH, brand, copy_for, flow_header, learning_path, score_panel, skill_chips  # noqa: E402
+from presentation import CSS_PATH, brand, copy_for, flow_header, learning_path, logo_mark, score_panel, skill_chips  # noqa: E402
 
 # Copy lives in data/i18n/*.json, not in Python modules, because Streamlit keeps
 # imported modules alive across reruns and redeploys: a redeploy would otherwise
@@ -472,7 +472,8 @@ INTRO_HTML = """
 .sr-rain-top { left:34%; top:0; width:66%; height:21.5%; }
 .sr-rain-right { left:72%; top:21%; width:28%; height:43%; }
 .sr-intro-top { position:absolute; z-index:4; top:max(12px,calc(50% - min(50vh,28.125vw) + 16px)); left:max(16px,calc(50% - min(50vw,88.89vh) + 24px)); right:max(16px,calc(50% - min(50vw,88.89vh) + 24px)); display:flex; justify-content:space-between; align-items:center; color:rgba(245,250,255,.92); font:600 10px/1.4 ui-monospace,Consolas,monospace; letter-spacing:.15em; text-transform:uppercase; text-shadow:0 2px 12px rgba(0,0,0,.65); pointer-events:none; }
-.sr-intro-brand { font:800 13px/1.2 'Helvetica Neue',Arial,sans-serif; letter-spacing:.13em; }
+.sr-intro-brand { display:inline-flex; align-items:center; gap:8px; font:800 13px/1.2 'Helvetica Neue',Arial,sans-serif; letter-spacing:.13em; }
+.sr-intro-logo { width:26px; height:26px; flex:none; filter:drop-shadow(0 1px 8px rgba(93,235,203,.24)); }
 .sr-intro-clock { font-variant-numeric:tabular-nums; }
 .sr-intro-heading { position:absolute; z-index:4; top:calc(50% - min(50vh,28.125vw) + 10px); left:50%; transform:translateX(-50%); color:#f1fbff; font-size:clamp(11px,1.2vw,15px); font-weight:600; letter-spacing:.15em; text-transform:uppercase; text-shadow:0 2px 14px rgba(0,0,0,.7); text-align:center; white-space:nowrap; pointer-events:none; }
 body:has(.sr-intro:not(.sr-intro-zoom)) [data-testid="stHeader"],body:has(.sr-intro:not(.sr-intro-zoom)) [data-testid="stToolbar"],body:has(.sr-intro:not(.sr-intro-zoom)) footer { display:none !important; }
@@ -496,6 +497,10 @@ body:has(.sr-intro:not(.sr-intro-zoom)) [data-testid="stAppViewContainer"] { ove
   <button class="sr-scene-cta" type="button">CLICK TO ENTER</button>
 </div>
 """
+INTRO_HTML = INTRO_HTML.replace(
+    '<span class="sr-intro-brand">SKILLRADAR MY</span>',
+    f'<span class="sr-intro-brand">{logo_mark("sr-intro-logo")}<span>SKILLRADAR MY</span></span>',
+)
 
 
 def _scene_data_uri(filename: str) -> str:

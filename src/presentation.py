@@ -3,6 +3,7 @@ from html import escape
 from pathlib import Path
 
 CSS_PATH = Path(__file__).resolve().parent / "post_selection.css"
+LOGO_PATH = Path(__file__).resolve().parent.parent / "static" / "skillradar-logo.svg"
 
 COPY = {
     "en": {
@@ -69,8 +70,16 @@ def icon(name: str) -> str:
     )
 
 
+def logo_mark(css_class: str = "srui-logo-mark") -> str:
+    svg = LOGO_PATH.read_text(encoding="utf-8").replace(
+        ' role="img" aria-label="SkillRadar MY"', ' aria-hidden="true" focusable="false"', 1
+    )
+    return svg.replace("<svg ", f'<svg class="{css_class}" ', 1)
+
+
 def brand() -> str:
-    return f'<div class="srui-brand">{icon("compass")}<span>SkillRadar <b>MY</b></span></div>'
+    mark = logo_mark()
+    return f'<div class="srui-brand">{mark}<span>SkillRadar <b>MY</b></span></div>'
 
 
 def flow_header(stage: str, flow: str, lang: str) -> str:
