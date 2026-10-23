@@ -370,8 +370,15 @@ ANIM_CSS = """
 <style>
 @keyframes sr-curtain {
   0%   { opacity: 1; }
-  84%  { opacity: 1; }
+  88%  { opacity: 1; }
   100% { opacity: 0; visibility: hidden; }
+}
+/* The panel fades out before the backdrop does, so the intro headline never
+   sits on top of the landing headline during the cross-fade. */
+@keyframes sr-curtain-out {
+  0%, 68% { opacity: 1; }
+  82%     { opacity: 0; }
+  100%    { opacity: 0; }
 }
 @keyframes sr-eyebrow {
   0%   { opacity: 0; transform: translateY(6px); letter-spacing: .05em; }
@@ -405,7 +412,10 @@ ANIM_CSS = """
   animation: sr-curtain 2.2s ease forwards;
   pointer-events: none;
 }
-.sr-curtain-inner { max-width: 860px; padding: 0 28px; }
+.sr-curtain-inner {
+  max-width: 860px; padding: 0 28px;
+  animation: sr-curtain-out 2.2s ease forwards;
+}
 .sr-eyebrow {
   font-size: 12px; font-weight: 600; color: #7a8663; text-transform: uppercase;
   letter-spacing: .22em; margin-bottom: 16px;
@@ -551,6 +561,12 @@ def render_particle_field() -> None:
             position:relative;
             z-index:1;
           }
+          /* Every element container sits at z-index 1, so paint order falls back to
+             DOM order — the particle layer is rendered after the intro curtain and
+             would cover it. Lift the curtain itself above the field. */
+          [data-testid="stMainBlockContainer"] [data-testid="stElementContainer"]:has(.sr-curtain) {
+            z-index: 4;
+          }
           [data-testid="stHeader"], [data-testid="stSidebar"] {
             position:relative;
             z-index:2;
@@ -663,7 +679,21 @@ def render_particle_field() -> None:
             ctx.fillRect(pointer.x - radius, pointer.y - radius, radius * 2, radius * 2);
           }
 
+          function introRunning() {
+            const curtain = parentDocument.querySelector(".sr-curtain");
+            if (!curtain) return false;
+            const style = parentWindow.getComputedStyle(curtain);
+            return style.visibility !== "hidden" && parseFloat(style.opacity || "1") > 0.02;
+          }
+
           function render(time) {
+            // The intro owns the screen while it is up: stay invisible instead of
+            // drifting under/over its headline, then start once it is gone.
+            if (introRunning()) {
+              ctx.clearRect(0, 0, width, height);
+              raf = requestAnimationFrame(render);
+              return;
+            }
             ctx.clearRect(0, 0, width, height);
             if (pointer.active) {
               drawGlow(pointer.strength);
