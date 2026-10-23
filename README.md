@@ -38,7 +38,7 @@ every role mapped to the UN SDGs.
 | Replit Project (access pending) | https://replit.com/@duyulin18/SkillRadar-MY-Streamlit-app |
 | **Live Demo** | https://sdc2026-lumina-nusantara-65cnugvuxdle5dgp9ky3fs.streamlit.app |
 | RunPod Endpoint | Not used — the app runs no GPU endpoint (see Technical Declaration §5) |
-| Slide Deck | `<TODO>` |
+| Slide Deck | [SDC2026_LuminaNusantara_SlideDeck.pptx](submission/SDC2026_LuminaNusantara_SlideDeck.pptx) |
 | Demo Video | `<TODO>` |
 
 ---
@@ -231,7 +231,7 @@ table records access, not identity.
 ## Submission Checklist
 
 - [x] Team name, domain (Domain 1) and SDG track filled in
-- [ ] Slide deck link added
+- [x] Slide deck added (`submission/SDC2026_LuminaNusantara_SlideDeck.pptx`) — a hosted link is still recommended
 - [ ] Demo video link added
 - [x] Replit used, with proof of use in `submission/`
 - [ ] RunPod — **not used**; CV parsing and scoring run locally in the app

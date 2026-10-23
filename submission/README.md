@@ -4,6 +4,7 @@
 | --- | --- |
 | `SDC2026_LuminaNusantara_Preliminary.pdf` | Phase 1 project proposal |
 | `SDC2026_LuminaNusantara_TechDeclaration.pdf` | Technical tools declaration |
+| `SDC2026_LuminaNusantara_SlideDeck.pptx` | Preliminary-round pitch deck (12 slides) |
 | `REPLIT PROOF OF USE.pdf` | Screenshots proving the Replit workspace was used |
 
 ## Note on RunPod
