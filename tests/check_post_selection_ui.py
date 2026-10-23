@@ -54,7 +54,7 @@ with sync_playwright() as playwright:
         app = page
     t = T("en")
     # The migrated iframe still executes the repository's static particle script.
-    expect(app.frame_locator('iframe[title="st.iframe"]').locator("canvas")).to_have_count(1)
+    expect(app.frame_locator('iframe[title="SkillRadar full-page cursor particle field"]').locator("canvas")).to_have_count(1)
     app.get_by_role("button", name=t["p1_btn"], exact=True).click(timeout=30000)
     settle(app)
     healthy(app, t)
