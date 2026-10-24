@@ -1,5 +1,3 @@
-> Submission revision: the two PDFs have been corrected locally and require leader review and new signatures. See [owner actions](submission/OWNER_ACTIONS.md). Historical validation notes below do not establish current Replit access.
-
 # SkillRadar MY — AI Skills & Career Radar for Malaysia
 
 > **Lumina Nusantara · SDC 2026 Hackathon · Domain 1 — The Aiversecity Future-Ready Workforce Domain · SDG 4**
