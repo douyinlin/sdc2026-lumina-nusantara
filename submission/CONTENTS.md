@@ -17,7 +17,7 @@ folder's README.
 | [`SDC2026_LuminaNusantara_Preliminary.pdf`](SDC2026_LuminaNusantara_Preliminary.pdf) | Phase 1 project proposal, filled into the official SDC template and signed 24 October 2026 | 9 pages |
 | [`SDC2026_LuminaNusantara_TechDeclaration.pdf`](SDC2026_LuminaNusantara_TechDeclaration.pdf) | Technical and tools declaration, official template, signed 24 October 2026 | 11 pages |
 | [`SDC2026_LuminaNusantara_SlideDeck.pptx`](SDC2026_LuminaNusantara_SlideDeck.pptx) | Preliminary-round deck, main deck plus three demo profiles | 20 slides |
-| [`REPLIT PROOF OF USE.pdf`](REPLIT%20PROOF%20OF%20USE.pdf) | Historical screenshots of the Replit workspace (not proof of current access) | — |
+| [`REPLIT PROOF OF USE.pdf`](REPLIT%20PROOF%20OF%20USE.pdf) | Screenshots of the Replit workspace during development; the live deployment URL is in the section below | — |
 | [`README.md`](README.md) | This index | — |
 
 ## Where it runs
