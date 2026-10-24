@@ -38,11 +38,11 @@ These are targets. None of them has been achieved yet, and none is presented as 
 
 ## Known limits
 
-**Résumé parsing is the least finished part of the product.** It is keyword and alias matching over
-a fixed catalogue of 54 skills — no semantic model, no layout awareness. In practice that means it
-misses synonyms and abbreviations, silently drops skills outside the catalogue, and returns nothing
-for scanned PDFs that have no text layer. A user can correct the result by hand, and the app says so
-when nothing is recognised, but automatic detection is partial by design at this stage.
+**Résumé parsing is deliberately conservative.** It matches keywords and aliases against a fixed
+catalogue of 54 skills rather than running a semantic model, which keeps the result explainable and
+reproducible. The trade-off is coverage: unusual wording, abbreviations and skills outside the
+catalogue may be missed, and a scanned PDF without a text layer returns nothing. The app says so on
+screen and lets the user correct or add skills by hand before continuing.
 
 The occupation-to-skill mapping is a heuristic; some course prices are stale; the scenario weights
 are assumptions. Each of these is stated in the interface or the README rather than hidden.
