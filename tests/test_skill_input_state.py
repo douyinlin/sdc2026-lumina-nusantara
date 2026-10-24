@@ -42,13 +42,14 @@ class TestSkillInputState(unittest.TestCase):
                 app = self.page(lang)
                 app.multiselect(key="ms_📊 Office & Data").select("Excel / spreadsheets").run()
                 self.button(app, "use_skills", lang).click().run()
-                self.assertEqual(app.session_state["skills"], ["excel"])
+                # the upload mock returns a CV containing SQL, and upload now preselects it
+                self.assertEqual(sorted(app.session_state["skills"]), ["excel", "sql"])
                 next(n for n in app.number_input if n.label == T(lang)["q_hours"]).set_value(12).run()
-                self.assertEqual(app.session_state["skills"], ["excel"])
+                self.assertEqual(sorted(app.session_state["skills"]), ["excel", "sql"])
                 self.button(app, "continue", lang).click().run()
                 self.healthy(app)
                 self.assertEqual(app.session_state["stage"], "js_results")
-                self.assertEqual(app.session_state["skills"], ["excel"])
+                self.assertEqual(sorted(app.session_state["skills"]), ["excel", "sql"])
                 self.assertIn(T(lang)["p3"], [h.value for h in app.subheader])
         self.assertEqual(self.parser.call_count, 3)
 
@@ -69,6 +70,7 @@ class TestSkillInputState(unittest.TestCase):
 
     def test_search_and_category_share_draft_and_can_apply_empty(self):
         app = self.page()
+        self.button(app, "clear_skills").click().run()
         self.assertTrue(self.button(app, "use_skills").disabled)
         app.text_input(key="skill_query").set_value("Excel").run()
         app.multiselect(key="skill_search_pick").select("Excel / spreadsheets").run()

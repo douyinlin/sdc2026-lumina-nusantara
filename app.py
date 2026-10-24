@@ -1439,7 +1439,14 @@ RADAR_CSS = """
 
 
 def dosm_radar(t: dict, d: dict, lang: str = "en") -> None:
-    """Radar of the official DOSM occupational counts (current vs previous quarter)."""
+    """Occupational radar: each spoke is an index, last quarter = 100.
+
+    The previous version plotted the raw offer counts, so the largest group
+    (Professionals, ~286k) flattened every other spoke into the centre and the
+    chart carried no information. Indexing each group to its own previous
+    quarter puts every spoke on one scale: the dashed ring is "no change", the
+    dip is how much that group fell.
+    """
     occ = d.get("occupations") or []
     if len(occ) < 3:
         return
@@ -1447,45 +1454,59 @@ def dosm_radar(t: dict, d: dict, lang: str = "en") -> None:
         import matplotlib
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
-        from matplotlib.projections.polar import PolarAxes
         import numpy as np
     except Exception:
         return
 
-    labels = [_loc(o, "group", lang) for o in occ]
-    cur = [o["offers"] for o in occ]
-    prev = [o.get("offers_prev") or 0 for o in occ]
+    cur = np.array([o["offers"] for o in occ], dtype=float)
+    prev = np.array([o.get("offers_prev") or 0 for o in occ], dtype=float)
+    if (prev <= 0).any():
+        return
+    index = cur / prev * 100.0
+    change = index - 100.0
 
-    n = len(labels)
-    angles = np.linspace(0, 2 * np.pi, n, endpoint=False).tolist()
-    angles += angles[:1]
-    cur_c = cur + cur[:1]
-    prev_c = prev + prev[:1]
+    n = len(index)
+    angles = np.linspace(0, 2 * np.pi, n, endpoint=False)
+    closed_a = np.append(angles, angles[0])
+    closed_v = np.append(index, index[0])
+    low = float(np.floor(index.min() / 5.0) * 5.0 - 4.0)
 
-    fig, ax = plt.subplots(figsize=(3.4, 3.2), subplot_kw=dict(polar=True), dpi=170)
-    ax = cast(PolarAxes, ax)
-    ax.set_facecolor("none")
+    fig, ax = plt.subplots(figsize=(4.0, 3.7), subplot_kw=dict(polar=True), dpi=170)
     ax.set_theta_offset(np.pi / 2)
     ax.set_theta_direction(-1)
 
-    ax.plot(angles, prev_c, color="#b7c1a5", linewidth=1.2, label=d.get("previous_period", "Previous"))
-    ax.fill(angles, prev_c, color="#b7c1a5", alpha=0.16)
-    ax.plot(angles, cur_c, color="#5b7fa6", linewidth=1.7, label=d.get("latest_period", "Latest"))
-    ax.fill(angles, cur_c, color="#5b7fa6", alpha=0.22)
-    ax.scatter(angles[:-1], cur, color="#5b7fa6", s=13, zorder=5)
+    # the ring for "nothing changed" - last quarter's level
+    ax.plot(closed_a, np.full(n + 1, 100.0), color="#8a9a5b", linewidth=1.1,
+            linestyle=(0, (3, 2)), zorder=2)
+    ax.text(np.deg2rad(38), 100.6, "Q1 = 100", fontsize=6.2, color="#6f7a5c",
+            ha="left", va="bottom", zorder=6)
 
-    # Matplotlib has no CJK font in this environment, so Chinese or Malay axis
-    # labels render as empty boxes. Number the spokes instead and let the table
-    # beside the chart act as the legend — the same numbers appear there.
-    ax.set_xticks(angles[:-1])
-    ax.set_xticklabels([str(i + 1) for i in range(n)], fontsize=8.0, color="#3f4a26")
-    ax.set_yticklabels([])
-    ax.tick_params(axis="x", pad=2)
+    ax.plot(closed_a, closed_v, color="#5b7fa6", linewidth=1.9, zorder=4)
+    ax.fill(closed_a, closed_v, color="#5b7fa6", alpha=0.18, zorder=3)
+    ax.scatter(angles, index, s=[46 if v < 90 else 34 for v in index], color="#3f5c80",
+               edgecolor="white", linewidth=0.9, zorder=5)
+
+    ax.set_ylim(low, 104.0)
+    # Matplotlib has no CJK font in this environment, so the spokes stay numbered
+    # and the table beside the chart maps each number to its occupation group.
+    ax.set_xticks(angles)
+    ax.set_xticklabels([str(i + 1) for i in range(n)], fontsize=10.0, color="#3f4a26")
+    ax.set_yticks([])
+    ax.tick_params(axis="x", pad=4)
     ax.grid(color="#d8dfca", linewidth=0.6)
     ax.spines["polar"].set_color("#e2e8d8")
-    ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.19), ncol=2, frameon=False,
-              fontsize=6.8, handlelength=1.2, columnspacing=1.0)
+
+    for ang, val in zip(angles, change):
+        # place the label outside the polygon, toward the "no change" ring, so the
+        # deepest dips do not stack their labels in the middle of the chart
+        label_r = min(100.0 + val + 4.6, 103.2)
+        ax.text(ang, label_r, f"{val:+.1f}%", ha="center", va="center",
+                fontsize=7.6, color="#2f3a1f", fontweight="bold", zorder=6,
+                bbox=dict(boxstyle="round,pad=0.18", facecolor="white", edgecolor="none", alpha=0.8))
+
+    ax.set_facecolor("none")
     fig.patch.set_alpha(0)
+    fig.tight_layout()
     st.pyplot(fig, width="content")
     plt.close(fig)
 
@@ -1525,6 +1546,7 @@ def dosm_panel(t: dict, lang: str) -> None:
     with left:
         st.markdown(f"**{t['radar_title']}**")
         dosm_radar(t, d, lang)
+        st.caption(t["radar_index_note"])
     with right:
         st.markdown(f"**{t['radar_values']}**")
         body_rows = []
