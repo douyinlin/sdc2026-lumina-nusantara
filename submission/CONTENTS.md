@@ -5,7 +5,7 @@ below are the source of truth.
 
 ## Download everything at once
 
-[`SDC2026_LuminaNusantara_Submission.zip`](SDC2026_LuminaNusantara_Submission.zip) (about 4.4 MB)
+[`SDC2026_LuminaNusantara_Submission.zip`](SDC2026_LuminaNusantara_Submission.zip) (about 13 MB)
 
 Contains the proposal, the technical declaration, the slide deck, the Replit proof and this
 folder's README.
@@ -16,7 +16,7 @@ folder's README.
 | --- | --- | --- |
 | [`SDC2026_LuminaNusantara_Preliminary.pdf`](SDC2026_LuminaNusantara_Preliminary.pdf) | Phase 1 project proposal, filled into the official SDC template and signed 24 October 2026 | 9 pages |
 | [`SDC2026_LuminaNusantara_TechDeclaration.pdf`](SDC2026_LuminaNusantara_TechDeclaration.pdf) | Technical and tools declaration, official template, signed 24 October 2026 | 11 pages |
-| [`SDC2026_LuminaNusantara_SlideDeck.pptx`](SDC2026_LuminaNusantara_SlideDeck.pptx) | Preliminary-round deck | 12 slides |
+| [`SDC2026_LuminaNusantara_SlideDeck.pptx`](SDC2026_LuminaNusantara_SlideDeck.pptx) | Preliminary-round deck, main deck plus three demo profiles | 20 slides |
 | [`REPLIT PROOF OF USE.pdf`](REPLIT%20PROOF%20OF%20USE.pdf) | Historical screenshots of the Replit workspace (not proof of current access) | — |
 | [`README.md`](README.md) | This index | — |
 
