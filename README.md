@@ -37,7 +37,8 @@ every role mapped to the UN SDGs.
 | Resource | Link |
 | --- | --- |
 | GitHub Repository | https://github.com/douyinlin/sdc2026-lumina-nusantara |
-| Replit Project (access pending) | https://replit.com/@duyulin18/SkillRadar-MY-Streamlit-app |
+| Replit Project / Run → Preview | https://replit.com/@duyulin18/SkillRadar-MY-Streamlit-app |
+| Replit public deployment | Not published as of 24 October 2026; owner approval required |
 | **Live Demo** | https://sdc2026-lumina-nusantara-65cnugvuxdle5dgp9ky3fs.streamlit.app |
 | RunPod Endpoint | Not used — the app runs no GPU endpoint (see Technical Declaration §5) |
 | Submission bundle | [SDC2026_LuminaNusantara_Submission.zip](submission/SDC2026_LuminaNusantara_Submission.zip) (all files, 4.4 MB) |
@@ -154,19 +155,36 @@ python -m unittest discover tests
 
 ## How We Use Replit *(Required)*
 
-Existing Replit usage evidence is preserved in `submission/`. This repaired local
-version has **not** been run or deployed on Replit during this change. The concrete project link above was found in the existing slide brief. A read-only
-access check on 2026-10-22 returned "Page not found" with an owner-invitation message.
-This does not establish whether the app is private, renamed or removed, and does
-not prove which commit it runs. The owner must provide access and a runnable Preview.
+On **24 October 2026**, the latest reviewed GitHub main
+`73b4f344efeaaed281d7f1d0eac384f329897d04` was synced into the existing Replit
+project and run in its real Linux / Python 3.11 environment. We kept the original
+Python Streamlit application, its scoring and data, and the existing registered
+web Preview rather than rebuilding it in another stack.
 
-- **Development configuration (not executed there in this repair):** `.replit` starts
-  `python -m streamlit run app.py` on port 5000.
-- **Secrets:** any API keys live in Replit Secrets and are never committed.
-- **Hosting:** the public live demo is served by Streamlit Community Cloud, which
-  deployment settings and the deployed commit must be checked by the team.
+- **Development:** Replit's Run button starts `artifacts/skillradar: web`.
+  Its launcher uses the injected `PORT`; `/` and `/_stcore/stream` remain routed.
+  Dependencies install into `.pythonlibs`, never the immutable Nix Python.
+  The upstream standalone `.replit` is intentionally different from this managed
+  workspace's artifact configuration.
+- **Verification:** 57 unit/page tests, the separate synthetic-CV check, `pip check`,
+  and mypy (11 source files) passed. Real proxied-browser checks covered three
+  languages, synthetic CV → results → learning path → SDG, the DOSM chart,
+  and HR/career-centre smoke flows; Streamlit WebSocket messages were received.
+- **Secrets:** the main application needs no API key, GPU endpoint or database.
+  Any future keys belong in Replit Secrets, not the repository.
+- **Hosting:** the deployment service reports **no active Replit deployment**.
+  No app was published, no visibility was changed, and no production URL is
+  claimed. Run/Preview is a development session, not an always-on judging URL.
+  The existing Streamlit Community Cloud demo was anonymously reachable; its
+  exact deployed SHA is not independently established.
 
-Proof of use: [`submission/REPLIT PROOF OF USE.pdf`](submission/REPLIT%20PROOF%20OF%20USE.pdf)
+See [Replit validation and publishing handoff](docs/REPLIT_VALIDATION.md) for
+the tested project SHA, evidence locations, reproducible commands, deployment
+choices and portal fields. The old anonymous access failure is not evidence that
+the project is missing or private.
+
+The [historical proof PDF](submission/REPLIT%20PROOF%20OF%20USE.pdf) is unchanged;
+it does not prove the current version or a public Replit deployment.
 
 ## On RunPod
 
@@ -337,12 +355,12 @@ python tests/check_post_selection_ui.py --url http://localhost:8501 --browser "C
 ```
 
 There is no separate frontend build: Streamlit runs the Python application.
-For hosted startup use `python -m streamlit run app.py --server.address 0.0.0.0
---server.port 5000 --server.headless true` on one line. `.replit` already includes
-build/install and startup settings; importing and running this commit on the
-team's Replit account is still required. No API key is needed. `.env` is not loaded
-by the app; `PORT` is used only by the `.replit` deployment shell command. RunPod
-variables are reserved for the disconnected optional experiment.
+For a standalone host, bind Streamlit to `0.0.0.0` and the host's `PORT`.
+In the existing Replit workspace use **Run → SkillRadar MY Preview**; its managed
+artifact already supplies the port and WebSocket routing. Install with
+`sh scripts/install-python-deps.sh`. Do not replace the managed artifact with the
+upstream standalone fixed-port configuration. No API key is needed. `.env` is
+not loaded by the app; RunPod remains a disconnected optional experiment.
 
 Validation performed locally: unit/integration tests, dependency consistency,
 mypy and a Chrome worker flow with field selection, edited synthetic skills,
@@ -350,7 +368,11 @@ study hours, evidence/scenario switching and SDG display. See
 `team/DEVELOPMENT_LOG.md` for actual results and remaining limitations.
 
 
-### Follow-up validation — baseline 68559e5
+### Historical local validation — baseline 68559e5
+
+The following Windows results describe earlier work only. Current Replit/Linux
+results supersede the old hosting/access limitations; see
+[the current validation report](docs/REPLIT_VALIDATION.md).
 
 The trend importer, runtime loaders, scoring, explanations and pathway ordering
 now share canonical matching keys without changing source wording. Course titles,
@@ -382,12 +404,9 @@ languages. The separate CV check, mypy (11 files), pinned dependency installatio
 `pip check` and the real Chrome workflow passed. Artifacts are ignored under
 `test-results/normalized-trends-browser/`.
 
-Replit status: configuration inspected; concrete project link checked read-only;
-this repair has **not run on Replit** and has not been deployed there.
-No Linux runtime test was performed. Once the owner grants access, sync the reviewed
-commit, install `requirements.txt`, run the configured app, and verify the same
-flows in Preview. Collect a project/Preview link and screenshot that identifies
-the actual tested commit. Do not assume old usage evidence covers this repair.
+At that earlier checkpoint, Replit/Linux execution had not been performed.
+That limitation was resolved by the 24 October Replit run documented above;
+public Replit publishing still requires separate owner approval.
 
 
 ### Input state and import preflight repair — baseline b6c0837
@@ -419,4 +438,6 @@ scenario controls, learning route and SDG display. Browser artifacts are ignored
 under `test-results/input-state-browser/`. Three-language and worker/graduate/HR/
 career-centre coverage uses Streamlit page tests; the Chrome flow is English worker.
 These are local Windows results for the uncommitted repair based on b6c0837;
-Replit/Linux execution and team human review remain unverified.
+Those historical results did not verify Replit/Linux execution or team human
+review. The current Replit report verifies execution; human factual/signature
+review remains the team's responsibility.

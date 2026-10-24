@@ -15,10 +15,10 @@ and the interface says so next to the chart. Impact numbers are targets, never m
 
 | Check | Result |
 | --- | --- |
-| Automated tests | **54**, run with `python -m unittest discover -s tests -p "test_*.py"` |
+| Automated tests | **57** in the Replit workspace; current scope and revisions in [REPLIT_VALIDATION.md](REPLIT_VALIDATION.md) |
 | Page flows | all three personas, walked in English / Bahasa Malaysia / 中文 |
 | Profiles used | synthetic only (`data/sample_cv.txt`) |
-| Course links | **60** links covering all 54 skills, each checked as reachable on 24 October 2026 |
+| Course links | **60** links covering all 54 skills; upstream reports reachability checks on 24 October 2026, not independently rechecked in this Replit run |
 | Trend snapshots | validated on import: source URL host, publication date, mapping keys |
 | Live demo | Streamlit Community Cloud, free tier (may take 30–60 s to wake) |
 

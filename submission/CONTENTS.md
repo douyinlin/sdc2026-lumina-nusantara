@@ -7,8 +7,10 @@ below are the source of truth.
 
 [`SDC2026_LuminaNusantara_Submission.zip`](SDC2026_LuminaNusantara_Submission.zip) (about 4.4 MB)
 
-Contains the proposal, the technical declaration, the slide deck, the Replit proof and this
-folder's README.
+The legacy committed ZIP contains the proposal, declaration, deck, historical
+proof and an older README. It does **not** establish the latest runtime status.
+Use the current individual documents as the source of truth, or regenerate a
+bundle with the updated index and validation report before submitting.
 
 ## Files
 
@@ -21,6 +23,22 @@ folder's README.
 | [`README.md`](README.md) | This index | — |
 
 Plain-text version of every slide: [`team/DECK_TALKING_POINTS.md`](../team/DECK_TALKING_POINTS.md).
+
+## Application and Replit links (verified 24 October 2026)
+
+| Portal field | Value / status |
+| --- | --- |
+| Source repository | <https://github.com/douyinlin/sdc2026-lumina-nusantara> |
+| Replit project / Run → Preview | <https://replit.com/@duyulin18/SkillRadar-MY-Streamlit-app> |
+| Public app demo | <https://sdc2026-lumina-nusantara-65cnugvuxdle5dgp9ky3fs.streamlit.app> — anonymous app access verified, deployed SHA unknown |
+| Replit public deployment URL | **Not available: deployment service reports no active deployment. Owner approval required before publishing.** |
+| Current Replit evidence and runtime SHA | [Validation report](../docs/REPLIT_VALIDATION.md); screenshots captured from the actual Preview, separate from the historical PDF |
+
+The development Preview was browser-tested, including its WebSocket connection.
+It is not a permanent production address or a substitute for a public judging
+URL. Do not invent a `replit.app` URL or claim that the old proof PDF verifies
+this version. Portal submission and sponsor declarations require owner review;
+no portal form has been submitted by this repair.
 
 ## The six required features, and where each one lives
 
@@ -36,7 +54,7 @@ Plain-text version of every slide: [`team/DECK_TALKING_POINTS.md`](../team/DECK_
 ## Current numbers
 
 - 54 skills, 45 roles, **60 verified course links covering all 54 skills**
-- 54 automated tests
+- 57 automated unit/page tests passed in the Replit workspace; see the report
 - Three languages: English, Bahasa Malaysia, 中文
 - Live demo: <https://sdc2026-lumina-nusantara-65cnugvuxdle5dgp9ky3fs.streamlit.app>
 
