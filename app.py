@@ -2565,7 +2565,9 @@ def screen_js_results() -> None:
         help=t["sdg_help_tip"],
     ):
         st.session_state["show_sdg_wheel"] = not q_open
-        q_open = not q_open
+        # Streamlit finishes the pass before the label above is rebuilt, so the
+        # arrow would lag one click behind the wheel. Force the refresh.
+        st.rerun()
 
     summary = sdg_summary(results[:4])
     st.write(", ".join(f"**SDG {k}** ({v})" for k, v in summary.items()) or "—")
