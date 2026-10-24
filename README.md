@@ -36,10 +36,9 @@ every role mapped to the UN SDGs.
 | --- | --- |
 | GitHub Repository | https://github.com/douyinlin/sdc2026-lumina-nusantara |
 | Streamlit Cloud (backup, currently behind a sign-in wall) | https://sdc2026-lumina-nusantara-65cnugvuxdle5dgp9ky3fs.streamlit.app |
-| Replit workspace (private) | https://replit.com/@duyulin18/SkillRadar-MY-Streamlit-app |
 | **Live Demo** | https://skill-radar-my-streamlit-app.replit.app |
 | RunPod Endpoint | Not used — the app runs no GPU endpoint (see Technical Declaration §5) |
-| Submission bundle | [SDC2026_LuminaNusantara_Submission.zip](submission/SDC2026_LuminaNusantara_Submission.zip) (all files, 4.4 MB) |
+| Submission bundle | [SDC2026_LuminaNusantara_Submission.zip](submission/SDC2026_LuminaNusantara_Submission.zip) (all files, 13.2 MB) |
 | Slide Deck | [SDC2026_LuminaNusantara_SlideDeck.pptx](submission/SDC2026_LuminaNusantara_SlideDeck.pptx) |
 | Demo Video (6:34) | https://youtu.be/wCsUDKMBIfs |
 
