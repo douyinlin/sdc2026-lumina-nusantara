@@ -127,10 +127,13 @@ and two disruption scenarios so the user sees how robust each choice is.
 
 ### Option 1 — Use the live demo (recommended)
 
-Open https://sdc2026-lumina-nusantara-65cnugvuxdle5dgp9ky3fs.streamlit.app
+Open https://skill-radar-my-streamlit-app.replit.app
 
-No installation required. Free-tier instances sleep when idle; the first load can
-take 30–60 seconds.
+No installation required. The deployment runs on Replit Autoscale, so the first
+visit after a quiet period can take 20–30 seconds to wake.
+
+<sub>Backup host: https://sdc2026-lumina-nusantara-65cnugvuxdle5dgp9ky3fs.streamlit.app
+(Streamlit Community Cloud — currently behind a sign-in wall, so use the Replit link above.)</sub>
 
 ### Option 2 — Run locally
 
