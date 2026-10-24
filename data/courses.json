@@ -1,7 +1,7 @@
 {
   "is_simulated": false,
   "scope": "Malaysia-friendly free or low-cost providers",
-  "retrieved_at": "2026-10-23",
+  "retrieved_at": "2026-10-24",
   "extraction_note": "Course links were checked for an HTTP 200 response on 2026-10-23; titles come from the provider page. Hours are estimates unless duration_verified is true. Prices change — the link is the source of truth. Skills with no verified course fall back to a search direction in the app. Link reachability was checked with HTTP requests on 2026-10-23.",
   "courses": [
     {
@@ -342,6 +342,116 @@
       "cost": "Free",
       "url": "https://wiki.freecad.org/Manual:Introduction",
       "link_checked_at": "2026-10-23",
+      "duration_verified": false
+    },
+    {
+      "skill": "reporting",
+      "title": "Excel Skills for Business: Essentials",
+      "provider": "Coursera (Macquarie University)",
+      "hours": 24,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.coursera.org/learn/excel-essentials",
+      "link_checked_at": "2026-10-24",
+      "duration_verified": false
+    },
+    {
+      "skill": "quality assurance",
+      "title": "Software Testing and Automation",
+      "provider": "Coursera (University of Minnesota)",
+      "hours": 60,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.coursera.org/specializations/software-testing-automation",
+      "link_checked_at": "2026-10-24",
+      "duration_verified": false
+    },
+    {
+      "skill": "compliance",
+      "title": "Regulatory Compliance",
+      "provider": "Coursera (University of Pennsylvania)",
+      "hours": 40,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.coursera.org/specializations/regulatory-compliance",
+      "link_checked_at": "2026-10-24",
+      "duration_verified": false
+    },
+    {
+      "skill": "customer support",
+      "title": "Customer Service Fundamentals",
+      "provider": "Coursera (IBM)",
+      "hours": 12,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.coursera.org/learn/customer-service-fundamentals",
+      "link_checked_at": "2026-10-24",
+      "duration_verified": false
+    },
+    {
+      "skill": "logistics",
+      "title": "Supply Chain Management",
+      "provider": "Coursera (Rutgers University)",
+      "hours": 40,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.coursera.org/specializations/supply-chain-management",
+      "link_checked_at": "2026-10-24",
+      "duration_verified": false
+    },
+    {
+      "skill": "inventory",
+      "title": "Supply Chain Management",
+      "provider": "Coursera (Rutgers University)",
+      "hours": 40,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.coursera.org/specializations/supply-chain-management",
+      "link_checked_at": "2026-10-24",
+      "duration_verified": false
+    },
+    {
+      "skill": "financial reporting",
+      "title": "Financial Accounting",
+      "provider": "Coursera (University of Illinois)",
+      "hours": 30,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.coursera.org/learn/financial-accounting",
+      "link_checked_at": "2026-10-24",
+      "duration_verified": false
+    },
+    {
+      "skill": "recruitment",
+      "title": "Human Resource Management",
+      "provider": "Coursera (University of Minnesota)",
+      "hours": 24,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.coursera.org/learn/human-resources",
+      "link_checked_at": "2026-10-24",
+      "duration_verified": false
+    },
+    {
+      "skill": "data entry",
+      "title": "Excel Skills for Business: Essentials",
+      "provider": "Coursera (Macquarie University)",
+      "hours": 24,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.coursera.org/learn/excel-essentials",
+      "link_checked_at": "2026-10-24",
+      "duration_verified": false
+    },
+    {
+      "skill": "osh",
+      "title": "Occupational Health and Safety",
+      "provider": "Alison",
+      "hours": 8,
+      "cost": "Free",
+      "url": "https://alison.com/course/occupational-health-and-safety",
+      "link_checked_at": "2026-10-24",
+      "duration_verified": false
+    },
+    {
+      "skill": "stakeholder management",
+      "title": "Project Management Principles",
+      "provider": "Coursera (Google)",
+      "hours": 20,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.coursera.org/learn/project-management-foundations",
+      "link_checked_at": "2026-10-24",
       "duration_verified": false
     }
   ],

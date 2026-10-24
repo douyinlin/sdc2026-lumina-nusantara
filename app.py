@@ -2397,6 +2397,26 @@ def screen_js_results() -> None:
         # skills the market currently rewards towards the front of the queue.
         _evidence = {signal_key(s): _signal_strength(s) for s in (trend.get("signals") or []) if signal_key(s) is not None}
         plan.sort(key=lambda p_: GAP_COST.get(p_["skill"], 0.7) - 0.35 * _evidence.get(p_["skill"], 0.0))
+        # One gap should not mean one course: top the plan up from the roles that
+        # come next in the shortlist, so the learner always gets a real choice.
+        if len(plan) < 3:
+            _seen = {p_["skill"] for p_ in plan}
+            for _alt in results[1:6]:
+                for _s in _alt["missing"]:
+                    if _s in _seen:
+                        continue
+                    plan.append({
+                        "step": len(plan) + 1,
+                        "skill": _s,
+                        "weeks": max(1, round(GAP_COST.get(_s, 0.7) * 6)),
+                        "resource": "",
+                        "from_next_role": True,
+                    })
+                    _seen.add(_s)
+                    if len(plan) >= 3:
+                        break
+                if len(plan) >= 3:
+                    break
         for _i, _p in enumerate(plan, 1):
             _p["step"] = _i
         # Product metrics, computed from this profile — never an outcome claim.
@@ -2481,6 +2501,49 @@ def screen_js_results() -> None:
                 st.markdown(" · ".join(links))
     else:
         st.success(t["covered_all"])
+        # Full coverage is not a dead end: the role still rests on a handful of
+        # skills, so offer the next level for those instead of nothing at all.
+        st.markdown(f"**{t['advance_title']}**")
+        st.caption(t["advance_note"])
+        _adv = list(top["covered"])[:3]
+        adv_rows, adv_courses = [], []
+        for _i, _sk in enumerate(_adv, 1):
+            _dur = learning_duration(_sk, courses, hours)
+            adv_rows.append({
+                t["step"]: _i,
+                t["skill"]: skill_label(lang_now, _sk),
+                t["weeks"]: _dur["weeks"],
+                t["duration_basis"]: t[_dur["basis"]],
+            })
+            _c = courses.get(_sk)
+            if _c:
+                adv_courses.append({
+                    t["col_course"]: _c["title"],
+                    t["col_provider"]: _c["provider"],
+                    t["col_hours"]: _c["hours"],
+                    t["col_cost"]: _c["cost"],
+                    t["col_link"]: _c["url"],
+                })
+        if adv_rows:
+            st.dataframe(adv_rows, width="stretch", hide_index=True)
+        if adv_courses:
+            st.markdown(f"**{t['courses_title']}**")
+            st.dataframe(
+                adv_courses,
+                width="stretch",
+                hide_index=True,
+                column_config={t["col_link"]: st.column_config.LinkColumn(t["col_link"])},
+            )
+            st.caption(t["courses_note"])
+        else:
+            _links = []
+            for _sk in _adv:
+                _links.append(
+                    f"[{t['course_search_link']} · {skill_plain(lang_now, _sk)}]"
+                    f"(https://www.coursera.org/search?query={quote_plus(_sk)})"
+                )
+            if _links:
+                st.markdown(" · ".join(_links))
 
     with st.expander(t["disclose_title"]):
         st.markdown(t["disclose_body"])

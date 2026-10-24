@@ -120,7 +120,9 @@
     "data_col_score_after": "Score after",
     "data_col_score_shift": "Score shift",
     "upload_too_big": "That file is {0} MB and the limit is {1} MB. Compress the PDF, or paste the text instead.",
-    "data_too_big": "That snapshot is {0} MB and the limit is {1} MB. Upload a smaller JSON file."
+    "data_too_big": "That snapshot is {0} MB and the limit is {1} MB. Upload a smaller JSON file.",
+    "advance_title": "Next level — the skills this role leans on",
+    "advance_note": "You already cover the skills this role requires, so there is no gap to close. These are the skills it leans on hardest; the resources below keep them current or take them further."
   },
   "zh": {
     "summary_full": "匹配很强：**{0}**，加权覆盖 {1}%——这个岗位的要求你已经全部具备。下面的路径是加深，不是补缺口。",
@@ -243,7 +245,9 @@
     "data_col_score_after": "更新后分数",
     "data_col_score_shift": "分数变化",
     "upload_too_big": "这个文件 {0} MB，上限是 {1} MB。请压缩 PDF，或者直接把内容粘贴进来。",
-    "data_too_big": "快照 {0} MB，上限是 {1} MB。请上传更小的 JSON 文件。"
+    "data_too_big": "快照 {0} MB，上限是 {1} MB。请上传更小的 JSON 文件。",
+    "advance_title": "再往上一步——这个岗位最倚重的技能",
+    "advance_note": "你已经覆盖了这个岗位要求的技能，没有缺口要补。下面列出它最倚重的三项，这些资源可以帮你保持手感或往上走一层。"
   },
   "ms": {
     "summary_full": "Padanan kukuh: **{0}**, liputan berwajaran {1}% — semua keperluan sudah dipenuhi. Laluan di bawah ialah pendalaman, bukan jurang.",
@@ -366,6 +370,8 @@
     "data_col_score_after": "Skor selepas",
     "data_col_score_shift": "Perubahan skor",
     "upload_too_big": "Fail ini {0} MB, had ialah {1} MB. Mampatkan PDF, atau tampal teksnya.",
-    "data_too_big": "Snapshot ini {0} MB, had ialah {1} MB. Muat naik fail JSON yang lebih kecil."
+    "data_too_big": "Snapshot ini {0} MB, had ialah {1} MB. Muat naik fail JSON yang lebih kecil.",
+    "advance_title": "Peringkat seterusnya - kemahiran yang paling ditagih oleh peranan ini",
+    "advance_note": "Anda sudah memenuhi kemahiran peranan ini, jadi tiada jurang untuk ditutup. Ini kemahiran yang paling ditagih; sumber di bawah membantu mengekalkannya atau membawanya lebih jauh."
   }
 }

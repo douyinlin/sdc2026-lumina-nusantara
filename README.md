@@ -71,7 +71,7 @@ and two disruption scenarios so the user sees how robust each choice is.
 | 1 | Skills profile intake | Questionnaire + synthetic CV parsing into a shared skill taxonomy |
 | 2 | AI-trend signal layer | Separate Malaysia job-offering observations, reported named-skill signals and global WEF forecasts; each source shows its date and link |
 | 3 | Future-role matching | Explainable score decomposed into skill coverage, role focus, transferability, demand trend and gap cost |
-| 4 | Personalised reskilling pathway | Sequential learning plan with linked course records (36 links, 30 of 54 catalogue skills); skills without a verified course get a search route instead of an invented one |
+| 4 | Personalised reskilling pathway | Sequential learning plan with linked course records (47 links, 41 of 54 catalogue skills); skills without a verified course get a search route instead of an invented one |
 | 5 | SDG mapping | Role-level SDG tags, plus a skill-to-target crosswalk (`data/skills_sdg.json`) shown on the results page; clearly labelled as the team's own reading of the 2030 Agenda |
 | 6 | Handling uncertainty | Moderate vs fast AI-disruption scenarios, explicitly labelled as estimates |
 
