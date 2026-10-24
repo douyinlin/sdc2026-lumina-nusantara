@@ -253,7 +253,7 @@ table records access, not identity.
 - [x] Slide deck added (`submission/SDC2026_LuminaNusantara_SlideDeck.pptx`, 20 slides), also inside the bundle ZIP
 - [x] Demo video link added (YouTube, 6:34)
 - [x] Replit used, with proof of use in `submission/`
-- [x] RunPod not used — CV parsing and scoring run locally; the project has no GPU endpoint (declared in the Technical Declaration §5)
+- **RunPod:** not used — CV parsing and scoring run locally; the project has no GPU endpoint (declared in the Technical Declaration §5). This is a statement of fact, not a checklist item.
 - [x] Revised submission PDFs reviewed and signed by the leader on 24 October 2026 (signature block on the last page of each)
 - [x] "How to Run" steps verified
 - [x] No API keys or secrets committed to the repository
