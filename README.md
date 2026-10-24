@@ -8,7 +8,7 @@ A working web app that takes a Malaysian worker from "who I am today" to "where 
 can be in the AI era", with every forecast traceable to a dated public source and
 every role mapped to the UN SDGs.
 
-**Live demo:** https://sdc2026-lumina-nusantara-65cnugvuxdle5dgp9ky3fs.streamlit.app
+**Live demo (Replit):** https://skill-radar-my-streamlit-app.replit.app
 
 > [!IMPORTANT]
 > ### 📁 Submission Documents 提交文件
@@ -37,9 +37,9 @@ every role mapped to the UN SDGs.
 | Resource | Link |
 | --- | --- |
 | GitHub Repository | https://github.com/douyinlin/sdc2026-lumina-nusantara |
-| Replit Deployment (live) | https://skill-radar-my-streamlit-app.replit.app |
+| Streamlit Cloud (backup, sign-in wall pending) | https://sdc2026-lumina-nusantara-65cnugvuxdle5dgp9ky3fs.streamlit.app |
 | Replit workspace (private) | https://replit.com/@duyulin18/SkillRadar-MY-Streamlit-app |
-| **Live Demo** | https://sdc2026-lumina-nusantara-65cnugvuxdle5dgp9ky3fs.streamlit.app |
+| **Live Demo** | https://skill-radar-my-streamlit-app.replit.app |
 | RunPod Endpoint | Not used — the app runs no GPU endpoint (see Technical Declaration §5) |
 | Submission bundle | [SDC2026_LuminaNusantara_Submission.zip](submission/SDC2026_LuminaNusantara_Submission.zip) (all files, 4.4 MB) |
 | Slide Deck | [SDC2026_LuminaNusantara_SlideDeck.pptx](submission/SDC2026_LuminaNusantara_SlideDeck.pptx) |
