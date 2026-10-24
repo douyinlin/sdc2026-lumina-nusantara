@@ -453,6 +453,136 @@
       "url": "https://www.coursera.org/learn/project-management-foundations",
       "link_checked_at": "2026-10-24",
       "duration_verified": false
+    },
+    {
+      "skill": "patient care",
+      "title": "Nursing Fundamentals: Skills for Patient Care",
+      "provider": "Coursera",
+      "hours": 16,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.coursera.org/learn/nursing-fundamentals-skills-for-patient-care-excellence",
+      "link_checked_at": "2026-10-24",
+      "duration_verified": false
+    },
+    {
+      "skill": "clinic admin",
+      "title": "Medical and Clinical Administration",
+      "provider": "Alison",
+      "hours": 10,
+      "cost": "Free",
+      "url": "https://alison.com/course/medical-and-clinical-administration",
+      "link_checked_at": "2026-10-24",
+      "duration_verified": false
+    },
+    {
+      "skill": "copywriting",
+      "title": "Copywriting: 3 Proven Frameworks to Write Words That Sell",
+      "provider": "Coursera",
+      "hours": 8,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.coursera.org/learn/copywriting-3-proven-frameworks-to-write-words-that-sell",
+      "link_checked_at": "2026-10-24",
+      "duration_verified": false
+    },
+    {
+      "skill": "machine operation",
+      "title": "Digital Manufacturing and Design",
+      "provider": "Coursera (University at Buffalo)",
+      "hours": 20,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.coursera.org/learn/digital-manufacturing-design",
+      "link_checked_at": "2026-10-24",
+      "duration_verified": false
+    },
+    {
+      "skill": "lean",
+      "title": "Lean Six Sigma Green Belt: Analyze and Improve",
+      "provider": "Coursera",
+      "hours": 24,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.coursera.org/learn/lean-six-sigma-green-belt-analyze-improve",
+      "link_checked_at": "2026-10-24",
+      "duration_verified": false
+    },
+    {
+      "skill": "contract review",
+      "title": "Contract Law",
+      "provider": "Alison",
+      "hours": 10,
+      "cost": "Free",
+      "url": "https://alison.com/course/contract-law",
+      "link_checked_at": "2026-10-24",
+      "duration_verified": false
+    },
+    {
+      "skill": "structural analysis",
+      "title": "Introduction to Finite Element Analysis",
+      "provider": "OpenLearn (Open University)",
+      "hours": 8,
+      "cost": "Free",
+      "url": "https://www.open.edu/openlearn/science-maths-technology/introduction-finite-element-analysis/content-section-0",
+      "link_checked_at": "2026-10-24",
+      "duration_verified": false
+    },
+    {
+      "skill": "process improvement",
+      "title": "Operations Management",
+      "provider": "Coursera (University of Pennsylvania)",
+      "hours": 20,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.coursera.org/learn/wharton-operations",
+      "link_checked_at": "2026-10-24",
+      "duration_verified": false
+    },
+    {
+      "skill": "electrical systems",
+      "title": "Circuits and Electronics 1: Basic Circuit Analysis",
+      "provider": "edX (MITx)",
+      "hours": 40,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.edx.org/learn/circuits/massachusetts-institute-of-technology-circuits-and-electronics-1-basic-circuit-analysis",
+      "link_checked_at": "2026-10-24",
+      "duration_verified": false
+    },
+    {
+      "skill": "site supervision",
+      "title": "Construction Management",
+      "provider": "Coursera (Columbia University)",
+      "hours": 40,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.coursera.org/specializations/construction-management",
+      "link_checked_at": "2026-10-24",
+      "duration_verified": false
+    },
+    {
+      "skill": "quantity surveying",
+      "title": "Construction Cost Estimating and Cost Control",
+      "provider": "Coursera (Columbia University)",
+      "hours": 20,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.coursera.org/learn/construction-cost-estimating",
+      "link_checked_at": "2026-10-24",
+      "duration_verified": false
+    },
+    {
+      "skill": "coaching",
+      "title": "Coaching Practices",
+      "provider": "Coursera (UC Davis)",
+      "hours": 16,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.coursera.org/learn/coaching-practices",
+      "link_checked_at": "2026-10-24",
+      "duration_verified": false
+    },
+    {
+      "skill": "team lead",
+      "title": "Leading Teams",
+      "provider": "Coursera (University of Michigan)",
+      "hours": 20,
+      "cost": "Free to audit; paid for certificate",
+      "url": "https://www.coursera.org/learn/leading-teams",
+      "link_checked_at": "2026-10-24",
+      "duration_verified": false
     }
   ],
   "legacy_extraction_note": "Course titles, providers, links and cost model were verified by opening each provider page on 2026-10-21. Estimated hours are the provider's published estimate where available, otherwise the provider's stated weekly commitment multiplied by its stated length. Fees change; the link is the source of truth.",
