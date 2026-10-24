@@ -964,7 +964,7 @@ def render_particle_field() -> None:
           }
 
           function drawGlow(amount) {
-            const radius = Math.max(85, Math.min(width, height) * .20);
+            const radius = Math.max(42.5, Math.min(width, height) * .10);
             const glow = ctx.createRadialGradient(pointer.x, pointer.y, 0,
               pointer.x, pointer.y, radius);
             glow.addColorStop(0, `rgba(255,255,255,${.56 * amount})`);
