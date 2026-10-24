@@ -1925,13 +1925,34 @@ def screen_js_intake() -> None:
         digest = hashlib.sha256(up.getvalue()).hexdigest()
         if digest != st.session_state.get("processed_upload_digest"):
             up.seek(0)
-            found = normalize_skills(cv_to_skills(up))
+            selectable_skills = {
+                skill for items in TAXONOMY.values() for keys in items.values() for skill in keys
+            }
+            found = [
+                skill for skill in normalize_skills(cv_to_skills(up))
+                if skill in selectable_skills
+            ]
+            clear_skill_draft()
+            found_set = set(found)
+            selected_labels = [
+                label
+                for items in TAXONOMY.values()
+                for label, keys in items.items()
+                if found_set.intersection(keys)
+            ]
+            st.session_state["skill_draft_labels"] = selected_labels
+            st.session_state["skill_draft_dirty"] = bool(selected_labels)
+            for group, items in TAXONOMY.items():
+                st.session_state[f"ms_{group}"] = [
+                    label for label, keys in items.items() if found_set.intersection(keys)
+                ]
             st.session_state["upload_parsed_skills"] = found
             st.session_state["processed_upload_digest"] = digest
             st.session_state["skills"] = list(found)
-            clear_skill_draft()
-            if found:
-                st.success(t["detected"].format(len(found), ", ".join(found)))
+            if selected_labels:
+                upload_lang = st.session_state.get("lang", "en")
+                display = ", ".join(skill_option_label(upload_lang, label) for label in selected_labels)
+                st.success(t["detected"].format(len(selected_labels), display))
             else:
                 st.warning(t["not_detected"])
     st.caption(t["uploader_hint"])
