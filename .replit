@@ -8,4 +8,4 @@ externalPort = 80
 
 [deployment]
 run = ["sh", "-c", "python -m streamlit run app.py --server.address 0.0.0.0 --server.port ${PORT:-5000} --server.headless true"]
-build = ["sh", "-c", "python -m pip install -r requirements.txt"]
+build = ["sh", "scripts/install-python-deps.sh"]

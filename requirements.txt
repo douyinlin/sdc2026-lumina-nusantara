@@ -1,8 +1,9 @@
-# Exact direct-runtime pins, validated on Windows / Python 3.12.
-# Not a full transitive lock and not proof of Linux/Replit compatibility.
+# Direct runtime pins; Python 3.11 uses the latest compatible NumPy series.
+# Not a full transitive lock. See docs/REPLIT_VALIDATION.md for tested scope.
 streamlit==1.66.0
 pandas==3.0.6
-numpy==2.5.4
+numpy==2.4.6; python_version < "3.12"
+numpy==2.5.4; python_version >= "3.12"
 pyarrow==26.0.0
 matplotlib==3.11.2
 pypdf==6.10.0

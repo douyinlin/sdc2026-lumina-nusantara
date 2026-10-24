@@ -1454,6 +1454,7 @@ def dosm_radar(t: dict, d: dict, lang: str = "en") -> None:
         import matplotlib
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
+        from matplotlib.projections.polar import PolarAxes
         import numpy as np
     except Exception:
         return
@@ -1472,6 +1473,7 @@ def dosm_radar(t: dict, d: dict, lang: str = "en") -> None:
     low = float(np.floor(index.min() / 5.0) * 5.0 - 4.0)
 
     fig, ax = plt.subplots(figsize=(4.0, 3.7), subplot_kw=dict(polar=True), dpi=170)
+    ax = cast(PolarAxes, ax)
     ax.set_theta_offset(np.pi / 2)
     ax.set_theta_direction(-1)
 
@@ -2565,7 +2567,7 @@ def screen_js_results() -> None:
         help=t["sdg_help_tip"],
     ):
         st.session_state["show_sdg_wheel"] = not q_open
-        q_open = not q_open
+        st.rerun()
 
     summary = sdg_summary(results[:4])
     st.write(", ".join(f"**SDG {k}** ({v})" for k, v in summary.items()) or "—")
@@ -2588,13 +2590,13 @@ def screen_js_results() -> None:
     mapped = [(s_, skill_sdg[s_]) for s_ in step_skills if s_ in skill_sdg]
     if mapped:
         st.markdown(f"**{t['skill_sdg_title']}**")
-        rows = "".join(
+        sdg_chips = "".join(
             f'<span style="display:inline-block;background:#eef3e6;color:#3f4a26;'
             f'padding:3px 10px;border-radius:999px;font-size:12px;margin:0 6px 6px 0">'
             f'{skill_plain(lang_now, s_)} · {" / ".join(info["targets"])}</span>'
             for s_, info in mapped
         )
-        st.markdown(rows, unsafe_allow_html=True)
+        st.markdown(sdg_chips, unsafe_allow_html=True)
         reached = sorted({t_ for _, info in mapped for t_ in info["targets"]})
         st.caption(t["skill_sdg_note"].format(n=len(mapped), targets=", ".join(reached)))
 
