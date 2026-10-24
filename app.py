@@ -840,6 +840,9 @@ def theme_css(theme_key: str) -> str:
 .st-key-theme_picker {{ width:32px !important; padding-top:5px !important; }}
 .st-key-theme_picker button {{ width:27px !important; min-width:27px !important; height:27px !important; min-height:27px !important; padding:0 !important; border-radius:50% !important; border:3px solid var(--sr-theme-soft) !important; background:var(--sr-theme-primary) !important; color:transparent !important; font-size:0 !important; box-shadow:0 1px 8px color-mix(in srgb,var(--sr-theme-primary) 42%,transparent) !important; }}
 .st-key-theme_picker button:hover {{ transform:scale(1.08) !important; filter:brightness(1.08); }}
+.st-key-font_size_picker {{ width:32px !important; padding-top:5px !important; }}
+.st-key-font_size_picker button {{ width:27px !important; min-width:27px !important; height:27px !important; min-height:27px !important; padding:0 !important; border-radius:50% !important; border:2px solid var(--sr-theme-border) !important; background:var(--sr-theme-soft) !important; color:var(--sr-theme-ink) !important; font-size:12px !important; font-weight:700 !important; }}
+.st-key-font_size_picker button:hover {{ transform:scale(1.08) !important; }}
 </style>"""
 
 def render_particle_field() -> None:
@@ -1296,6 +1299,32 @@ def theme_picker() -> None:
         )
 
 
+def font_size_picker() -> None:
+    """Choose a compact, default, or larger overall text display size."""
+    language = st.session_state.get("lang", "en")
+    titles = {"en": "Text size", "ms": "Saiz teks", "zh": "字体大小"}
+    labels = {
+        "en": {"small": "Small", "normal": "Default", "large": "Large"},
+        "ms": {"small": "Kecil", "normal": "Biasa", "large": "Besar"},
+        "zh": {"small": "小", "normal": "默认", "large": "大"},
+    }
+    with st.popover("A", help=titles.get(language, "Text size"), key="font_size_picker"):
+        st.radio(
+            titles.get(language, "Text size"),
+            options=("small", "normal", "large"),
+            format_func=lambda size: labels.get(language, labels["en"])[size],
+            key="font_size",
+            horizontal=True,
+            label_visibility="collapsed",
+        )
+
+
+def font_size_css() -> str:
+    """Apply the selected text display scale consistently across the app."""
+    scales = {"small": 0.9, "normal": 1.0, "large": 1.1}
+    scale = scales.get(st.session_state.get("font_size", "normal"), 1.0)
+    return f"<style>#root {{ zoom: {scale}; }}</style>"
+
 STEP_ORDER = {"js_intake": 1, "js_results": 2, "hr_intake": 1, "hr_results": 2,
               "cc_intake": 1, "cc_results": 2}
 
@@ -1323,11 +1352,13 @@ def top_bar(t: dict) -> None:
         if st.button(t["reeval"], width="stretch", help=t["reeval_help"]):
             reset()
     with far:
-        lang_col, theme_col = st.columns([1, .22], vertical_alignment="center")
+        lang_col, theme_col, font_col = st.columns([1, .22, .22], vertical_alignment="center")
         with lang_col:
             lang_selector(compact=True)
         with theme_col:
             theme_picker()
+        with font_col:
+            font_size_picker()
 
 
 #: Official UN SDG colours for goals 1-17.
@@ -1696,12 +1727,15 @@ def screen_landing() -> None:
     screen_wrap()
     st.markdown(LANDING_CSS + ORBS_HTML, unsafe_allow_html=True)
     st.markdown(theme_css(st.session_state.get("theme_color", "sage")), unsafe_allow_html=True)
+    st.markdown(font_size_css(), unsafe_allow_html=True)
 
-    _, lang_col, theme_col = st.columns([5, 1, .26], vertical_alignment="center")
+    _, lang_col, theme_col, font_col = st.columns([5, 1, .26, .26], vertical_alignment="center")
     with lang_col:
         lang_selector(compact=True)
     with theme_col:
         theme_picker()
+    with font_col:
+        font_size_picker()
 
     t = T(st.session_state.get("lang", "en"))
 
@@ -2589,6 +2623,7 @@ st.set_page_config(page_title="SkillRadar MY", page_icon="📡", layout="wide")
 
 st.session_state.setdefault("lang", "en")
 st.session_state.setdefault("theme_color", "sage")
+st.session_state.setdefault("font_size", "normal")
 _on_landing = st.session_state.get("stage") in (None, "", "landing")
 if _on_landing:
     play_intro()
@@ -2683,6 +2718,7 @@ if STAGE != "landing":
     st.markdown(APP_CSS, unsafe_allow_html=True)
     st.markdown(f"<style>{CSS_PATH.read_text(encoding='utf-8')}</style>", unsafe_allow_html=True)
     st.markdown(theme_css(st.session_state["theme_color"]), unsafe_allow_html=True)
+st.markdown(font_size_css(), unsafe_allow_html=True)
 
 try:
     STAGES.get(STAGE, screen_landing)()
