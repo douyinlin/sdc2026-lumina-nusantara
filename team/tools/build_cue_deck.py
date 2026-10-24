@@ -17,11 +17,9 @@ REPO = "https://github.com/douyinlin/sdc2026-lumina-nusantara"
 SLIDES = [
     ("Where the data comes from", [
         ("Data sources explained", f"{REPO}/blob/main/docs/DATA.md"),
-        ("The DOSM figures, row by row", f"{REPO}/blob/main/docs/DATA.md#1-dosm--advertised-vacancies-by-occupation"),
     ]),
     ("What the program does, what the AI does", [
         ("How the score is built", f"{REPO}/blob/main/docs/TECH.md"),
-        ("AI tools used in development", f"{REPO}/blob/main/docs/TECH.md#what-the-program-does-and-what-the-ai-does"),
     ]),
     ("Where AI actually helped", [
         ("Validation and test evidence", f"{REPO}/blob/main/docs/VALIDATION.md"),
@@ -29,18 +27,18 @@ SLIDES = [
     ]),
     ("Replit and RunPod", [
         ("Replit proof of use", f"{REPO}/blob/main/submission/REPLIT%20PROOF%20OF%20USE.pdf"),
-        ("Technical Declaration, section 3", f"{REPO}/blob/main/docs/TECH.md#what-is-deliberately-not-here"),
+        ("Technical Declaration, signed", f"{REPO}/blob/main/submission/SDC2026_LuminaNusantara_TechDeclaration.pdf"),
     ]),
     ("SDG mapping", [
-        ("SDG mapping and what it means", f"{REPO}/blob/main/docs/VALIDATION.md#sdg-mapping"),
+        ("SDG mapping and why 4.4", f"{REPO}/blob/main/docs/SDG.md"),
         ("The 54-skill crosswalk", f"{REPO}/blob/main/data/skills_sdg.json"),
     ]),
     ("What we tested, honestly", [
-        ("What was tested, what was not", f"{REPO}/blob/main/docs/VALIDATION.md#what-was-tested"),
+        ("What was tested, what was not", f"{REPO}/blob/main/docs/VALIDATION.md"),
         ("The course catalogue, all 54 skills", f"{REPO}/blob/main/data/courses.json"),
     ]),
     ("Limits and next steps", [
-        ("Known limits", f"{REPO}/blob/main/docs/VALIDATION.md#known-limits"),
+        ("Known limits", f"{REPO}/blob/main/docs/VALIDATION.md"),
         ("Roadmap in the deck", f"{REPO}/blob/main/submission/SDC2026_LuminaNusantara_SlideDeck.pptx"),
     ]),
 ]
