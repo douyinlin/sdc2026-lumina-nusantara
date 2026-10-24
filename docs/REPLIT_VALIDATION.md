@@ -25,6 +25,8 @@
 - 同步原 Python app、src、data、static、测试及必需 docs 资源。
   保留此前已合并的选人后界面与 SDG 按钮 rerun 修复，不另建应用、不替换 React、
   不另启固定端口服务，不改匹配算法、权重、解析规则或业务数据。
+- 上游修复以专用分支 PR 交付：https://github.com/douyinlin/sdc2026-lumina-nusantara/pull/2 。
+  未直接推 main，未自动合并；Replit 专用 artifact/工作流基础设施不写入上游独立项目配置。
 - Replit web artifact 继续拥有 `/` 与 `/_stcore/stream` 路由。Run 使用注入的 `PORT`，
   绑定 `0.0.0.0`。安装写入 `.pythonlibs`，不写不可变 Nix Python。
 

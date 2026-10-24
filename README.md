@@ -1,4 +1,4 @@
-> Submission revision: the two PDFs have been corrected locally and require leader review and new signatures. See [owner actions](submission/OWNER_ACTIONS.md). Historical validation notes below do not establish current Replit access.
+> Runtime addendum (24 October 2026): the latest app has been verified in the real Replit Preview; no public Replit deployment exists yet. Existing signed PDFs are unchanged by this repair. See [owner actions](submission/OWNER_ACTIONS.md) and [current validation](docs/REPLIT_VALIDATION.md).
 
 # SkillRadar MY — AI Skills & Career Radar for Malaysia
 
