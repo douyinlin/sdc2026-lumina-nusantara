@@ -16,37 +16,32 @@ REPO = "https://github.com/douyinlin/sdc2026-lumina-nusantara"
 
 SLIDES = [
     ("Where the data comes from", [
-        ("README - data sources", f"{REPO}/blob/main/README.md"),
-        ("dosm_q2_2026.json", f"{REPO}/blob/main/data/trends/dosm_q2_2026.json"),
-        ("wef_future_jobs_2025.json", f"{REPO}/blob/main/data/trends/wef_future_jobs_2025.json"),
+        ("Data sources explained", f"{REPO}/blob/main/docs/DATA.md"),
+        ("The DOSM figures, row by row", f"{REPO}/blob/main/docs/DATA.md#1-dosm--advertised-vacancies-by-occupation"),
     ]),
     ("What the program does, what the AI does", [
-        ("src/utils.py - scoring", f"{REPO}/blob/main/src/utils.py"),
-        ("src/cv.py - parsing", f"{REPO}/blob/main/src/cv.py"),
-        ("src/trends.py", f"{REPO}/blob/main/src/trends.py"),
+        ("How the score is built", f"{REPO}/blob/main/docs/TECH.md"),
+        ("AI tools used in development", f"{REPO}/blob/main/docs/TECH.md#what-the-program-does-and-what-the-ai-does"),
     ]),
     ("Where AI actually helped", [
-        ("tests folder (54 tests)", f"{REPO}/tree/main/tests"),
-        ("Technical Declaration 4.3",
-         f"{REPO}/blob/main/submission/SDC2026_LuminaNusantara_TechDeclaration.pdf"),
+        ("Validation and test evidence", f"{REPO}/blob/main/docs/VALIDATION.md"),
+        ("Technical Declaration, signed", f"{REPO}/blob/main/submission/SDC2026_LuminaNusantara_TechDeclaration.pdf"),
     ]),
     ("Replit and RunPod", [
-        ("REPLIT PROOF OF USE.pdf", f"{REPO}/blob/main/submission/REPLIT%20PROOF%20OF%20USE.pdf"),
-        ("Technical Declaration",
-         f"{REPO}/blob/main/submission/SDC2026_LuminaNusantara_TechDeclaration.pdf"),
+        ("Replit proof of use", f"{REPO}/blob/main/submission/REPLIT%20PROOF%20OF%20USE.pdf"),
+        ("Technical Declaration, section 3", f"{REPO}/blob/main/docs/TECH.md#what-is-deliberately-not-here"),
     ]),
     ("SDG mapping", [
-        ("data/skills_sdg.json - 54 skills", f"{REPO}/blob/main/data/skills_sdg.json"),
-        ("README - SDG row", f"{REPO}/blob/main/README.md"),
+        ("SDG mapping and what it means", f"{REPO}/blob/main/docs/VALIDATION.md#sdg-mapping"),
+        ("The 54-skill crosswalk", f"{REPO}/blob/main/data/skills_sdg.json"),
     ]),
     ("What we tested, honestly", [
-        ("data/courses.json - 60 links", f"{REPO}/blob/main/data/courses.json"),
-        ("data/sample_cv.txt - synthetic", f"{REPO}/blob/main/data/sample_cv.txt"),
+        ("What was tested, what was not", f"{REPO}/blob/main/docs/VALIDATION.md#what-was-tested"),
+        ("The course catalogue, all 54 skills", f"{REPO}/blob/main/data/courses.json"),
     ]),
     ("Limits and next steps", [
-        ("README - known limitations", f"{REPO}/blob/main/README.md"),
-        ("Slide deck - roadmap",
-         f"{REPO}/blob/main/submission/SDC2026_LuminaNusantara_SlideDeck.pptx"),
+        ("Known limits", f"{REPO}/blob/main/docs/VALIDATION.md#known-limits"),
+        ("Roadmap in the deck", f"{REPO}/blob/main/submission/SDC2026_LuminaNusantara_SlideDeck.pptx"),
     ]),
 ]
 
@@ -73,15 +68,15 @@ for title, links in SLIDES:
     hr.font.name = "Arial"
     hr.font.color.rgb = SAGE_DARK
 
-    box = s.shapes.add_textbox(Inches(0.75), Inches(2.35), Inches(11.8), Inches(3.6))
+    box = s.shapes.add_textbox(Inches(0.75), Inches(2.45), Inches(11.8), Inches(3.2))
     frame = box.text_frame
     frame.word_wrap = True
     for i, (label, url) in enumerate(links):
         para = frame.paragraphs[0] if i == 0 else frame.add_paragraph()
-        para.space_after = Pt(16)
+        para.space_after = Pt(18)
         run = para.add_run()
         run.text = label
-        run.font.size = Pt(22)
+        run.font.size = Pt(24)
         run.font.name = "Arial"
         run.font.color.rgb = BLUE
         run.font.underline = True
