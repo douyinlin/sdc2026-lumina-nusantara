@@ -22,24 +22,20 @@ SLIDES = [
         ("How the score is built", f"{REPO}/blob/main/docs/TECH.md"),
     ]),
     ("Where AI actually helped", [
-        ("Validation and test evidence", f"{REPO}/blob/main/docs/VALIDATION.md"),
-        ("Technical Declaration, signed", f"{REPO}/blob/main/submission/SDC2026_LuminaNusantara_TechDeclaration.pdf"),
+        ("Technical Declaration, signed",
+         f"{REPO}/blob/main/submission/SDC2026_LuminaNusantara_TechDeclaration.pdf"),
     ]),
     ("Replit and RunPod", [
         ("Replit proof of use", f"{REPO}/blob/main/submission/REPLIT%20PROOF%20OF%20USE.pdf"),
-        ("Technical Declaration, signed", f"{REPO}/blob/main/submission/SDC2026_LuminaNusantara_TechDeclaration.pdf"),
     ]),
     ("SDG mapping", [
         ("SDG mapping and why 4.4", f"{REPO}/blob/main/docs/SDG.md"),
-        ("The 54-skill crosswalk", f"{REPO}/blob/main/data/skills_sdg.json"),
     ]),
     ("What we tested, honestly", [
-        ("What was tested, what was not", f"{REPO}/blob/main/docs/VALIDATION.md"),
-        ("The course catalogue, all 54 skills", f"{REPO}/blob/main/data/courses.json"),
+        ("The course catalogue", f"{REPO}/blob/main/docs/COURSES.md"),
     ]),
     ("Limits and next steps", [
-        ("Known limits", f"{REPO}/blob/main/docs/VALIDATION.md"),
-        ("Roadmap in the deck", f"{REPO}/blob/main/submission/SDC2026_LuminaNusantara_SlideDeck.pptx"),
+        ("What was tested, what was not", f"{REPO}/blob/main/docs/VALIDATION.md"),
     ]),
 ]
 
