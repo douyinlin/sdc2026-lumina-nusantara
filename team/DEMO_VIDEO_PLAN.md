@@ -1,107 +1,121 @@
-# Demo video — 3-minute recording plan (Phase 1, SDC 2026)
+# Demo video — 6-minute recording plan (Phase 1, SDC 2026)
 
-Follows the five-beat structure the team agreed on, ~36 s per beat. English voiceover, 1080p,
-YouTube unlisted.
+Follows the organiser's six-block timing. English voiceover, 1080p, YouTube unlisted, linked from
+the README.
 
 ## Hard rules
 
-- **Never say "GPU" or "RunPod"** — organisers warned this costs marks while RunPod is unused.
-- Say the score is **a ranking rule, not a hiring probability** — the brief asks for this.
+- **Never say "GPU" or "RunPod" is used.** RunPod is not part of this build; say plainly that the
+  app calls no GPU endpoint and leave it there.
+- The score is **a ranking rule, not a hiring probability** — say it out loud once.
 - Every data screen: name the **source, the date and the scope**.
 - Synthetic profile only; no real names, emails or phone numbers on screen.
-- One clear flow: jobseeker. Mention HR / career centre in one sentence, do not demo them.
+- Say "planned / not built yet" for anything that is not in the demo. The brief allows unfinished
+  features if they are labelled.
 
-## Beat 1 — user input · 0:00–0:36
+## Block 1 — problem and user · 0:00–0:40
 
-1. Entry scene → **CLICK TO ENTER** → landing page.
-2. **Start as jobseeker** (leave the three cards visible for a second).
-3. In the intake touch three real inputs: **target field** (interest), **years**, **hours/week**
-   (study time).
-4. Upload the synthetic CV → detected skills → continue.
+Screen: landing page, then the three entry cards.
 
-Say: "This is a synthetic profile. She picks her target field, her experience, and how many hours
-a week she can study. Then she uploads a CV — the parser finds seven skills, and she can edit them
-by hand."
+Say: "In Malaysia, 56% of professionals already use AI at work, but only 26% have had formal
+training. A worker who is told to 'learn AI' still has to answer three questions: which role fits
+me, which skills am I actually missing, and what do I study first. SkillRadar MY answers those three
+questions with numbers the user can check."
 
-## Beat 2 — evidence · 0:36–1:12
+## Block 2 — what the product does · 0:40–1:10
 
-Scroll to **2 · Future skills radar**.
+Screen: results page, scroll slowly past the evidence, ranking and pathway sections.
 
-1. DOSM panel: total **555,509**, QoQ **−11.4%**, release date, "view source".
-2. Point at the line saying this counts **job advertisements by occupation group, not skills**.
-3. Named-skill layer and the WEF panel: point at "forecast, global, not Malaysia".
+Say: "It turns a profile into a ranked shortlist of future-fit roles, each with a visible score,
+the evidence behind its demand trend, and an ordered learning path with real resources. The
+difference from a course list: every number is traceable, and nothing is generated at request time."
 
-Say: "DOSM published 555,509 advertised vacancies for Q2 2026, down 11.4% on the quarter — that
-counts job ads by occupation, not skills. Beside it, named skill demand from a 2025 industry
-report, and WEF's global outlook. Every panel states its source, its date, and what it can and
-cannot tell you."
+## Block 3 — real product walkthrough · 1:10–4:10
 
-## Beat 3 — recommendation · 1:12–1:48
+1. **Input (1:10–1:45)** — synthetic CV upload, parsed skills, edit one by hand, set hours/week.
+2. **Trend evidence (1:45–2:30)** — DOSM panel: 555,509 vacancies, Q2 2026, −11.4% QoQ; point at the
+   line that says this counts job ads by occupation, not skills. Then the named-skill layer and the
+   WEF panel: global forecast, not a Malaysian measurement.
+3. **Recommendation (2:30–3:20)** — top role, five score inputs, "why this role" block. Say: "This
+   orders options for a decision; it is not a hiring probability."
+4. **A real change (3:20–4:00)** — open *Update the trend data*, upload
+   `data/trends/sample_upload_example.json`, read the before/after table: scores move, one position
+   changes. Say the upload lives only in the session and a permanent update is a reviewed commit.
+5. **Learning route (4:00–4:10)** — hold on the pathway: first skill, weeks, free resource link.
 
-Scroll to **3 · Best-fit future roles**.
+## Block 4 — technical implementation · 4:10–5:00
 
-1. Point at the top role and its score.
-2. Expand it → five bars (coverage / focus / transferability / trend / gap cost).
-3. Point at "why this role": transfer, gap, evidence.
+**4:10–4:30 — where the data comes from.**
+Screen: the README *Data sources* table, then `data/trends/` in the repository.
 
-Say: "The score is a weighted rule over five inputs, all visible here. Coverage is 84%, but the
-demand trend is lower, so this role sits second rather than first. It orders options for a
-decision — it is not a hiring probability, and it never scores a person for an employer."
+Say: "Three kinds of input, kept separate. DOSM publishes advertised vacancies by occupation — we
+transcribe the counts by hand and keep the release link and the date in the JSON. Industry reporting
+gives named skills, and the WEF report gives a global forecast. Every file carries its source URL,
+its publication date and a note on what it can and cannot support."
 
-## Beat 4 — comparison / change · 1:48–2:24
+**4:30–4:45 — what the program does, what the AI does.**
+Screen: the results page score, then a terminal running the test suite.
 
-Pick **one** of the two change mechanisms - not both, the beat is 36 seconds.
+Say: "The running application contains no model. Parsing is a keyword and alias matcher; scoring is
+five weighted rules; the pathway is a lookup over a curated catalogue. That is deliberate: a user can
+be shown exactly why a role ranked where it did, and the same profile always produces the same
+answer. AI tools were used to write the code — DeepSeek, Copilot, Codex — and every change was read,
+run and tested before it was kept."
 
-**Option A (preferred: shows a data update).** In the evidence section open *Update the trend data
-with a reviewed snapshot*, upload `data/trends/sample_upload_example.json`, and read the before/after
-table: the score column moves and one position changes. Say that a permanent update is a reviewed
-commit, and that this upload lives only in the session.
+**4:45–5:00 — Replit and RunPod.**
+Screen: the repository's Replit screenshots folder, or the Technical Declaration section 3.2.
 
-**Option B (shows model sensitivity).** Open **AI disruption scenario · moderate / fast**.
-2. Read one row: moderate score, fast score, rank arrow.
-3. Point at the **SCENARIO ESTIMATE** badge and the caveat.
+Say: "Replit was our development workspace, and screenshots of that use are in the repository.
+RunPod is not used: there is no GPU endpoint anywhere in this project, the public demo runs on
+Streamlit Community Cloud, and the Technical Declaration says so."
 
-Say: "Same profile, two disruption speeds. Under fast disruption the trend carries more weight, so
-scores move and some positions swap — this table shows what changed and by how much. We label the
-whole block as a scenario estimate: one quarter or one weighting is not a long-term prediction."
+## Block 5 — SDG and what was actually tested · 5:00–5:40
 
-## Beat 5 — action plan · 2:24–3:00
+**5:00–5:20 — SDG.**
+Screen: the SDG section, skill-level tags.
 
-1. Scroll to **4 · Skills to close and your pathway**.
-2. Read the three metrics: skills to close, estimated weeks, **best match after the plan** + delta.
-3. Show the ordered steps and the course table (free, real links).
-4. End on **5 · SDG** or the repo page.
+Say: "The track is SDG 4, sub-target 4.4 — relevant skills for employment — with 8.5 as the second
+target. The mapping goes down to individual skills: this pathway's skills are tagged to 4.4 and 9.5,
+and we label that crosswalk as our own reading, not an official UN mapping."
 
-Say: "The plan lists the missing skills, ordered cheapest-first, with real free resources and an
-estimated number of weeks. Finishing it lifts the best match by twenty points. Each skill is also
-tagged to an SDG target, and we label that mapping as our own reading. The links are real; prices
-still need confirming."
+**5:20–5:40 — validation, honestly.**
+Screen: test output, then the robustness table.
 
-## Setup (once, ~15 minutes)
+Say: "What we did test: 52 automated tests, a walkthrough of every flow in three languages on
+synthetic profiles, and 36 course links checked as reachable. What we have not done: a user study.
+The Phase 2 target is ten testers, a median plan in under five minutes, and 70% rating a top-three
+role at least 4 out of 5. Those are targets, not results."
+
+## Block 6 — limits and next steps · 5:40–6:00
+
+Screen: README *Known limitations*, or the last slide of the deck.
+
+Say: "Known limits: the occupation-to-skill mapping is our heuristic, one quarter is not a trend,
+course fees are unverified, and the parser misses synonyms. Next: verified course metadata, semantic
+CV parsing, and the user pilot. Everything that is planned is labelled as planned."
+
+## Setup
 
 1. Browser 1920×1080, zoom 110%, bookmarks bar hidden, one window only.
-2. **Warm the app first**: run the whole flow once and keep the tab open — the free instance
-   sleeps and needs 30–60 s to wake.
-3. Close WeChat / Discord; turn on Focus Assist.
-4. OBS: 1080p, 30 fps, screen + microphone, MP4, one file per beat.
+2. Warm the app first — the free instance sleeps and needs 30–60 s to wake.
+3. Close WeChat / Discord; Focus Assist on.
+4. OBS: 1080p, 30 fps, screen + microphone, MP4, one file per block.
 5. Mic check: 10-second test, listen back.
-6. Synthetic CV only (`data/sample_cv.txt`).
 
 ## Edit and upload
 
-1. CapCut / Clipchamp: cut dead air, normalise audio, small labels
-   (Input / Evidence / Ranking / Scenario / Plan).
-2. Export 1080p MP4, target 3:00–3:20.
-3. YouTube → **Unlisted** → title
-   `SkillRadar MY — SDC 2026 Domain 1 demo (Lumina Nusantara)`.
-4. English captions; skim for product-name typos.
-5. Put the link in `README.md` (row **Demo Video**) and in the Team Portal field.
+1. CapCut or Clipchamp: cut dead air, normalise audio, six small labels matching the blocks.
+2. Export 1080p, target 5:50–6:10.
+3. YouTube → **Unlisted** → `SkillRadar MY — SDC 2026 Domain 1 demo (Lumina Nusantara)`.
+4. English captions; check product names.
+5. Link in `README.md` (row **Demo Video**) and in the Team Portal field.
 
 ## Pre-upload check
 
-- [ ] No GPU / RunPod wording
-- [ ] "Not a hiring probability" said out loud in beat 3
+- [ ] No claim that RunPod or a GPU is used
+- [ ] "Not a hiring probability" said once
 - [ ] Source + date visible on every data screen
 - [ ] Only synthetic profile on screen
-- [ ] Length 3:00–3:30
+- [ ] "Not built yet" said for anything planned
+- [ ] Length 5:50–6:20
 - [ ] Link opens in a private window
