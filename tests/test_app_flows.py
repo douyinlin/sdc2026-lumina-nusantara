@@ -15,6 +15,17 @@ def run_page(stage, lang="en", **state):
         app.session_state[key] = value
     return app.run()
 
+def persona_radio(app):
+    """Persona is the two-option radio; theme and text-size pickers add their own radios."""
+    return next(r for r in app.radio if len(list(r.options)) == 2)
+
+
+def choose_persona(app, index=1):
+    radio = persona_radio(app)
+    radio.set_value(list(radio.options)[index]).run()
+    return app
+
+
 class TestAppFlows(unittest.TestCase):
     def healthy(self, app):
         self.assertEqual(len(app.exception), 0)
@@ -38,7 +49,7 @@ class TestAppFlows(unittest.TestCase):
         app.selectbox(key="worker_field_widget").set_value("Computer Science").run()
         self.healthy(app)
         self.assertEqual(app.session_state["worker_field"], "Computer Science")
-        app.radio[0].set_value("grad").run()
+        choose_persona(app)
         self.healthy(app)
         self.assertEqual(app.session_state["graduate_field"], "Computer Science")
         self.assertEqual(app.session_state["worker_field"], "Computer Science")
@@ -68,5 +79,5 @@ class TestAppFlows(unittest.TestCase):
                     app = run_page(stage, lang)
                     self.healthy(app)
                     if stage == "js_intake":
-                        app.radio[0].set_value("grad").run()
+                        choose_persona(app)
                         self.healthy(app)
