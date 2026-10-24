@@ -130,3 +130,9 @@ CONTENTS 和门户字段。未经确认不发布、不猜 `replit.app` 地址、
 提交 ZIP 的历史副本含旧 README。更新后的打包脚本将当前 README、CONTENTS、
 OWNER_ACTIONS 和本报告一起打包，签字 PDF 字节保持不变；生成文件放忽略目录，
 由本人核对后选择最终材料，不自动提交。
+
+当前可下载新包由 Replit Library 的 **SkillRadar 提交材料包** 卡片交付；
+原件的可访问固定版本链接见 `submission/CONTENTS.md`。工作区不含签署二进制文件，
+因此重建时使用 `python team/tools/build_bundle.py --fetch-originals`（需 build-only
+依赖 python-pptx），或显式传入 `--submission-dir`；不要使用缺失原件的默认目录。
+下载仅写入忽略目录，且逐件核对预先固定的 SHA-256。

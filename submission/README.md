@@ -19,6 +19,32 @@ prove this run. Original binaries remain in the
 [upstream submission folder](https://github.com/douyinlin/sdc2026-lumina-nusantara/tree/main/submission);
 the Replit workspace intentionally imports runtime sources and text handoff only.
 
-The old committed ZIP is a historical convenience copy. Regenerate it from the
-current documents with `python team/tools/build_bundle.py`; do not submit an old
-embedded README as the latest hosting declaration.
+## Current ZIP download and reproducible build
+
+The new 4.4 MB ZIP is delivered through the Replit download card / Library item
+**SkillRadar 提交材料包**, not a nonexistent `submission/*.zip` in this workspace.
+Its actual local path is
+`generated-artifacts/submission/SDC2026_LuminaNusantara_Submission.zip`.
+The old GitHub ZIP is a historical convenience copy, not the latest hosting declaration.
+
+From the repository root, with the build-only `python-pptx` package installed:
+
+```sh
+python team/tools/build_bundle.py --fetch-originals
+```
+
+This explicitly downloads four public, commit-pinned binary originals, verifies
+their SHA-256 digests, and stores them only in ignored
+`generated-artifacts/submission-input/`. It uses the **current** three Markdown
+indices from this workspace, not an old embedded README, and writes the new ZIP
+to the actual output path above. It does not change or re-sign the PDFs.
+Without network access, provide a directory containing the four original binaries
+and current README/CONTENTS/OWNER_ACTIONS:
+
+```sh
+python team/tools/build_bundle.py --submission-dir generated-artifacts/submission-input
+```
+
+Running without either option requires all originals already present under
+`submission/`, as in the full upstream checkout; the runtime-only workspace does
+not include them. Do not upload the generated bundle to Git merely to make a link.

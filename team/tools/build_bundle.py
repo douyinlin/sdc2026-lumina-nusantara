@@ -2,6 +2,10 @@
 
 import zipfile
 import argparse
+import hashlib
+import shutil
+from urllib.parse import quote
+from urllib.request import urlopen
 from pathlib import Path
 
 from pptx import Presentation
@@ -9,9 +13,29 @@ from pptx import Presentation
 REPO = Path(__file__).resolve().parents[2]
 parser = argparse.ArgumentParser()
 parser.add_argument("--submission-dir", type=Path, default=REPO / "submission")
+parser.add_argument("--fetch-originals", action="store_true",
+                    help="Download pinned public originals into ignored generated-artifacts.")
 parser.add_argument("--output", type=Path, default=REPO / "generated-artifacts/submission/SDC2026_LuminaNusantara_Submission.zip")
 args = parser.parse_args()
 SUB = args.submission_dir
+if args.fetch_originals:
+    SUB = REPO / "generated-artifacts/submission-input"
+    SUB.mkdir(parents=True, exist_ok=True)
+    originals = {
+        "SDC2026_LuminaNusantara_Preliminary.pdf": "892fa3edca17f635b243623e8ccac3d9e218c4e803196119752b7764619ef911",
+        "SDC2026_LuminaNusantara_TechDeclaration.pdf": "3e4eff6cf7c103a4dcb2bba1edc5d7cd9e66c8a540b230300b4da446cafe08ae",
+        "SDC2026_LuminaNusantara_SlideDeck.pptx": "8889a1512f719a602653b718cd12057f4cb4d5eb4cb4c1e8a918ab945ce98a82",
+        "REPLIT PROOF OF USE.pdf": "77cac4face126862a9997d37ce663d462f97cb32adb0583fae2b23df7bbf459b",
+    }
+    base = "https://raw.githubusercontent.com/douyinlin/sdc2026-lumina-nusantara/73b4f344efeaaed281d7f1d0eac384f329897d04/submission/"
+    for name, digest in originals.items():
+        with urlopen(base + quote(name), timeout=60) as response:
+            content = response.read()
+        if hashlib.sha256(content).hexdigest() != digest:
+            raise ValueError(f"Original checksum mismatch: {name}")
+        (SUB / name).write_bytes(content)
+    for name in ("README.md", "CONTENTS.md", "OWNER_ACTIONS.md"):
+        shutil.copyfile(REPO / "submission" / name, SUB / name)
 BUNDLE = args.output
 MEMBERS = [
     "SDC2026_LuminaNusantara_Preliminary.pdf",
@@ -24,7 +48,7 @@ MEMBERS = [
 ]
 missing = [name for name in MEMBERS if not (SUB / name).is_file()]
 if missing:
-    raise FileNotFoundError(f"Missing authoritative submission originals: {missing}")
+    raise FileNotFoundError(f"Missing originals: {missing}. Use --fetch-originals or --submission-dir with the provided originals.")
 BUNDLE.parent.mkdir(parents=True, exist_ok=True)
 
 prs = Presentation(str(SUB / "SDC2026_LuminaNusantara_SlideDeck.pptx"))

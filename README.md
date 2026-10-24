@@ -13,11 +13,12 @@ every role mapped to the UN SDGs.
 > [!IMPORTANT]
 > ### 📁 Submission Documents 提交文件
 >
-> The two signed submission PDFs, the Replit proof of use and the online demo guide are in the
-> [submission/](submission) folder. Start with [submission/README.md](submission/README.md).
+> Start with [submission/README.md](submission/README.md) for authoritative GitHub
+> originals and the current Replit download/rebuild instructions. Binary originals
+> are deliberately not copied into this runtime workspace.
 >
-> 两份已签署的提交 PDF、Replit 使用证明与在线演示说明都在 [submission/](submission) 目录内。
-> 请先读 [submission/README.md](submission/README.md)。
+> 签署原件保留在 GitHub；当前工作区只保留文字索引。请先读
+> [submission/README.md](submission/README.md)，不要把历史 ZIP 当作本次新包。
 
 ---
 
@@ -41,8 +42,8 @@ every role mapped to the UN SDGs.
 | Replit public deployment | Not published as of 24 October 2026; owner approval required |
 | **Live Demo** | https://sdc2026-lumina-nusantara-65cnugvuxdle5dgp9ky3fs.streamlit.app |
 | RunPod Endpoint | Not used — the app runs no GPU endpoint (see Technical Declaration §5) |
-| Submission bundle | [SDC2026_LuminaNusantara_Submission.zip](submission/SDC2026_LuminaNusantara_Submission.zip) (all files, 4.4 MB) |
-| Slide Deck | [SDC2026_LuminaNusantara_SlideDeck.pptx](submission/SDC2026_LuminaNusantara_SlideDeck.pptx) |
+| Current submission bundle | Replit download card / Library: **SkillRadar 提交材料包**; rebuild instructions in [submission/README.md](submission/README.md) |
+| Slide Deck | [Authoritative signed-package deck](https://github.com/douyinlin/sdc2026-lumina-nusantara/blob/73b4f344efeaaed281d7f1d0eac384f329897d04/submission/SDC2026_LuminaNusantara_SlideDeck.pptx) |
 | Demo Video | `<TODO>` |
 
 ---
@@ -51,10 +52,10 @@ every role mapped to the UN SDGs.
 
 | Item | File | What it is |
 | --- | --- | --- |
-| Preliminary deck | [SDC2026_LuminaNusantara_SlideDeck.pptx](submission/SDC2026_LuminaNusantara_SlideDeck.pptx) | 12 slides, the deck shown to judges |
-| Video cue sheet | [CUE_DECK_4min10_to_6min.pdf](team/CUE_DECK_4min10_to_6min.pdf) | 7 pages, title + the exact link to show for each beat of 4:10-6:00 |
-| Same, editable | [CUE_DECK_4min10_to_6min.pptx](team/CUE_DECK_4min10_to_6min.pptx) | PPTX version |
-| Deck talking points | [DECK_TALKING_POINTS.md](team/DECK_TALKING_POINTS.md) | every slide as plain text |
+| Preliminary deck | [SDC2026_LuminaNusantara_SlideDeck.pptx](https://github.com/douyinlin/sdc2026-lumina-nusantara/blob/73b4f344efeaaed281d7f1d0eac384f329897d04/submission/SDC2026_LuminaNusantara_SlideDeck.pptx) | 12 slides, the deck shown to judges |
+| Video cue sheet | [CUE_DECK_4min10_to_6min.pdf](https://github.com/douyinlin/sdc2026-lumina-nusantara/blob/73b4f344efeaaed281d7f1d0eac384f329897d04/team/CUE_DECK_4min10_to_6min.pdf) | 7 pages, title + the exact link to show for each beat of 4:10-6:00 |
+| Same, editable | [CUE_DECK_4min10_to_6min.pptx](https://github.com/douyinlin/sdc2026-lumina-nusantara/blob/73b4f344efeaaed281d7f1d0eac384f329897d04/team/CUE_DECK_4min10_to_6min.pptx) | PPTX version |
+| Deck talking points | [DECK_TALKING_POINTS.md](https://github.com/douyinlin/sdc2026-lumina-nusantara/blob/73b4f344efeaaed281d7f1d0eac384f329897d04/team/DECK_TALKING_POINTS.md) | every slide as plain text |
 
 Data, method and validation pages: [docs/DATA.md](docs/DATA.md) · [docs/TECH.md](docs/TECH.md) · [docs/VALIDATION.md](docs/VALIDATION.md).
 
@@ -183,7 +184,7 @@ the tested project SHA, evidence locations, reproducible commands, deployment
 choices and portal fields. The old anonymous access failure is not evidence that
 the project is missing or private.
 
-The [historical proof PDF](submission/REPLIT%20PROOF%20OF%20USE.pdf) is unchanged;
+The [historical proof PDF](https://github.com/douyinlin/sdc2026-lumina-nusantara/blob/73b4f344efeaaed281d7f1d0eac384f329897d04/submission/REPLIT%20PROOF%20OF%20USE.pdf) is unchanged;
 it does not prove the current version or a public Replit deployment.
 
 ## On RunPod
