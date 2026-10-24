@@ -1,0 +1,29 @@
+{
+  "source": "Illustrative reviewed snapshot (team test fixture)",
+  "source_url": "https://www.weforum.org/publications/the-future-of-jobs-report-2025/3-skills-outlook",
+  "published": "2026-10-24",
+  "retrieved_at": "2026-10-24",
+  "extraction_note": "Synthetic example that exercises the upload path. It is not a new measurement and must not be presented as one.",
+  "skill_signals": [
+    {
+      "skill": "SQL",
+      "direction": "declining",
+      "evidence": "Illustrative fixture: demand falling in this example."
+    },
+    {
+      "skill": "Python",
+      "direction": "rising",
+      "evidence": "Illustrative fixture: demand rising in this example."
+    },
+    {
+      "skill": "Excel / spreadsheets",
+      "direction": "declining",
+      "evidence": "Illustrative fixture."
+    },
+    {
+      "skill": "Data visualisation",
+      "direction": "rising",
+      "evidence": "Illustrative fixture."
+    }
+  ]
+}

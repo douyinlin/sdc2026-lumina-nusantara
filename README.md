@@ -266,6 +266,17 @@ as a team estimate. Total weeks sum rounded step durations. Source verification
 and course access/fees remain team tasks. Completing a step is a hypothetical
 skill acquisition; the highest-scoring role after the plan may change.
 
+### Updating the data from inside the app
+
+The results page carries a **"Update the trend data with a reviewed snapshot"** panel. It accepts a
+JSON file with the same schema as `data/trends/`, validates it with the same function the CLI uses,
+and shows a before/after table (score shift and rank change) for the current profile. Applying it
+changes the ranking for that browser session only - it never writes to the repository, so a demo
+cannot fake a data update.
+
+A sample file lives at `data/trends/sample_upload_example.json`; it is an **illustrative fixture**,
+not a new measurement. A permanent update stays a maintainer step, below.
+
 ### Validated manual trend update
 
 1. Read the original source linked in the existing WEF/Jobstreet JSON. Review its

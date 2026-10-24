@@ -50,7 +50,14 @@ decision — it is not a hiring probability, and it never scores a person for an
 
 ## Beat 4 — comparison / change · 1:48–2:24
 
-1. Open **AI disruption scenario · moderate / fast**.
+Pick **one** of the two change mechanisms - not both, the beat is 36 seconds.
+
+**Option A (preferred: shows a data update).** In the evidence section open *Update the trend data
+with a reviewed snapshot*, upload `data/trends/sample_upload_example.json`, and read the before/after
+table: the score column moves and one position changes. Say that a permanent update is a reviewed
+commit, and that this upload lives only in the session.
+
+**Option B (shows model sensitivity).** Open **AI disruption scenario · moderate / fast**.
 2. Read one row: moderate score, fast score, rank arrow.
 3. Point at the **SCENARIO ESTIMATE** badge and the caveat.
 

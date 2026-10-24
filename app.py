@@ -359,7 +359,13 @@ def _wef_skill_snapshot() -> dict:
 
 
 def load_snapshot(kind: str = "wef") -> dict:
-    """One skill-evidence source; DOSM occupation counts stay a separate panel."""
+    """One skill-evidence source; DOSM occupation counts stay a separate panel.
+
+    "session" is an uploaded, validated snapshot that lives only in this browser
+    session, so a demo shows what a data update does without faking a commit.
+    """
+    if kind == "session":
+        return st.session_state.get("trend_session_snapshot") or _wef_skill_snapshot()
     status = trends_mod.update_status(DATA / "trends", kind)
     t = T(st.session_state.get("lang", "en"))
     st.caption(t["snapshot_note"])
@@ -2132,9 +2138,16 @@ def screen_js_results() -> None:
 
     # The ranking source is a user-visible choice, so "we track the market" is
     # something the judge can switch and see, not a claim on a slide.
+    if st.session_state.pop("_force_session_source", False):
+        # Must happen before the radio is created: Streamlit ignores writes to a
+        # widget key after the widget exists in the same run.
+        st.session_state["trend_source"] = "session"
+    _sources = ["jobstreet", "wef"] + (["session"] if st.session_state.get("trend_session_snapshot") else [])
+    if st.session_state.get("trend_source") not in _sources:
+        st.session_state["trend_source"] = "jobstreet"
     src = st.radio(
         t["src_label"],
-        ["jobstreet", "wef"],
+        _sources,
         horizontal=True,
         key="trend_source",
         format_func=lambda k: t["src_" + k],
@@ -2149,6 +2162,66 @@ def screen_js_results() -> None:
         unsafe_allow_html=True,
     )
     st.caption(t["src_note_" + src])
+
+    with st.expander(t["data_update_title"], expanded=False):
+        st.caption(t["data_update_note"])
+        upload = st.file_uploader(t["data_upload_label"], type=["json"], key="trend_upload")
+        if upload is not None:
+            try:
+                payload = json.loads(upload.getvalue().decode("utf-8"))
+                validated = trends_mod.validate_snapshot(payload)
+                signals = snapshot_signals(validated)
+            except Exception as exc:  # validator messages are user-facing
+                # A rejected upload is a user mistake, not an app error: warn, do not error.
+                st.warning(t["data_invalid"].format(str(exc)[:160]))
+            else:
+                st.success(t["data_valid"].format(
+                    len(signals), validated.get("source", "-"), validated.get("published", "-")))
+                preview = {
+                    **validated,
+                    "signals": signals,
+                    "scenario": False,
+                    "observed": True,
+                    "forecast": False,
+                }
+                before = rank(skills, apply_trend(pool_base, load_snapshot("wef")), scenario="moderate")
+                after = rank(skills, apply_trend(pool_base, preview), scenario="moderate")
+                base_pos = {r["role"]: i + 1 for i, r in enumerate(before)}
+                base_score = {r["role"]: r["score"] for r in before}
+                rows = []
+                for i, item in enumerate(after[:5]):
+                    name = item["role"]
+                    a = base_pos.get(name, 0)
+                    old_score = round(base_score.get(name, 0.0))
+                    new_score = round(item["score"])
+                    rows.append({
+                        t["col_role"]: role_plain(lang_now, name),
+                        t["data_col_score_before"]: old_score,
+                        t["data_col_score_after"]: new_score,
+                        t["data_col_score_shift"]: f"{new_score - old_score:+d}",
+                        t["data_col_before"]: a,
+                        t["data_col_after"]: i + 1,
+                    })
+                st.markdown(f"**{t['data_delta_title']}**")
+                st.dataframe(rows, hide_index=True, width="stretch")
+                st.caption(t["data_delta_note"].format(
+                    _loc(validated, "source", lang_now), validated.get("published", "-")))
+                if st.button(t["data_apply_btn"], key="trend_apply", type="primary"):
+                    st.session_state["trend_session_snapshot"] = preview
+                    st.session_state["_force_session_source"] = True
+                    st.rerun()
+
+        if st.session_state.get("trend_session_snapshot"):
+            snap = st.session_state["trend_session_snapshot"]
+            st.caption(t["data_active_note"].format(
+                _loc(snap, "source", lang_now), snap.get("published", "-")))
+            if st.button(t["data_revert_btn"], key="trend_revert"):
+                st.session_state.pop("trend_session_snapshot", None)
+                st.session_state["_force_session_source"] = True
+                st.session_state["trend_source"] = "wef"
+                st.rerun()
+        st.caption(t["data_cli_hint"])
+
     trend_cards(t, trend, lang_now)
     roles = apply_trend(pool_base, trend)
 
