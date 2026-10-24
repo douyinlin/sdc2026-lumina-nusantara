@@ -43,7 +43,7 @@ every role mapped to the UN SDGs.
 | RunPod Endpoint | Not used — the app runs no GPU endpoint (see Technical Declaration §5) |
 | Submission bundle | [SDC2026_LuminaNusantara_Submission.zip](submission/SDC2026_LuminaNusantara_Submission.zip) (all files, 4.4 MB) |
 | Slide Deck | [SDC2026_LuminaNusantara_SlideDeck.pptx](submission/SDC2026_LuminaNusantara_SlideDeck.pptx) |
-| Demo Video | `<TODO>` |
+| Demo Video (6:34) | https://youtu.be/wCsUDKMBIfs |
 
 ---
 
@@ -248,7 +248,7 @@ table records access, not identity.
 
 - [x] Team name, domain (Domain 1) and SDG track filled in
 - [x] Slide deck added (`submission/SDC2026_LuminaNusantara_SlideDeck.pptx`) — a hosted link is still recommended
-- [ ] Demo video link added
+- [x] Demo video link added (YouTube, 6:34)
 - [x] Replit used, with proof of use in `submission/`
 - [ ] RunPod — **not used**; CV parsing and scoring run locally in the app
 - [ ] Revised submission PDFs require leader review and signatures

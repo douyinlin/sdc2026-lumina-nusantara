@@ -25,6 +25,7 @@ folder's README.
 | Host | URL |
 | --- | --- |
 | Replit (published, required) | <https://skill-radar-my-streamlit-app.replit.app> |
+| Demo video | <https://youtu.be/wCsUDKMBIfs> (6:34) |
 | Streamlit Community Cloud (backup) | <https://sdc2026-lumina-nusantara-65cnugvuxdle5dgp9ky3fs.streamlit.app> |
 
 
