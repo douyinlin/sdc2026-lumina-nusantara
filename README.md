@@ -50,9 +50,7 @@ every role mapped to the UN SDGs.
 | Item | File | What it is |
 | --- | --- | --- |
 | Preliminary deck | [SDC2026_LuminaNusantara_SlideDeck.pptx](submission/SDC2026_LuminaNusantara_SlideDeck.pptx) | 20 slides, the deck shown to judges |
-| Video cue sheet | [CUE_DECK_4min10_to_6min.pdf](team/CUE_DECK_4min10_to_6min.pdf) | 7 pages, title + the exact link to show for each beat of 4:10-6:00 |
-| Same, editable | [CUE_DECK_4min10_to_6min.pptx](team/CUE_DECK_4min10_to_6min.pptx) | PPTX version |
-| Deck talking points | [DECK_TALKING_POINTS.md](team/DECK_TALKING_POINTS.md) | every slide as plain text |
+| Product demo video | [YouTube, 6:34](https://youtu.be/wCsUDKMBIfs) | the recorded walkthrough |
 
 Data, method and validation pages: [docs/DATA.md](docs/DATA.md) · [docs/TECH.md](docs/TECH.md) · [docs/VALIDATION.md](docs/VALIDATION.md).
 
