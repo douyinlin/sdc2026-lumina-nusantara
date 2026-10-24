@@ -35,7 +35,7 @@ every role mapped to the UN SDGs.
 | Resource | Link |
 | --- | --- |
 | GitHub Repository | https://github.com/douyinlin/sdc2026-lumina-nusantara |
-| Streamlit Cloud (backup, sign-in wall pending) | https://sdc2026-lumina-nusantara-65cnugvuxdle5dgp9ky3fs.streamlit.app |
+| Streamlit Cloud (backup, currently behind a sign-in wall) | https://sdc2026-lumina-nusantara-65cnugvuxdle5dgp9ky3fs.streamlit.app |
 | Replit workspace (private) | https://replit.com/@duyulin18/SkillRadar-MY-Streamlit-app |
 | **Live Demo** | https://skill-radar-my-streamlit-app.replit.app |
 | RunPod Endpoint | Not used — the app runs no GPU endpoint (see Technical Declaration §5) |
@@ -49,7 +49,7 @@ every role mapped to the UN SDGs.
 
 | Item | File | What it is |
 | --- | --- | --- |
-| Preliminary deck | [SDC2026_LuminaNusantara_SlideDeck.pptx](submission/SDC2026_LuminaNusantara_SlideDeck.pptx) | 12 slides, the deck shown to judges |
+| Preliminary deck | [SDC2026_LuminaNusantara_SlideDeck.pptx](submission/SDC2026_LuminaNusantara_SlideDeck.pptx) | 20 slides, the deck shown to judges |
 | Video cue sheet | [CUE_DECK_4min10_to_6min.pdf](team/CUE_DECK_4min10_to_6min.pdf) | 7 pages, title + the exact link to show for each beat of 4:10-6:00 |
 | Same, editable | [CUE_DECK_4min10_to_6min.pptx](team/CUE_DECK_4min10_to_6min.pptx) | PPTX version |
 | Deck talking points | [DECK_TALKING_POINTS.md](team/DECK_TALKING_POINTS.md) | every slide as plain text |
@@ -238,7 +238,7 @@ access, checked through the GitHub API on 23 October 2026:
 | `Lover-Leo` | Write |
 | `bojunzw` | Write |
 | `Lynnyue826` | Write |
-| `ZHENGQUANYING` | Write — invitation sent, not yet accepted |
+| `ZHENGQUANYING` | Write |
 
 The team keeps the mapping between these accounts and the five registered members; this
 table records access, not identity.
@@ -414,7 +414,7 @@ status. Passing means structural/source-identity validation only, not external
 fact verification or guaranteed write access. Failed imports retain the last
 valid snapshot and record failure status. Original source wording is preserved.
 
-Final local verification on 2026-10-23: **49 unit/page tests passed**, 2 standalone
+Final verification on 2026-10-25: **54 automated tests passed**; a fresh matrix of edge states (empty/unknown/all skills, invalid language, corrupt snapshot, HR and career-centre cases) is clean, and the live demo is served from Replit
 CV checks passed, configured mypy passed (11 source files), and `pip check` passed.
 Chrome verified synthetic upload → manual Excel override → hours change → results,
 clear with the old upload retained, same-name/new-content uploads, field/source/
