@@ -1,69 +1,100 @@
-# Demo video — recording plan (Phase 1, SDC 2026)
+# Demo video — 3-minute recording plan (Phase 1, SDC 2026)
 
-Target: **5:30–6:00**, 1080p, English voiceover, uploaded to YouTube (unlisted) and linked
-from the README. Organisers require a recorded demo uploaded to YouTube so judges can watch
-it "like you're giving a pitch".
+Follows the five-beat structure the team agreed on, ~36 s per beat. English voiceover, 1080p,
+YouTube unlisted.
 
-## Hard rules from the organisers
+## Hard rules
 
-- **Never say "GPU" or "RunPod".** The organisers warned that discussing GPU usage without
-  actually using RunPod can cost marks. Our app runs no GPU endpoint — say nothing about one.
-- Show **one clear flow**. Do not try to demo all three personas at depth; jobseeker gets the
-  time, the other two get one sentence each.
-- Say what is **new** relative to generic career tools: the score is explainable, every trend
-  claim carries a source and a date, and the SDG mapping goes down to skill level.
-- Synthetic data only. Never show a real CV, a real name, or personal data.
+- **Never say "GPU" or "RunPod"** — organisers warned this costs marks while RunPod is unused.
+- Say the score is **a ranking rule, not a hiring probability** — the brief asks for this.
+- Every data screen: name the **source, the date and the scope**.
+- Synthetic profile only; no real names, emails or phone numbers on screen.
+- One clear flow: jobseeker. Mention HR / career centre in one sentence, do not demo them.
 
-## Setup (15 minutes, do it once)
+## Beat 1 — user input · 0:00–0:36
 
-1. Browser: Edge or Chrome, window 1920×1080, page zoom 110%, bookmarks bar hidden
-   (`Ctrl+Shift+B`), all other tabs closed.
-2. Do a full warm-up run of the flow **before** recording — the free Streamlit instance takes
-   30–60 s to wake after idling. Keep a second tab open and already loaded.
-3. Turn off notifications (`Win+F` focus assist on, or quit WeChat/Discord).
-4. Recorder: **OBS Studio** (free). Settings: 1920×1080, 30 fps, screen capture + microphone,
-   MP4 output. Record each segment separately — editing is easier than one long take.
-5. Mic: quiet room, phone earbuds are acceptable. Record a 10-second test and listen back.
-6. Cursor: move slowly, pause before clicking. Do not shake the mouse while talking.
+1. Entry scene → **CLICK TO ENTER** → landing page.
+2. **Start as jobseeker** (leave the three cards visible for a second).
+3. In the intake touch three real inputs: **target field** (interest), **years**, **hours/week**
+   (study time).
+4. Upload the synthetic CV → detected skills → continue.
 
-## Script (timings are targets, not limits)
+Say: "This is a synthetic profile. She picks her target field, her experience, and how many hours
+a week she can study. Then she uploads a CV — the parser finds seven skills, and she can edit them
+by hand."
 
-| Time | Screen | Say (English) |
-| --- | --- | --- |
-| 0:00–0:25 | Title card or landing page | "In Malaysia, 56% of professionals already use AI at work, but only 26% have had any formal training. SkillRadar MY turns that gap into a plan: what is changing, which roles fit you, and what to learn next." |
-| 0:25–0:55 | Entry screen → landing | "Three ways in — a worker at risk, a fresh graduate, or an HR and TVET view. Every recommendation is a rule, not a black box: no language model runs when the app scores you." |
-| 0:55–1:45 | Jobseeker intake | "I upload a synthetic CV. The parser maps it to a shared skill catalogue — here are the skills it found. I can edit them by hand or search across categories." Click continue. |
-| 1:45–2:40 | Evidence section | "Before any recommendation, here is the evidence. This is DOSM's official advertised-job count for Q2 2026 — 555,509 offerings, down 11.4% on the quarter. Beside it, the named skills a 2025 industry report calls out. I can switch which source drives the ranking, and the ranking moves with it — that table shows whether a role holds under both sources." |
-| 2:40–3:40 | Role ranking, expand the "why" block | "One score, five weighted inputs: skill coverage, role focus, transferability, demand trend and gap cost — all visible. Under the hood here is why: which of my skills carry over, what is still missing, and which official number backs the trend." |
-| 3:40–4:25 | Scenario comparison, then pathway | "Same profile, two disruption speeds: moderate and fast. The skills that stay in the gap under both are the ones worth learning first. Then the pathway: ordered steps, real free resources, and an estimate of how the score moves after each step." |
-| 4:25–4:55 | SDG section + HR screen (short) | "Every role is tagged to the SDGs, and each skill on the path maps to a target — we label that crosswalk as our own reading, not an official UN mapping. The same engine gives HR a team-level gap view in one screen." |
-| 4:55–5:25 | Sources panel / disclosure expander | "What this is not: no hiring decisions, no employment prediction, no real personal data. Trend files are dated snapshots we transcribe by hand, and the course links were checked as reachable; prices and hours still need confirmation." |
-| 5:25–5:45 | Closing slide of the deck or repo page | "SkillRadar MY — Lumina Nusantara, Xiamen University Malaysia. Live demo and code are in the description. Thank you." |
+## Beat 2 — evidence · 0:36–1:12
 
-## Recording order (fastest path)
+Scroll to **2 · Future skills radar**.
 
-1. Segments 3–7 first (the app screens) while the instance is warm.
-2. Then 1–2 (talking head or landing page).
-3. Then 8–9.
-4. One extra take of any segment where you stumbled — cut in editing.
+1. DOSM panel: total **555,509**, QoQ **−11.4%**, release date, "view source".
+2. Point at the line saying this counts **job advertisements by occupation group, not skills**.
+3. Named-skill layer and the WEF panel: point at "forecast, global, not Malaysia".
+
+Say: "DOSM published 555,509 advertised vacancies for Q2 2026, down 11.4% on the quarter — that
+counts job ads by occupation, not skills. Beside it, named skill demand from a 2025 industry
+report, and WEF's global outlook. Every panel states its source, its date, and what it can and
+cannot tell you."
+
+## Beat 3 — recommendation · 1:12–1:48
+
+Scroll to **3 · Best-fit future roles**.
+
+1. Point at the top role and its score.
+2. Expand it → five bars (coverage / focus / transferability / trend / gap cost).
+3. Point at "why this role": transfer, gap, evidence.
+
+Say: "The score is a weighted rule over five inputs, all visible here. Coverage is 84%, but the
+demand trend is lower, so this role sits second rather than first. It orders options for a
+decision — it is not a hiring probability, and it never scores a person for an employer."
+
+## Beat 4 — comparison / change · 1:48–2:24
+
+1. Open **AI disruption scenario · moderate / fast**.
+2. Read one row: moderate score, fast score, rank arrow.
+3. Point at the **SCENARIO ESTIMATE** badge and the caveat.
+
+Say: "Same profile, two disruption speeds. Under fast disruption the trend carries more weight, so
+scores move and some positions swap — this table shows what changed and by how much. We label the
+whole block as a scenario estimate: one quarter or one weighting is not a long-term prediction."
+
+## Beat 5 — action plan · 2:24–3:00
+
+1. Scroll to **4 · Skills to close and your pathway**.
+2. Read the three metrics: skills to close, estimated weeks, **best match after the plan** + delta.
+3. Show the ordered steps and the course table (free, real links).
+4. End on **5 · SDG** or the repo page.
+
+Say: "The plan lists the missing skills, ordered cheapest-first, with real free resources and an
+estimated number of weeks. Finishing it lifts the best match by twenty points. Each skill is also
+tagged to an SDG target, and we label that mapping as our own reading. The links are real; prices
+still need confirming."
+
+## Setup (once, ~15 minutes)
+
+1. Browser 1920×1080, zoom 110%, bookmarks bar hidden, one window only.
+2. **Warm the app first**: run the whole flow once and keep the tab open — the free instance
+   sleeps and needs 30–60 s to wake.
+3. Close WeChat / Discord; turn on Focus Assist.
+4. OBS: 1080p, 30 fps, screen + microphone, MP4, one file per beat.
+5. Mic check: 10-second test, listen back.
+6. Synthetic CV only (`data/sample_cv.txt`).
 
 ## Edit and upload
 
-1. Edit in CapCut or Clipchamp: cut dead air, normalise audio to about −16 LUFS, add four
-   lower-third labels (Problem / Evidence / Matching / Pathway). No background music unless it
-   is licence-free.
-2. Export 1080p MP4.
-3. Upload to YouTube as **Unlisted**, title
+1. CapCut / Clipchamp: cut dead air, normalise audio, small labels
+   (Input / Evidence / Ranking / Scenario / Plan).
+2. Export 1080p MP4, target 3:00–3:20.
+3. YouTube → **Unlisted** → title
    `SkillRadar MY — SDC 2026 Domain 1 demo (Lumina Nusantara)`.
-4. Add English auto-captions, then skim them for wrong product names.
-5. Put the link in `README.md` (row **Demo Video**) and in the Team Portal submission field.
-6. Keep the MP4 as a backup in case the portal needs a direct upload.
+4. English captions; skim for product-name typos.
+5. Put the link in `README.md` (row **Demo Video**) and in the Team Portal field.
 
 ## Pre-upload check
 
-- [ ] No mention of GPU, RunPod, or model training
-- [ ] Only synthetic CV / synthetic profiles on screen
-- [ ] No real names, emails, phone numbers, or other tabs visible
-- [ ] Audio is understandable at 50% volume
-- [ ] Runs between 5 and 7 minutes
-- [ ] Link opens in a private window without logging in
+- [ ] No GPU / RunPod wording
+- [ ] "Not a hiring probability" said out loud in beat 3
+- [ ] Source + date visible on every data screen
+- [ ] Only synthetic profile on screen
+- [ ] Length 3:00–3:30
+- [ ] Link opens in a private window
