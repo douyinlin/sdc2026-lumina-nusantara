@@ -136,3 +136,170 @@ Chrome 英文在职用户流程通过：虚构 SQL 文件上传→手动 Excel�
 
 未处理：PPT 与演示视频（交付物）、赛事委员会账号、Technical Declaration 补 Codex——
 需要本人在 GitHub / 门户上操作。
+
+---
+
+## Repair and validation — 2026-10-22 (moved from README)
+
+## Repair and validation — 2026-10-22
+
+Worker targets default to all fields and use separate state from graduate study
+fields. Skills are deduplicated on both sides of weighted and count-based coverage.
+Coverage is not a hiring probability. Scoring weights, transfer coefficients and
+scenario assumptions are team heuristics, not observed hiring outcomes.
+
+Skills, selected field and evidence/scenario affect matching. Weekly study hours
+change duration. Work experience, urgency, budget, degree level, internship months
+and graduation year are recorded only; they do not affect scoring or course filters.
+
+Study steps are sequential. For a positive recorded course duration, weeks are
+`ceil(course hours / weekly study hours)`. Existing catalogue hours are explicitly
+labelled unverified estimates. A future verified record must include
+`duration_verified: true` and `duration_source_url`. Missing/invalid hours use the
+original team assumption (`round(skill cost * 6)` weeks at 8 hours/week), labelled
+as a team estimate. Total weeks sum rounded step durations. Source verification
+and course access/fees remain team tasks. Completing a step is a hypothetical
+skill acquisition; the highest-scoring role after the plan may change.
+
+### Updating the data from inside the app
+
+The results page carries a **"Update the trend data with a reviewed snapshot"** panel. It accepts a
+JSON file with the same schema as `data/trends/`, validates it with the same function the CLI uses,
+and shows a before/after table (score shift and rank change) for the current profile. Applying it
+changes the ranking for that browser session only - it never writes to the repository, so a demo
+cannot fake a data update.
+
+A sample file lives at `data/trends/sample_upload_example.json`; it is an **illustrative fixture**,
+not a new measurement. A permanent update stays a maintainer step, below.
+
+### Validated manual trend update
+
+1. Read the original source linked in the existing WEF/Jobstreet JSON. Review its
+   scope, date, skill direction and any taxonomy mapping. This is a human review,
+   not an automatic claim that a page was fetched or checked.
+2. Prepare a JSON file outside the repository, preserving the existing schema.
+   Include `source`, HTTPS `source_url`, `published`, `retrieved_at`,
+   `extraction_note`, and non-empty `skill_signals` with `skill`, `direction`,
+   `evidence`. Proxy mappings must have `mapping_note`. Do not invent percentages.
+   Preserve `skill` as the original source name and `model_skill` as the team's
+   original mapping text, with `mapping_note` explaining proxies. The importer
+   derives `match_key` using the scoring normalizer (trim + casefold). It rejects
+   blank/invalid keys and normalized duplicates. Do not hand-maintain `match_key`:
+   it is regenerated on import/read. `mapping_kind: "unmapped"` with no
+   `model_skill` produces `match_key: null` and cannot affect scoring, even if its
+   name happens to match a known skill. Other unknown catalogue keys also remain
+   context only. The UI retains source names, not internal matching keys.
+
+3. Validate, then import (replace the example input path with your reviewed file):
+
+```powershell
+python -m src.trends wef "C:\path\reviewed-wef.json" --check
+python -m src.trends wef "C:\path\reviewed-wef.json"
+# For the other source, replace wef with jobstreet.
+```
+
+Successful imports atomically replace only the selected source, keeping an ignored
+`.json.bak` of the previous valid snapshot. Validation failure leaves it unchanged.
+Ignored per-source `.*-import-status.json` records the attempt; the UI warns after
+failed imports. A missing/corrupt active snapshot produces an explicit error,
+not a simulated replacement. Re-run the page after importing. Review `git diff`
+and the original evidence before manually committing. DOSM occupation panels
+remain separate from skill scoring; update those manually and review their diff.
+
+### Reproduce checks and run
+
+```powershell
+python -m pip install -r team/dev-env/requirements-dev.txt
+python -m unittest discover tests -v
+python tests/check_cv_intake.py
+python -m pip check
+python -m mypy --config-file team/dev-env/pyproject.toml
+python -m streamlit run app.py --server.headless true
+# In a second terminal, using an installed Chrome:
+python tests/check_post_selection_ui.py --url http://localhost:8501 --browser "C:\Program Files\Google\Chrome\Application\chrome.exe" --output test-results/browser
+```
+
+There is no separate frontend build: Streamlit runs the Python application.
+For hosted startup use `python -m streamlit run app.py --server.address 0.0.0.0
+--server.port 5000 --server.headless true` on one line. `.replit` already includes
+build/install and startup settings; importing and running this commit on the
+team's Replit account is still required. No API key is needed. `.env` is not loaded
+by the app; `PORT` is used only by the `.replit` deployment shell command. RunPod
+variables are reserved for the disconnected optional experiment.
+
+Validation performed locally: unit/integration tests, dependency consistency,
+mypy and a Chrome worker flow with field selection, edited synthetic skills,
+study hours, evidence/scenario switching and SDG display. See
+`team/DEVELOPMENT_LOG.md` for actual results and remaining limitations.
+
+
+### Follow-up validation — baseline 68559e5
+
+The trend importer, runtime loaders, scoring, explanations and pathway ordering
+now share canonical matching keys without changing source wording. Course titles,
+notes and disclosures agree in all three languages: recorded provider links and
+fees/hours require verification; team-estimated time is separate. Transfer
+percentages are labelled team rule coefficients, not measured ability transfer.
+The historical extraction note in `data/courses.json` is retained as legacy team
+metadata, not treated as fresh verification.
+
+Runtime requirements use **exact direct pins** in `requirements.txt`; development
+checks use the same policy in `team/dev-env/requirements-dev.txt`, which includes
+runtime requirements and only the two direct check tools. This is not a Windows
+`pip freeze` export, a full transitive/hash lock, or proof of Linux compatibility.
+Transitive packages are still resolved by pip. Validated environment: Windows,
+Python 3.12, Streamlit 1.66.0, pandas 3.0.6, NumPy 2.5.4, PyArrow 26.0.0,
+Matplotlib 3.11.2. The previously missing Matplotlib package is now installed and
+the real browser test asserts the DOSM chart is visible.
+
+Deprecated container-width arguments were replaced with `width`, and repository-owned
+static HTML/JavaScript uses `st.iframe`. The API was checked against installed
+Streamlit 1.66.0 and its [official iframe reference](https://docs.streamlit.io/develop/api-reference/text/st.iframe).
+Only repository-authored static scripts are passed to this iframe; evidence and
+uploaded content are not embedded in it. Browser checks include the particle
+canvas, source/scenario controls, study plan, SDG image and mobile capture.
+
+Previous validation (baseline 68559e5): **43 tests passed**, including normalization/import
+failure protection, copy consistency, and intake/results regression across three
+languages. The separate CV check, mypy (11 files), pinned dependency installation,
+`pip check` and the real Chrome workflow passed. Artifacts are ignored under
+`test-results/normalized-trends-browser/`.
+
+Replit status: configuration inspected; concrete project link checked read-only;
+this repair has **not run on Replit** and has not been deployed there.
+No Linux runtime test was performed. Once the owner grants access, sync the reviewed
+commit, install `requirements.txt`, run the configured app, and verify the same
+flows in Preview. Collect a project/Preview link and screenshot that identifies
+the actual tested commit. Do not assume old usage evidence covers this repair.
+
+
+### Input state and import preflight repair — baseline b6c0837
+
+Uploads are identified by a SHA-256 digest of their contents, not their filename.
+Changed contents are parsed once and replace confirmed skills, resetting the
+manual draft. Identical contents do not overwrite manual edits or cleared skills
+on reruns. Removing an upload alone does not clear the confirmed profile.
+Only fictional CVs should be used; this change adds no upload persistence.
+
+Search and category selectors share a manual draft. Editing enables Apply, which
+replaces confirmed skills (including an intentionally emptied draft). Before any
+manual edit, Apply is disabled so it cannot accidentally erase uploaded skills.
+Clear current skills clears the confirmed profile, draft and selectors while
+retaining the consumed upload digest. Continue is disabled for an empty profile
+and otherwise uses the displayed confirmed skills, never an unapplied draft.
+
+Trend `--check` and import now share metadata/date, source-host identity, mapping
+and canonical-key validation. Preflight writes no snapshots, backups or import
+status. Passing means structural/source-identity validation only, not external
+fact verification or guaranteed write access. Failed imports retain the last
+valid snapshot and record failure status. Original source wording is preserved.
+
+Final verification on 2026-10-25: **54 automated tests passed**; a fresh matrix of edge states (empty/unknown/all skills, invalid language, corrupt snapshot, HR and career-centre cases) is clean, and the live demo is served from Replit
+CV checks passed, configured mypy passed (11 source files), and `pip check` passed.
+Chrome verified synthetic upload → manual Excel override → hours change → results,
+clear with the old upload retained, same-name/new-content uploads, field/source/
+scenario controls, learning route and SDG display. Browser artifacts are ignored
+under `test-results/input-state-browser/`. Three-language and worker/graduate/HR/
+career-centre coverage uses Streamlit page tests; the Chrome flow is English worker.
+These are local Windows results for the uncommitted repair based on b6c0837;
+Replit/Linux execution and team human review remain unverified.
