@@ -1476,7 +1476,8 @@ def dosm_radar(t: dict, d: dict, lang: str = "en") -> None:
     ax.set_theta_direction(-1)
 
     # the ring for "nothing changed" - last quarter's level
-    ax.plot(closed_a, np.full(n + 1, 100.0), color="#8a9a5b", linewidth=1.1,
+    ring_angles = np.linspace(0, 2 * np.pi, 361)
+    ax.plot(ring_angles, np.full_like(ring_angles, 100.0), color="#8a9a5b", linewidth=1.1,
             linestyle=(0, (3, 2)), zorder=2)
     ax.text(np.deg2rad(38), 100.6, "Q1 = 100", fontsize=6.2, color="#6f7a5c",
             ha="left", va="bottom", zorder=6)
@@ -1491,7 +1492,8 @@ def dosm_radar(t: dict, d: dict, lang: str = "en") -> None:
     # and the table beside the chart maps each number to its occupation group.
     ax.set_xticks(angles)
     ax.set_xticklabels([str(i + 1) for i in range(n)], fontsize=10.0, color="#3f4a26")
-    ax.set_yticks([])
+    ax.set_yticks(np.arange(np.ceil(low / 5.0) * 5.0, 104.0, 5.0))
+    ax.set_yticklabels([])
     ax.tick_params(axis="x", pad=4)
     ax.grid(color="#d8dfca", linewidth=0.6)
     ax.spines["polar"].set_color("#e2e8d8")
@@ -1588,7 +1590,6 @@ def dosm_panel(t: dict, lang: str) -> None:
                        + " " + t["all_down_note"].format(n=len(moves)))
         else:
             st.caption(t["radar_footnote"].format(previous=d.get("previous_period", "")))
-        st.caption(t["radar_index_note"])
 
 
 def skill_evidence_panel(t: dict, lang: str) -> None:
