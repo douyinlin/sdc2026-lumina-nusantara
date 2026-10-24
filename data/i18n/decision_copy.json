@@ -117,7 +117,9 @@
     "data_active_note": "Active for this session: \"{0}\", published {1}. Switch the evidence radio back to compare.",
     "data_col_score_before": "Score before",
     "data_col_score_after": "Score after",
-    "data_col_score_shift": "Score shift"
+    "data_col_score_shift": "Score shift",
+    "upload_too_big": "That file is larger than 2 MB. Upload a text CV, or paste the text instead.",
+    "data_too_big": "That snapshot is larger than 2 MB. Upload a smaller JSON file."
   },
   "zh": {
     "summary_full": "匹配很强：**{0}**，加权覆盖 {1}%——这个岗位的要求你已经全部具备。下面的路径是加深，不是补缺口。",
@@ -237,7 +239,9 @@
     "data_active_note": "本会话已启用：「{0}」，发布于 {1}。把证据来源切回去即可对比。",
     "data_col_score_before": "更新前分数",
     "data_col_score_after": "更新后分数",
-    "data_col_score_shift": "分数变化"
+    "data_col_score_shift": "分数变化",
+    "upload_too_big": "文件超过 2 MB。请上传文本版简历，或直接把内容粘贴进来。",
+    "data_too_big": "快照超过 2 MB。请上传更小的 JSON 文件。"
   },
   "ms": {
     "summary_full": "Padanan kukuh: **{0}**, liputan berwajaran {1}% — semua keperluan sudah dipenuhi. Laluan di bawah ialah pendalaman, bukan jurang.",
@@ -357,6 +361,8 @@
     "data_active_note": "Aktif untuk sesi ini: \"{0}\", diterbitkan {1}. Tukar radio bukti semula untuk bandingkan.",
     "data_col_score_before": "Skor sebelum",
     "data_col_score_after": "Skor selepas",
-    "data_col_score_shift": "Perubahan skor"
+    "data_col_score_shift": "Perubahan skor",
+    "upload_too_big": "Fail itu melebihi 2 MB. Muat naik CV teks, atau tampal teksnya.",
+    "data_too_big": "Snapshot itu melebihi 2 MB. Muat naik fail JSON yang lebih kecil."
   }
 }

@@ -1285,7 +1285,7 @@ def lang_selector(compact: bool = False) -> None:
     choice = st.selectbox(
         "Language / Bahasa / 语言",
         options=options,
-        index=options.index(current),
+        index=options.index(current) if current in options else 0,
         format_func=lambda k: labels[k],
         label_visibility="collapsed" if compact else "visible",
         key=f"lang_{'c' if compact else 'f'}",
@@ -1942,6 +1942,9 @@ def screen_js_intake() -> None:
     st.divider()
     st.markdown(f'<div class="sr-pill">{t["opt_a"]}</div>', unsafe_allow_html=True)
     up = st.file_uploader(t["uploader"], type=["txt", "md", "pdf"])
+    if up is not None and getattr(up, "size", 0) > 2 * 1024 * 1024:
+        st.warning(t["upload_too_big"])
+        up = None
     if up is not None:
         # getvalue does not consume the upload stream on subsequent reruns.
         digest = hashlib.sha256(up.getvalue()).hexdigest()
@@ -2023,6 +2026,8 @@ def screen_js_intake() -> None:
     st.button(t["clear_skills"], width="stretch", on_click=clear_current_skills)
 
     current = st.session_state.get("skills") or []
+    if isinstance(current, str):
+        current = [current]
     if current:
         st.markdown(f"**{t['current']} · {len(set(current))}**")
         st.markdown(
@@ -2138,6 +2143,8 @@ def screen_js_results() -> None:
     top_bar(t)
     step_banner(t)
     skills = st.session_state.get("skills") or []
+    if isinstance(skills, str):
+        skills = [skills]
     persona = st.session_state.get("persona", "worker")
     if not skills:
         st.warning(t["not_detected"])
@@ -2151,6 +2158,8 @@ def screen_js_results() -> None:
     # Domain-aware filtering: never recommend a role from an unrelated field.
     field = st.session_state.get("worker_field", "all") if persona == "worker" else st.session_state.get("graduate_field", st.session_state.get("field", "Business Administration"))
     raw_profile = st.session_state.get("skills") or skills
+    if isinstance(raw_profile, str):
+        raw_profile = [raw_profile]
     # keep only skills the catalogue knows about (drop anything typed via an old key)
     known = {sk for r in base_roles for sk in r.required_skills}
     skills = [sk for sk in raw_profile if sk in known] or raw_profile
@@ -2209,6 +2218,9 @@ def screen_js_results() -> None:
     with st.expander(t["data_update_title"], expanded=False):
         st.caption(t["data_update_note"])
         upload = st.file_uploader(t["data_upload_label"], type=["json"], key="trend_upload")
+        if upload is not None and getattr(upload, "size", 0) > 2 * 1024 * 1024:
+            st.warning(t["data_too_big"])
+            upload = None
         if upload is not None:
             try:
                 payload = json.loads(upload.getvalue().decode("utf-8"))
@@ -2738,6 +2750,9 @@ def screen_cc_results() -> None:
 st.set_page_config(page_title="SkillRadar MY", page_icon="📡", layout="wide")
 
 st.session_state.setdefault("lang", "en")
+if st.session_state["lang"] not in ("en", "ms", "zh"):
+    # an old bookmark or a hand-edited session value must not crash the page
+    st.session_state["lang"] = "en"
 st.session_state.setdefault("theme_color", "sage")
 st.session_state.setdefault("font_size", "normal")
 _on_landing = st.session_state.get("stage") in (None, "", "landing")
