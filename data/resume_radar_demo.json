@@ -1,0 +1,49 @@
+{
+  "note": "Keyword lists parsed from the three user-supplied synthetic demo CVs; source PDF text is not stored here.",
+  "profiles": [
+    {
+      "name": "resume_01_early_career",
+      "skills": [
+        "basic statistics",
+        "communication",
+        "content",
+        "data visualisation",
+        "excel",
+        "presentation",
+        "prompt engineering",
+        "python",
+        "reporting",
+        "research",
+        "sql"
+      ]
+    },
+    {
+      "name": "resume_02_mid_career",
+      "skills": [
+        "communication",
+        "content",
+        "crm administration",
+        "customer support",
+        "excel",
+        "process improvement",
+        "reporting",
+        "sql",
+        "team lead"
+      ]
+    },
+    {
+      "name": "resume_03_senior_lead",
+      "skills": [
+        "coaching",
+        "communication",
+        "content",
+        "documentation",
+        "product management",
+        "python",
+        "reporting",
+        "sql",
+        "stakeholder management"
+      ]
+    }
+  ]
+}

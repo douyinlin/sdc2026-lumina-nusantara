@@ -119,7 +119,17 @@
     "data_col_score_after": "Score after",
     "data_col_score_shift": "Score shift",
     "upload_too_big": "That file is {0} MB and the limit is {1} MB. Compress the PDF, or paste the text instead.",
-    "data_too_big": "That snapshot is {0} MB and the limit is {1} MB. Upload a smaller JSON file."
+    "data_too_big": "That snapshot is {0} MB and the limit is {1} MB. Upload a smaller JSON file.",
+"resume_compare_title": "Compare up to three CV skill profiles",
+    "resume_compare_note": "The chart opens with the three synthetic demo CVs. Upload up to three other CVs below to replace them for this session; the active profile above stays unchanged.",
+    "resume_compare_upload": "Replace the demo with up to three CVs",
+    "resume_compare_limit": "Only the first three files are included in the comparison.",
+    "resume_compare_empty": "No selectable taxonomy skills were detected in these files.",
+    "resume_compare_axes": "Radar spokes: 1 Data & analytics · 2 AI & technology · 3 Customer & operations · 4 People & communication · 5 Creative & commercial · 6 Product & governance.",
+    "resume_compare_count": "detected skills",
+    "resume_compare_method": "Each percentage is the share of taxonomy keywords detected in that skill area. It shows extracted evidence, not proficiency, seniority, or work quality.",
+    "resume_compare_chart_title": "Detected skill coverage by profile"
+
   },
   "zh": {
     "summary_full": "匹配很强：**{0}**，加权覆盖 {1}%——这个岗位的要求你已经全部具备。下面的路径是加深，不是补缺口。",
@@ -241,7 +251,17 @@
     "data_col_score_after": "更新后分数",
     "data_col_score_shift": "分数变化",
     "upload_too_big": "这个文件 {0} MB，上限是 {1} MB。请压缩 PDF，或者直接把内容粘贴进来。",
-    "data_too_big": "快照 {0} MB，上限是 {1} MB。请上传更小的 JSON 文件。"
+    "data_too_big": "快照 {0} MB，上限是 {1} MB。请上传更小的 JSON 文件。",
+"resume_compare_title": "对比最多三份简历的技能画像",
+    "resume_compare_note": "页面默认展示三份虚构演示简历。你也可以在下方上传最多三份简历，在本次会话中替换图表数据；上方用于岗位匹配的当前档案不会改变。",
+    "resume_compare_upload": "上传最多三份简历以替换演示数据",
+    "resume_compare_limit": "对比只包含前 3 份文件。",
+    "resume_compare_empty": "这些文件中没有识别到可用于分类的技能。",
+    "resume_compare_axes": "雷达图维度：1 数据与分析 · 2 AI 与技术 · 3 客户与运营 · 4 人员与沟通 · 5 创意与商业 · 6 产品与治理。",
+    "resume_compare_count": "项已识别技能",
+    "resume_compare_method": "每个百分比表示该维度中被识别出的技能关键词占分类表关键词的比例。它反映解析证据，不代表熟练程度、资历或工作质量。",
+    "resume_compare_chart_title": "各简历识别技能覆盖对比"
+
   },
   "ms": {
     "summary_full": "Padanan kukuh: **{0}**, liputan berwajaran {1}% — semua keperluan sudah dipenuhi. Laluan di bawah ialah pendalaman, bukan jurang.",
@@ -363,6 +383,16 @@
     "data_col_score_after": "Skor selepas",
     "data_col_score_shift": "Perubahan skor",
     "upload_too_big": "Fail ini {0} MB, had ialah {1} MB. Mampatkan PDF, atau tampal teksnya.",
-    "data_too_big": "Snapshot ini {0} MB, had ialah {1} MB. Muat naik fail JSON yang lebih kecil."
+    "data_too_big": "Snapshot ini {0} MB, had ialah {1} MB. Muat naik fail JSON yang lebih kecil.",
+"resume_compare_title": "Bandingkan profil kemahiran sehingga tiga CV",
+    "resume_compare_note": "Carta dibuka dengan tiga CV demo rekaan. Muat naik sehingga tiga CV lain di bawah untuk menggantikannya bagi sesi ini; profil aktif di atas tidak berubah.",
+    "resume_compare_upload": "Gantikan demo dengan sehingga tiga CV",
+    "resume_compare_limit": "Hanya tiga fail pertama dimasukkan dalam perbandingan.",
+    "resume_compare_empty": "Tiada kemahiran taksonomi yang boleh dipilih dikesan dalam fail ini.",
+    "resume_compare_axes": "Paksi radar: 1 Data & analitik · 2 AI & teknologi · 3 Pelanggan & operasi · 4 Insan & komunikasi · 5 Kreatif & komersial · 6 Produk & tadbir urus.",
+    "resume_compare_count": "kemahiran dikesan",
+    "resume_compare_method": "Setiap peratus ialah bahagian kata kunci taksonomi yang dikesan dalam bidang kemahiran tersebut. Ini menunjukkan bukti yang diekstrak, bukan tahap kemahiran, senioriti atau kualiti kerja.",
+    "resume_compare_chart_title": "Liputan kemahiran dikesan mengikut profil"
+
   }
 }
