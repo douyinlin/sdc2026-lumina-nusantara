@@ -250,11 +250,11 @@ table records access, not identity.
 ## Submission Checklist
 
 - [x] Team name, domain (Domain 1) and SDG track filled in
-- [x] Slide deck added (`submission/SDC2026_LuminaNusantara_SlideDeck.pptx`) — a hosted link is still recommended
+- [x] Slide deck added (`submission/SDC2026_LuminaNusantara_SlideDeck.pptx`, 20 slides), also inside the bundle ZIP
 - [x] Demo video link added (YouTube, 6:34)
 - [x] Replit used, with proof of use in `submission/`
-- [ ] RunPod — **not used**; CV parsing and scoring run locally in the app
-- [ ] Revised submission PDFs require leader review and signatures
+- [x] RunPod not used — CV parsing and scoring run locally; the project has no GPU endpoint (declared in the Technical Declaration §5)
+- [x] Revised submission PDFs reviewed and signed by the leader on 24 October 2026 (signature block on the last page of each)
 - [x] "How to Run" steps verified
 - [x] No API keys or secrets committed to the repository
 
