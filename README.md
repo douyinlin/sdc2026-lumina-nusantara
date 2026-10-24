@@ -37,7 +37,8 @@ every role mapped to the UN SDGs.
 | Resource | Link |
 | --- | --- |
 | GitHub Repository | https://github.com/douyinlin/sdc2026-lumina-nusantara |
-| Replit Project (access pending) | https://replit.com/@duyulin18/SkillRadar-MY-Streamlit-app |
+| Replit Deployment (live) | https://skill-radar-my-streamlit-app.replit.app |
+| Replit workspace (private) | https://replit.com/@duyulin18/SkillRadar-MY-Streamlit-app |
 | **Live Demo** | https://sdc2026-lumina-nusantara-65cnugvuxdle5dgp9ky3fs.streamlit.app |
 | RunPod Endpoint | Not used — the app runs no GPU endpoint (see Technical Declaration §5) |
 | Submission bundle | [SDC2026_LuminaNusantara_Submission.zip](submission/SDC2026_LuminaNusantara_Submission.zip) (all files, 4.4 MB) |
@@ -154,19 +155,20 @@ python -m unittest discover tests
 
 ## How We Use Replit *(Required)*
 
-Existing Replit usage evidence is preserved in `submission/`. This repaired local
-version has **not** been run or deployed on Replit during this change. The concrete project link above was found in the existing slide brief. A read-only
-access check on 2026-10-22 returned "Page not found" with an owner-invitation message.
-This does not establish whether the app is private, renamed or removed, and does
-not prove which commit it runs. The owner must provide access and a runnable Preview.
+The project is **built and published on Replit**.
 
-- **Development configuration (not executed there in this repair):** `.replit` starts
-  `python -m streamlit run app.py` on port 5000.
-- **Secrets:** any API keys live in Replit Secrets and are never committed.
-- **Hosting:** the public live demo is served by Streamlit Community Cloud, which
-  deployment settings and the deployed commit must be checked by the team.
+- **Published app:** <https://skill-radar-my-streamlit-app.replit.app> — public, no login needed.
+  The deployment runs on Replit Autoscale, so the first visit after a quiet period can take
+  20–30 seconds to wake.
+- **Workspace:** <https://replit.com/@duyulin18/SkillRadar-MY-Streamlit-app> (private to the team).
+- **Run configuration:** `.replit` starts `python -m streamlit run app.py` on port 5000, bound to
+  `0.0.0.0` in headless mode, so Replit's proxy reaches it.
+- **Secrets:** none are required — the app calls no external API and needs no key or GPU.
+- **Second host:** the Streamlit Community Cloud instance in the links table stays online as a
+  backup and is the one used in the demo video.
 
-Proof of use: [`submission/REPLIT PROOF OF USE.pdf`](submission/REPLIT%20PROOF%20OF%20USE.pdf)
+Replit usage evidence is also kept as screenshots:
+[`submission/REPLIT PROOF OF USE.pdf`](submission/REPLIT%20PROOF%20OF%20USE.pdf).
 
 ## On RunPod
 

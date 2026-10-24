@@ -20,6 +20,14 @@ folder's README.
 | [`REPLIT PROOF OF USE.pdf`](REPLIT%20PROOF%20OF%20USE.pdf) | Historical screenshots of the Replit workspace (not proof of current access) | — |
 | [`README.md`](README.md) | This index | — |
 
+## Where it runs
+
+| Host | URL |
+| --- | --- |
+| Replit (published, required) | <https://skill-radar-my-streamlit-app.replit.app> |
+| Streamlit Community Cloud (backup) | <https://sdc2026-lumina-nusantara-65cnugvuxdle5dgp9ky3fs.streamlit.app> |
+
+
 Plain-text version of every slide: [`team/DECK_TALKING_POINTS.md`](../team/DECK_TALKING_POINTS.md).
 
 ## The six required features, and where each one lives
