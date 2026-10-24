@@ -2191,10 +2191,10 @@ def screen_js_results() -> None:
 
     # The ranking source is a user-visible choice, so "we track the market" is
     # something the judge can switch and see, not a claim on a slide.
-    if st.session_state.pop("_force_session_source", False):
-        # Must happen before the radio is created: Streamlit ignores writes to a
-        # widget key after the widget exists in the same run.
-        st.session_state["trend_source"] = "session"
+    pending_source = st.session_state.pop("_pending_trend_source", None)
+    if pending_source is not None:
+        # Apply source changes before creating the radio on the next rerun.
+        st.session_state["trend_source"] = pending_source
     _sources = ["jobstreet", "wef"] + (["session"] if st.session_state.get("trend_session_snapshot") else [])
     if st.session_state.get("trend_source") not in _sources:
         st.session_state["trend_source"] = "jobstreet"
@@ -2264,7 +2264,7 @@ def screen_js_results() -> None:
                     _loc(validated, "source", lang_now), validated.get("published", "-")))
                 if st.button(t["data_apply_btn"], key="trend_apply", type="primary"):
                     st.session_state["trend_session_snapshot"] = preview
-                    st.session_state["_force_session_source"] = True
+                    st.session_state["_pending_trend_source"] = "session"
                     st.rerun()
 
         if st.session_state.get("trend_session_snapshot"):
@@ -2273,8 +2273,7 @@ def screen_js_results() -> None:
                 _loc(snap, "source", lang_now), snap.get("published", "-")))
             if st.button(t["data_revert_btn"], key="trend_revert"):
                 st.session_state.pop("trend_session_snapshot", None)
-                st.session_state["_force_session_source"] = True
-                st.session_state["trend_source"] = "wef"
+                st.session_state["_pending_trend_source"] = "wef"
                 st.rerun()
         st.caption(t["data_cli_hint"])
 
