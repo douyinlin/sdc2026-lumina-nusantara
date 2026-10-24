@@ -1942,8 +1942,8 @@ def screen_js_intake() -> None:
     st.divider()
     st.markdown(f'<div class="sr-pill">{t["opt_a"]}</div>', unsafe_allow_html=True)
     up = st.file_uploader(t["uploader"], type=["txt", "md", "pdf"])
-    if up is not None and getattr(up, "size", 0) > 2 * 1024 * 1024:
-        st.warning(t["upload_too_big"])
+    if up is not None and getattr(up, "size", 0) > 10 * 1024 * 1024:
+        st.warning(t["upload_too_big"].format(round(up.size / (1024 * 1024), 1), 10))
         up = None
     if up is not None:
         # getvalue does not consume the upload stream on subsequent reruns.
@@ -2218,8 +2218,8 @@ def screen_js_results() -> None:
     with st.expander(t["data_update_title"], expanded=False):
         st.caption(t["data_update_note"])
         upload = st.file_uploader(t["data_upload_label"], type=["json"], key="trend_upload")
-        if upload is not None and getattr(upload, "size", 0) > 2 * 1024 * 1024:
-            st.warning(t["data_too_big"])
+        if upload is not None and getattr(upload, "size", 0) > 5 * 1024 * 1024:
+            st.warning(t["data_too_big"].format(round(upload.size / (1024 * 1024), 1), 5))
             upload = None
         if upload is not None:
             try:
