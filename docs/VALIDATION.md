@@ -38,6 +38,11 @@ These are targets. None of them has been achieved yet, and none is presented as 
 
 ## Known limits
 
-The occupation-to-skill mapping is a heuristic; the parser misses synonyms and cannot read scanned
-PDFs; some course prices are stale; the scenario weights are assumptions. Each of these is stated in
-the interface or the README rather than hidden.
+**Résumé parsing is the least finished part of the product.** It is keyword and alias matching over
+a fixed catalogue of 54 skills — no semantic model, no layout awareness. In practice that means it
+misses synonyms and abbreviations, silently drops skills outside the catalogue, and returns nothing
+for scanned PDFs that have no text layer. A user can correct the result by hand, and the app says so
+when nothing is recognised, but automatic detection is partial by design at this stage.
+
+The occupation-to-skill mapping is a heuristic; some course prices are stale; the scenario weights
+are assumptions. Each of these is stated in the interface or the README rather than hidden.
