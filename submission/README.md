@@ -31,8 +31,10 @@ login; the first visit after a quiet period can take 20–30 seconds to wake.
 
 - **RunPod:** not used. There is no GPU endpoint anywhere in the project; parsing and scoring are
   local Python. This is stated in the Technical Declaration, section 5.
-- **Sponsor API:** none integrated. The submission form's sponsor checkbox is therefore left
-  unticked, as the organisers instructed for teams that use no sponsor resource.
+- **Sponsor technology:** the organisers clarified on 23 October that the required
+  "API Premium sponsor technology" refers to **Replit and RunPod, if used**. This project is built
+  and published on Replit (declared in Technical Declaration §3.2), so the sponsor confirmation on
+  the submission form is accurate. RunPod is not used and no GPU endpoint is involved (§5).
 - **Data:** public Malaysian labour-market sources, transcribed by hand with the source URL and
   release date stored next to each figure.
 - **Profiles:** synthetic only. No real CV, name or contact detail appears in the demo material.
