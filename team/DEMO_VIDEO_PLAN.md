@@ -81,8 +81,8 @@ and we label that crosswalk as our own reading, not an official UN mapping."
 **5:20–5:40 — validation, honestly.**
 Screen: test output, then the robustness table.
 
-Say: "What we did test: 52 automated tests, a walkthrough of every flow in three languages on
-synthetic profiles, and 36 course links checked as reachable. What we have not done: a user study.
+Say: "What we did test: 54 automated tests, a walkthrough of every flow in three languages on
+synthetic profiles, and 60 course links checked as reachable. What we have not done: a user study.
 The Phase 2 target is ten testers, a median plan in under five minutes, and 70% rating a top-three
 role at least 4 out of 5. Those are targets, not results."
 

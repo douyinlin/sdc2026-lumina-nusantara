@@ -1,15 +1,25 @@
-# 提交前本人待办（2026-10-23）
+# Owner checklist — status after the 24 October pass
 
-本地文档已按代码修订，尚未签署，不应直接当作最终已确认提交。
+Everything below was verified on 25 October 2026 unless marked otherwise.
 
-1. 视频：完成 5–7 分钟 YouTube 视频，更新 README 和官网提交字段。
-2. Replit：登录项目，确认正确项目 URL，授权评委查看历史或提供合规的部署 URL；当前公开访问提示 Page not found。同步最新版本、运行一次虚构简历到推荐结果的流程，截取账号、项目、版本、运行画面。历史截图已放入技术声明附录，不能冒充最新运行证明。
-3. 工具：确认 DeepSeek / Copilot 是否确实用过、版本与程度；Codex 和 ChatGPT 已补报。确认实际云服务套餐、地区及辅助工具版本。
-4. 人工核验：核实来源许可、课程价格与时长、统计引用；确认工作坊完成、成员登记、原创性及 IP。访谈和四周基线已撤下，若确有访谈请提供去标识记录后再恢复。
-5. 签署：负责人完整阅读修改后的两份 PDF，填写实际日期并签署。旧签名不能代表新内容。
-6. GitHub：添加赛事指定委员会账号，确认待接受队员邀请。仓库公开不等于已邀请委员会。
-7. 演示：无痕窗口走完上传虚构简历、编辑技能、岗位推荐、课程、来源、情景与 SDG 流程；核对部署版本。PPT 的“实际演示截图”“52 tests”“全部在线运行”须与最终实测一致。
-8. 正式提交：官网 sdchack.my 填齐六项材料并保存回执。手册截止为 2026-10-25 07:59:59 UTC+8，若主办方另有正式通知以其为准。
+| Item | Status |
+| --- | --- |
+| Demo video | Done — 6:34, YouTube, public: <https://youtu.be/wCsUDKMBIfs> |
+| Replit | Done — published app answers `/_stcore/health` with `ok`: <https://skill-radar-my-streamlit-app.replit.app> |
+| Signatures | Done — both PDFs carry the leader's signature and the date 24 October 2026 |
+| Slide deck | Done — 20 slides, numbers aligned with the code (60 courses / 54 skills / 54 tests) |
+| Committee repo access | Not needed — organisers confirmed on 25 October that a public repository is enough |
+| Sponsor checkbox | Leave unticked — organisers confirmed on 24 October ("leave it unticked if you don't use any") |
+| RunPod | Not used; no GPU endpoint anywhere (Technical Declaration §5) |
+| Replit Core redemption | One member is enough (organiser answer, 24 October) |
 
-本地仓库：skillradar-submission-fix。原 PDF 备份位于本次本地工作区仓库外 work/submission-originals；此前签署版本也可从 Git 历史找回。GitHub 推送不等于赛事官网正式提交。
+## Still to be done by a human
 
+1. Submit the repository link on <https://sdchack.my> (Team Portal) and keep the receipt screenshot.
+2. Optional: turn the Streamlit Community Cloud app public again; it currently shows a sign-in wall,
+   so the Replit URL is the one linked everywhere.
+
+## Notes
+
+- The old Chinese checklist that said the PDFs were unsigned and the video pending has been replaced
+  by this page; the statements were true when written and are not true now.

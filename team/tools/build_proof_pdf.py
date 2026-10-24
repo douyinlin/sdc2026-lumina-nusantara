@@ -24,7 +24,7 @@ PAGES = [
      "replit.com/@duyulin18/SkillRadar-MY-Streamlit-app."),
     ("replit-files.png", "2 — The project files inside Replit",
      "The complete source is present in the Repl: app.py (Streamlit entry point), src/i18n.py and "
-     "src/utils.py (scoring engine), data/roles.json and data/trends/latest.json, plus "
+     "src/utils.py (scoring engine), data/roles.json and team/archive/derived_latest_q2_2025.json, plus "
      "requirements.txt. This is the code that runs the public demo."),
     ("replit-git.png", "3 — Version history inside Replit",
      "Work on the prototype is tracked by Replit's own version control, with a commit history from "

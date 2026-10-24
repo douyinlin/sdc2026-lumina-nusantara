@@ -12,7 +12,7 @@ prs = Presentation(str(SUB / "SDC2026_LuminaNusantara_SlideDeck.pptx"))
 lines = [
     "# Deck talking points",
     "",
-    "Generated from `submission/SDC2026_LuminaNusantara_SlideDeck.pptx` (12 slides).",
+    f"Generated from `submission/SDC2026_LuminaNusantara_SlideDeck.pptx` ({len(prs.slides)} slides).",
     "Each slide lists its own text, top to bottom.",
     "",
 ]

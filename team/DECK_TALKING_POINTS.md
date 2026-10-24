@@ -1,6 +1,6 @@
 # Deck talking points
 
-Generated from `submission/SDC2026_LuminaNusantara_SlideDeck.pptx` (12 slides).
+Generated from `submission/SDC2026_LuminaNusantara_SlideDeck.pptx` (20 slides).
 Each slide lists its own text, top to bottom.
 
 ## Slide 1
