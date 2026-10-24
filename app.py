@@ -163,18 +163,6 @@ TAXONOMY: dict[str, dict[str, list[str]]] = {
 LABEL_TO_KEYS = {label: keys for group in TAXONOMY.values() for label, keys in group.items()}
 
 
-# Broad, non-overlapping dimensions for comparing keywords extracted from CVs.
-# Scores represent evidence coverage, not a person's level of proficiency.
-RESUME_RADAR_DIMENSIONS = [
-    ("Data & analytics", ["basic statistics", "data visualisation", "excel", "reporting", "research", "sql"]),
-    ("AI & technology", ["python", "web development", "machine learning", "prompt engineering", "cloud", "automation", "cybersecurity", "it support"]),
-    ("Customer & operations", ["customer support", "crm administration", "process improvement", "supply chain", "quality assurance", "inventory", "logistics", "heavy equipment"]),
-    ("People & communication", ["team lead", "recruitment", "hr operations", "coaching", "communication", "stakeholder management", "presentation", "negotiation"]),
-    ("Creative & commercial", ["sales", "digital marketing", "content", "copywriting", "market research", "segmentation", "graphic design", "ui ux", "video editing", "photography"]),
-    ("Product & governance", ["product management", "documentation", "compliance", "contract review", "company secretary"]),
-]
-
-
 DEFAULT_ROLES = [
     Role("AI Operations Specialist", ["prompt engineering", "data visualisation", "sql", "customer support"], 0.8, ["4.4", "8.5"]),
     Role("Customer Success Analyst", ["crm administration", "data visualisation", "sql"], 0.2, ["8.5", "4.4"]),
@@ -1877,84 +1865,6 @@ def sync_search_draft() -> None:
     ]
 
 
-def render_resume_comparison(t: dict) -> None:
-    """Show a session-only radar comparison for up to three uploaded CVs."""
-    copy = t
-    with st.expander(copy["resume_compare_title"], expanded=True):
-        st.caption(copy["resume_compare_note"])
-        uploads = st.file_uploader(
-            copy["resume_compare_upload"], type=["txt", "md", "pdf"],
-            accept_multiple_files=True, key="resume_compare_upload",
-        )
-        if uploads:
-            if len(uploads) > 3:
-                st.info(copy["resume_compare_limit"])
-            uploads = uploads[:3]
-            files = [(Path(item.name).stem[:48] or f"CV {i + 1}", item.getvalue())
-                     for i, item in enumerate(uploads)]
-            digest = hashlib.sha256(b"\0".join(data for _, data in files)).hexdigest()
-            if digest != st.session_state.get("resume_compare_digest"):
-                selectable = {skill for items in TAXONOMY.values() for keys in items.values() for skill in keys}
-                profiles = []
-                for index, (name, _) in enumerate(files):
-                    item = uploads[index]
-                    item.seek(0)
-                    skills = [skill for skill in normalize_skills(cv_to_skills(item)) if skill in selectable]
-                    profiles.append({"name": name, "skills": skills})
-                st.session_state["resume_compare_profiles"] = profiles
-                st.session_state["resume_compare_digest"] = digest
-            profiles = st.session_state.get("resume_compare_profiles", [])
-        else:
-            st.session_state.pop("resume_compare_digest", None)
-            st.session_state.pop("resume_compare_profiles", None)
-            demo_path = DATA / "resume_radar_demo.json"
-            demo = json.loads(demo_path.read_text(encoding="utf-8"))
-            profiles = demo.get("profiles", [])
-        if not profiles or not any(profile["skills"] for profile in profiles):
-            st.info(copy["resume_compare_empty"])
-            return
-
-        import matplotlib
-        matplotlib.use("Agg")
-        import matplotlib.pyplot as plt
-        import numpy as np
-
-        spoke_count = len(RESUME_RADAR_DIMENSIONS)
-        angles = np.linspace(0, 2 * np.pi, spoke_count, endpoint=False).tolist()
-        closed_angles = angles + angles[:1]
-        palette = ["#547E9E", "#C37A67", "#75856A"]
-        fig, ax = plt.subplots(figsize=(7.2, 5.8), subplot_kw={"polar": True}, dpi=150)
-        ax.set_theta_offset(np.pi / 2)
-        ax.set_theta_direction(-1)
-        ax.set_ylim(0, 100)
-        ax.set_yticks([20, 40, 60, 80, 100])
-        ax.set_yticklabels(["20", "40", "60", "80", "100%"], fontsize=8, color="#778078")
-        ax.set_xticks(angles)
-        ax.set_xticklabels([str(i) for i in range(1, spoke_count + 1)], fontsize=11, fontweight="bold", color="#35423D")
-        ax.tick_params(axis="x", pad=10)
-        ax.grid(color="#D8E0DA", linewidth=0.8)
-        ax.spines["polar"].set_color("#D8E0DA")
-
-        for index, profile in enumerate(profiles):
-            skills = set(profile["skills"])
-            scores = [100 * len(skills.intersection(keys)) / len(keys) for _, keys in RESUME_RADAR_DIMENSIONS]
-            values = scores + scores[:1]
-            color = palette[index % len(palette)]
-            ax.plot(closed_angles, values, color=color, linewidth=2.4, marker="o", markersize=5, label=f"CV {index + 1}")
-            ax.fill(closed_angles, values, color=color, alpha=0.14)
-        ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.18), ncol=min(3, len(profiles)), frameon=False, fontsize=10)
-        fig.patch.set_alpha(0)
-        fig.tight_layout()
-        st.markdown(f"**{copy['resume_compare_chart_title']}**")
-        st.pyplot(fig, width="stretch")
-        plt.close(fig)
-
-        st.caption(copy["resume_compare_axes"])
-        for index, profile in enumerate(profiles):
-            st.text(f"CV {index + 1} · {profile['name']} · {len(profile['skills'])} {copy['resume_compare_count']}")
-        st.caption(copy["resume_compare_method"])
-
-
 def screen_js_intake() -> None:
     t = T(st.session_state.get("lang", "en"))
     screen_wrap()
@@ -2073,7 +1983,6 @@ def screen_js_intake() -> None:
                 st.warning(t["not_detected"])
     st.caption(t["uploader_hint"])
     st.caption(t["upload_state_note"])
-    render_resume_comparison(t)
 
     st.markdown(f'<div class="sr-pill">{t["opt_b"]}</div>', unsafe_allow_html=True)
     lang = st.session_state.get("lang", "en")
